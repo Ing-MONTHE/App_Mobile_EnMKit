@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'relay_model.dart';
 
 class KitModel {
