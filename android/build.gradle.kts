@@ -2,6 +2,9 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+        // Maven Central mirror to mitigate temporary DNS/availability issues
+        maven { url = uri("https://repo1.maven.org/maven2/") }
     }
 }
 

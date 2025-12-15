@@ -14,24 +14,24 @@ rootProject.allprojects {
 }
 
 android {
-    namespace "com.enmkit.readsms"   // ✅ Ajout obligatoire du namespace
-    compileSdkVersion 33             // ⚡ Mets à jour pour être compatible avec Flutter récent
-
-    defaultConfig {
-        minSdkVersion 21             // ⚡ Flutter >=3.16 demande minSdk 21
-    }
+    namespace 'com.ayush783.readsms'
+    compileSdkVersion 35
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '1.8'
     }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdkVersion 21
     }
 }
 

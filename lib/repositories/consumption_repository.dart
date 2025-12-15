@@ -8,13 +8,18 @@ class ConsumptionRepository {
   // Ajouter une consommation
   Future<void> addConsumption(ConsumptionModel consumption) async {
     final db = await _dbService.database;
-    await db.insert('consumptions', consumption.toMap());
+    // Respecte le schéma SQLite (colonne 'kWh')
+    await db.insert('consumptions', {
+      'kWh': consumption.kwh,
+      'timestamp': consumption.timestamp.toIso8601String(),
+    });
   }
 
   // Récupérer toutes les consommations
   Future<List<ConsumptionModel>> getAllConsumptions() async {
     final db = await _dbService.database;
-    final maps = await db.query('consumptions');
+    // Alias pour rendre la clé compatible avec le modèle ('kwh')
+    final maps = await db.rawQuery('SELECT kWh AS kwh, timestamp FROM consumptions');
     return maps.map((m) => ConsumptionModel.fromMap(m)).toList();
   }
 

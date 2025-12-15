@@ -1,7 +1,6 @@
 import 'package:enmkit/models/users_model.dart';
 import 'package:enmkit/repositories/auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:enmkit/providers.dart';
 
 /// État de l'authentification
 class AuthState {

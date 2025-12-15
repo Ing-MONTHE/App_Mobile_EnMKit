@@ -26,4 +26,17 @@ class KitModel {
       pulseCount: map['pulseCount'],
     );
   }
+
+  /// Méthode copyWith pour modifier uniquement certains champs
+  KitModel copyWith({
+    String? kitNumber,
+    double? initialConsumption,
+    int? pulseCount,
+  }) {
+    return KitModel(
+      kitNumber: kitNumber ?? this.kitNumber,
+      initialConsumption: initialConsumption ?? this.initialConsumption,
+      pulseCount: pulseCount ?? this.pulseCount,
+    );
+  }
 }

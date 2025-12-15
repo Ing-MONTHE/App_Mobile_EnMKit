@@ -1,6 +1,3 @@
-import 'package:enmkit/ui/screens/auth/auth_screen.dart';
-import 'package:enmkit/ui/screens/home/home.dart';
-import 'package:enmkit/ui/screens/onboarding/onboarding_screen.dart';
 import 'package:enmkit/ui/screens/wrapper/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

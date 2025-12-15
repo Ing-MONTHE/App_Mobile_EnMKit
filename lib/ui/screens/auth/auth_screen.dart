@@ -1,5 +1,6 @@
 import 'package:enmkit/models/users_model.dart';
 import 'package:enmkit/providers.dart';
+import 'package:enmkit/ui/screens/home/home.dart';
 import 'package:enmkit/viewmodels/authViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,8 +96,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.user != null) {
         final route = next.user!.isAdmin
-            ? const Placeholder() // TODO: DashboardScreen()
-            : const Placeholder(); // TODO: HomeScreen()
+            ? const MainScreen() // TODO: DashboardScreen()
+            : const MainScreen(); // TODO: HomeScreen()
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => route),
         );
@@ -293,7 +294,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
       builder: (context, child) {
         return Transform.scale(
           scale: _pulseAnimation.value,
-          child: Container(
+          child: SizedBox(
             width: 80,
             height: 80,
             child: Image.asset(
@@ -313,15 +314,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
           shaderCallback: (bounds) => const LinearGradient(
             colors: [Color(0xFF1A365D), Color(0xFF4299E1)],
           ).createShader(bounds),
-          child: const Text(
-            'ENMKit',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 2,
-            ),
-          ),
+          child: _buildElectricLogo()
         ),
         const SizedBox(height: 4),
         const Text(

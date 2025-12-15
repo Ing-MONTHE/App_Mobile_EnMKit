@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import '../models/kit_model.dart';
-import '../models/relay_model.dart';
-import '../models/allowed_number_model.dart';
-import '../repositories/kit_repository.dart';
-import '../repositories/relay_repository.dart';
-import '../repositories/allowed_number_repository.dart';
+import 'package:enmkit/models/allowed_number_model.dart';
+import 'package:enmkit/models/kit_model.dart';
+import 'package:enmkit/models/relay_model.dart';
+import 'package:enmkit/repositories/allowed_number_repository.dart';
+import 'package:enmkit/repositories/kit_repository.dart';
+import 'package:enmkit/repositories/relay_repository.dart';
 
 class DatabaseRegenerator {
   final KitRepository kitRepo;
@@ -25,16 +25,18 @@ class DatabaseRegenerator {
 
       // --- 1. Kit ---
       if (data.containsKey('kit')) {
-        final kitData = data['kit'] as Map<String, dynamic>;
-        final kit = KitModel.fromMap(kitData);
-        await kitRepo.clearKit(); // vide l'ancienne table si nécessaire
-        await kitRepo.addKit(kit);
+        final kits = data['kit'] as List<dynamic>;
+        if (kits.isNotEmpty) {
+          final kit = KitModel.fromMap(kits.first as Map<String, dynamic>);
+          await kitRepo.clearKit();
+          await kitRepo.addKit(kit);
+        }
       }
 
       // --- 2. Relays ---
       if (data.containsKey('relays')) {
         final relaysData = data['relays'] as List<dynamic>;
-        await relayRepo.clearRelays(); // vide l'ancienne table
+        await relayRepo.clearRelays();
         for (var r in relaysData) {
           final relay = RelayModel.fromMap(r as Map<String, dynamic>);
           await relayRepo.addRelay(relay);

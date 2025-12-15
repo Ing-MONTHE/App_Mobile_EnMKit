@@ -1,14 +1,16 @@
 class RelayModel {
-  String? id;
+  int? id;
   String? name;
   bool isActive;
   int amperage;
+  bool ackReceived;
 
   RelayModel({
     this.id,
     this.name,
     this.isActive = false,
     required this.amperage,
+    this.ackReceived = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -17,6 +19,7 @@ class RelayModel {
       'name': name,
       'isActive': isActive ? 1 : 0,
       'amperage': amperage,
+      'ackReceived': ackReceived ? 1 : 0,
     };
   }
 
@@ -26,6 +29,7 @@ class RelayModel {
       name: map['name'],
       isActive: map['isActive'] == 1,
       amperage: map['amperage'],
+      ackReceived: (map['ackReceived'] ?? 0) == 1,
     );
   }
 }
