@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+group 'com.ayush783.readsms'
+version '1.0-SNAPSHOT'
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+android {
+    namespace 'com.ayush783.readsms'
+    compileSdkVersion 35
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+    }
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.3.0'
+}
