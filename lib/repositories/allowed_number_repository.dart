@@ -11,10 +11,12 @@ class AllowedNumberRepository {
     await db.insert('allowed_numbers', number.toMap());
   }
 
-  // Récupérer tous les numéros
-  Future<List<AllowedNumberModel>> getAllNumbers() async {
+  // Récupérer tous les numéros (filtrés par kit si [kitNumber] est fourni)
+  Future<List<AllowedNumberModel>> getAllNumbers({String? kitNumber}) async {
     final db = await _dbService.database;
-    final maps = await db.query('allowed_numbers');
+    final maps = kitNumber == null
+        ? await db.query('allowed_numbers')
+        : await db.query('allowed_numbers', where: 'kitNumber = ?', whereArgs: [kitNumber]);
     return maps.map((m) => AllowedNumberModel.fromMap(m)).toList();
   }
 
@@ -39,9 +41,13 @@ class AllowedNumberRepository {
     );
   }
 
-    /// Supprime tous les numéros autorisés
-  Future<void> clearAllowedNumbers() async {
+    /// Supprime tous les numéros autorisés (d'un kit si [kitNumber] est fourni)
+  Future<void> clearAllowedNumbers({String? kitNumber}) async {
     final db = await _dbService.database;
-    await db.delete('allowed_numbers');
+    if (kitNumber == null) {
+      await db.delete('allowed_numbers');
+    } else {
+      await db.delete('allowed_numbers', where: 'kitNumber = ?', whereArgs: [kitNumber]);
+    }
   }
 }

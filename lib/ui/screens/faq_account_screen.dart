@@ -1,4 +1,3 @@
-import 'package:enmkit/ui/screens/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 
 class FaqAccountScreen extends StatelessWidget {
@@ -9,12 +8,9 @@ class FaqAccountScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Compte & Connexion'),
-        backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: const Color(0xFF1E293B),
       ),
-      backgroundColor: const Color(0xFFF8FAFC),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -27,6 +23,7 @@ class FaqAccountScreen extends StatelessWidget {
               _buildActionButtons(context),
               const SizedBox(height: 24),
               _buildFaqSection(
+                context,
                 'Créer un compte EnMKit',
                 Icons.person_add_alt,
                 const [
@@ -38,6 +35,7 @@ class FaqAccountScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildFaqSection(
+                context,
                 'Se connecter à son compte',
                 Icons.login,
                 const [
@@ -49,6 +47,7 @@ class FaqAccountScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildFaqSection(
+                context,
                 'Rôles et accès',
                 Icons.verified_user_outlined,
                 const [
@@ -60,6 +59,7 @@ class FaqAccountScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
               _buildFaqSection(
+                context,
                 'Sécurité du compte',
                 Icons.security_outlined,
                 const [
@@ -70,6 +70,7 @@ class FaqAccountScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildFaqSection(
+                context,
                 'Problèmes de connexion réseau',
                 Icons.wifi_tethering_off,
                 const [
@@ -92,19 +93,14 @@ class FaqAccountScreen extends StatelessWidget {
 }
 
 Widget _buildHeroInfo(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.06),
-          blurRadius: 16,
-          offset: const Offset(0, 6),
-        ),
-      ],
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
     child: Row(
       children: [
@@ -119,7 +115,7 @@ Widget _buildHeroInfo(BuildContext context) {
           child: const Icon(Icons.lock_outline, color: Colors.white, size: 26),
         ),
         const SizedBox(width: 16),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -128,13 +124,14 @@ Widget _buildHeroInfo(BuildContext context) {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
+                  color: scheme.onSurface,
                 ),
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Text(
                 'Connexion, rôles, sécurité et récupération d\'accès pour EnMKit Control.',
-                style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+                style: TextStyle(
+                    fontSize: 12, color: scheme.onSurfaceVariant, height: 1.4),
               ),
             ],
           ),
@@ -152,19 +149,17 @@ Widget _buildActionButtons(BuildContext context) {
           height: 48,
           child: ElevatedButton.icon(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AuthScreen()),
-              );
+              // Plus de page de connexion : on revient simplement à l'accueil.
+              Navigator.popUntil(context, (route) => route.isFirst);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF3B82F6),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               elevation: 0,
             ),
-            icon: const Icon(Icons.login, color: Colors.white),
+            icon: const Icon(Icons.home, color: Colors.white),
             label: const Text(
-              'Aller à la connexion',
+              'Retour à l\'accueil',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
             ),
           ),
@@ -192,41 +187,37 @@ Widget _buildActionButtons(BuildContext context) {
   );
 }
 
-Widget _buildFaqSection(String title, IconData icon, List<String> points) {
+Widget _buildFaqSection(
+    BuildContext context, String title, IconData icon, List<String> points) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.04),
-          blurRadius: 12,
-          offset: const Offset(0, 4),
-        ),
-      ],
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
+    clipBehavior: Clip.antiAlias,
     child: Theme(
-      data: ThemeData().copyWith(dividerColor: Colors.transparent),
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF3B82F6).withOpacity(0.1),
+            color: scheme.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: const Color(0xFF3B82F6), size: 22),
+          child: Icon(icon, color: scheme.primary, size: 22),
         ),
         title: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF0F172A),
+            color: scheme.onSurface,
           ),
         ),
         children: [
-          const Divider(height: 1),
+          Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.5)),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: Column(
@@ -238,12 +229,16 @@ Widget _buildFaqSection(String title, IconData icon, List<String> points) {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 16),
+                          const Icon(Icons.check_circle,
+                              color: Color(0xFF10B981), size: 16),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               p,
-                              style: const TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.4),
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: scheme.onSurfaceVariant,
+                                  height: 1.4),
                             ),
                           ),
                         ],
@@ -260,43 +255,42 @@ Widget _buildFaqSection(String title, IconData icon, List<String> points) {
 }
 
 Widget _buildSupportCard(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(18),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.04),
-          blurRadius: 12,
-          offset: const Offset(0, 4),
-        ),
-      ],
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
     child: Row(
       children: [
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF10B981).withOpacity(0.1),
+            color: const Color(0xFF10B981).withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(Icons.support_agent, color: Color(0xFF10B981), size: 22),
+          child:
+              const Icon(Icons.support_agent, color: Color(0xFF10B981), size: 22),
         ),
         const SizedBox(width: 12),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Toujours bloqué ?',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: scheme.onSurface),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Contacte le support avec ton email et le numéro du Kit.',
-                style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                style:
+                    TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -304,7 +298,9 @@ Widget _buildSupportCard(BuildContext context) {
         const SizedBox(width: 8),
         TextButton(
           onPressed: () => _showSupportDialog(context),
-          child: const Text('Contacter', style: TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.w700)),
+          child: const Text('Contacter',
+              style: TextStyle(
+                  color: Color(0xFF10B981), fontWeight: FontWeight.w700)),
         ),
       ],
     ),

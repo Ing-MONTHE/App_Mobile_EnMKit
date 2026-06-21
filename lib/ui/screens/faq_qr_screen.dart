@@ -8,12 +8,9 @@ class FaqQrScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('QR & Configuration'),
-        backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: const Color(0xFF1E293B),
       ),
-      backgroundColor: const Color(0xFFF8FAFC),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -21,9 +18,10 @@ class FaqQrScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHero(),
+              _buildHero(context),
               const SizedBox(height: 24),
               _buildSection(
+                context,
                 'Générer le QR Code',
                 Icons.qr_code,
                 const [
@@ -34,6 +32,7 @@ class FaqQrScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildSection(
+                context,
                 'Importer un QR Code',
                 Icons.qr_code_scanner,
                 const [
@@ -44,16 +43,17 @@ class FaqQrScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildSection(
+                context,
                 'Après import',
                 Icons.cloud_done_outlined,
                 const [
                   'Les données du Kit sont régénérées automatiquement.',
                   'Utilise « État Système » → « Valider » pour renvoyer la config au Kit.',
-                  'Vérifie la consommation et les relais dans leurs onglets respectifs.'
+                  'Vérifie la consommation et les lignes dans leurs onglets respectifs.'
                 ],
               ),
               const SizedBox(height: 28),
-              _buildInfoCard(),
+              _buildInfoCard(context),
             ],
           ),
         ),
@@ -62,27 +62,35 @@ class FaqQrScreen extends StatelessWidget {
   }
 }
 
-Widget _buildHero() {
+Widget _buildHero(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 16, offset: const Offset(0, 6)),
-      ],
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
-    child: const Row(
+    child: Row(
       children: [
-        Icon(Icons.qr_code, color: Color(0xFF3B82F6)),
-        SizedBox(width: 12),
+        const Icon(Icons.qr_code, color: Color(0xFF3B82F6)),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Gérer vos QR Codes de configuration', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-              SizedBox(height: 6),
-              Text('Génération, import et synchronisation des données du Kit en toute sécurité.', style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4)),
+              Text('Gérer vos QR Codes de configuration',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: scheme.onSurface)),
+              const SizedBox(height: 6),
+              Text(
+                  'Génération, import et synchronisation des données du Kit en toute sécurité.',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
+                      height: 1.4)),
             ],
           ),
         )
@@ -91,25 +99,33 @@ Widget _buildHero() {
   );
 }
 
-Widget _buildSection(String title, IconData icon, List<String> points) {
+Widget _buildSection(
+    BuildContext context, String title, IconData icon, List<String> points) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
+    clipBehavior: Clip.antiAlias,
     child: Theme(
-      data: ThemeData().copyWith(dividerColor: Colors.transparent),
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         leading: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: const Color(0xFF3B82F6).withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-          child: Icon(icon, color: const Color(0xFF3B82F6), size: 22),
+          decoration: BoxDecoration(
+              color: scheme.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10)),
+          child: Icon(icon, color: scheme.primary, size: 22),
         ),
-        title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+        title: Text(title,
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: scheme.onSurface)),
         children: [
-          const Divider(height: 1),
+          Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.5)),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: Column(
@@ -120,9 +136,15 @@ Widget _buildSection(String title, IconData icon, List<String> points) {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 16),
+                            const Icon(Icons.check_circle,
+                                color: Color(0xFF10B981), size: 16),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(p, style: const TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.4))),
+                            Expanded(
+                                child: Text(p,
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: scheme.onSurfaceVariant,
+                                        height: 1.4))),
                           ],
                         ),
                       ))
@@ -135,28 +157,26 @@ Widget _buildSection(String title, IconData icon, List<String> points) {
   );
 }
 
-Widget _buildInfoCard() {
+Widget _buildInfoCard(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(18),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
-    child: const Row(
+    child: Row(
       children: [
-        Icon(Icons.info_outline, color: Color(0xFF0EA5E9)),
-        SizedBox(width: 12),
+        const Icon(Icons.info_outline, color: Color(0xFF0EA5E9)),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             'Astuce: conserve une copie du QR Code de configuration pour restaurer rapidement le système.',
-            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+            style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
           ),
         )
       ],
     ),
   );
 }
-
-

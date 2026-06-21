@@ -12,14 +12,20 @@ class ConsumptionRepository {
     await db.insert('consumptions', {
       'kWh': consumption.kwh,
       'timestamp': consumption.timestamp.toIso8601String(),
+      'kitNumber': consumption.kitNumber,
     });
   }
 
-  // Récupérer toutes les consommations
-  Future<List<ConsumptionModel>> getAllConsumptions() async {
+  // Récupérer toutes les consommations (filtrées par kit si [kitNumber] est fourni)
+  Future<List<ConsumptionModel>> getAllConsumptions({String? kitNumber}) async {
     final db = await _dbService.database;
     // Alias pour rendre la clé compatible avec le modèle ('kwh')
-    final maps = await db.rawQuery('SELECT kWh AS kwh, timestamp FROM consumptions');
+    final maps = kitNumber == null
+        ? await db.rawQuery('SELECT kWh AS kwh, timestamp, kitNumber FROM consumptions')
+        : await db.rawQuery(
+            'SELECT kWh AS kwh, timestamp, kitNumber FROM consumptions WHERE kitNumber = ?',
+            [kitNumber],
+          );
     return maps.map((m) => ConsumptionModel.fromMap(m)).toList();
   }
 

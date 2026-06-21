@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Guide d'utilisation — EnMKit</title>
+<style>
+  :root{
+    --blue:#1E3FBE; --blue-d:#16309A; --green:#4FB81E; --green-d:#3E9417;
+    --enm:#1717A8; --ink:#23284D; --muted:#6E739A;
+    --bg-soft:#F2F5FD; --line:#E4E9F7; --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  @page{ size:A4; margin:14mm 0; }
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  body{
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); line-height:1.6; margin:0; font-size:12.5px;
+    -webkit-font-smoothing:antialiased;
+    background:#fff;
+  }
+
+  /* ---------- WATERMARK (2MeTech, per page) ---------- */
+  .watermark{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .watermark img{ width:58%; }
+  .content{ position:relative; z-index:1; padding:0 20mm; }
+
+  /* ---------- COVER ---------- */
+  .cover{
+    position:relative; z-index:2; overflow:hidden; page-break-after:always;
+    height:269mm; display:flex; flex-direction:column;
+    align-items:center; justify-content:space-between; text-align:center;
+    background:
+      radial-gradient(820px 460px at 50% -6%, #E6ECFF 0%, rgba(230,236,255,0) 62%),
+      radial-gradient(640px 440px at 108% 110%, #ECFCE3 0%, rgba(236,252,227,0) 58%),
+      linear-gradient(180deg,#FBFCFF 0%, #F1F4FD 100%);
+    padding:26mm 20mm 16mm;
+  }
+  .cover .top{ display:flex; flex-direction:column; align-items:center; }
+  .cover .enm-logo{ width:230px; margin-bottom:6px; }
+  .cover .rule{ width:54px; height:4px; border-radius:4px;
+    background:linear-gradient(90deg,var(--blue),var(--green)); margin:20px 0 26px; }
+  .cover .kicker{ color:var(--blue); font-weight:700; letter-spacing:3px;
+    font-size:11px; text-transform:uppercase; margin-bottom:12px; }
+  .cover h1{ font-size:46px; margin:0; font-weight:800; letter-spacing:-1.5px;
+    color:var(--ink); line-height:1.05; }
+  .cover p.tag{ font-size:16px; color:var(--muted); margin:18px auto 0;
+    max-width:430px; line-height:1.6; }
+  .cover .mid{ display:flex; flex-direction:column; align-items:center; }
+  .cover .badge{ display:inline-flex; align-items:center; gap:9px;
+    background:#fff; border:1px solid var(--line); border-radius:999px;
+    padding:7px 16px; font-size:11.5px; color:var(--muted);
+    box-shadow:0 6px 18px rgba(30,40,120,.08); }
+  .cover .badge b{ color:var(--blue-d); }
+  .cover .by{ margin-top:30px; display:flex; flex-direction:column; align-items:center; gap:12px; }
+  .cover .by span{ font-size:11px; color:var(--muted); letter-spacing:.5px; }
+  .cover .by img{ width:170px; }
+
+  /* ---------- Headings ---------- */
+  .sec{ display:flex; align-items:center; gap:12px; margin:26px 0 6px;
+    padding-bottom:8px; border-bottom:2px solid var(--line); page-break-after:avoid; }
+  .sec .num{ flex:0 0 auto; width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(150deg,var(--blue),var(--blue-d)); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
+    box-shadow:0 5px 13px rgba(30,63,190,.35); }
+  .sec h2{ margin:0; color:var(--blue-d); font-size:18px; border:0; padding:0; }
+  h3{ color:var(--ink); font-size:13.5px; margin:14px 0 2px; page-break-after:avoid; }
+  p{ margin:7px 0; }
+  .lead{ background:var(--bg-soft); border-radius:14px; padding:15px 19px; margin:14px 0; }
+  .lead p:first-child{ margin-top:0; } .lead p:last-child{ margin-bottom:0; }
+  .note{ background:var(--bg-soft); border-left:3px solid var(--green);
+    border-radius:0 10px 10px 0; padding:10px 15px; margin:13px 0; font-size:11.6px; color:#34395f; }
+
+  /* ---------- ANNOTATION: dot -> path -> callout ---------- */
+  .annot{ display:flex; align-items:center; margin:16px 0; page-break-inside:avoid; }
+  .shotbox{ position:relative; flex:0 0 auto; display:flex; gap:7px; }
+  .shotbox img{ display:block; border:1px solid var(--line); border-radius:14px;
+    box-shadow:0 9px 24px rgba(30,40,120,.13); background:#fff; }
+  .shotbox.single img{ width:208px; }
+  .shotbox.s2 img{ width:142px; }
+  .shotbox.s3 img{ width:110px; }
+  /* the point sitting on the capture */
+  .shotbox .dot{ position:absolute; right:-7px; top:50%; transform:translateY(-50%);
+    width:14px; height:14px; border-radius:50%; background:var(--green);
+    border:3px solid #fff; box-shadow:0 0 0 2px var(--green), 0 2px 7px rgba(0,0,0,.22); z-index:3; }
+  /* the little path leading to the quadrant */
+  .path{ flex:0 0 46px; height:3px; align-self:center; border-radius:3px;
+    background:linear-gradient(90deg,var(--green) 0%, var(--blue) 100%); position:relative; }
+  .path::after{ content:""; position:absolute; right:-3px; top:50%; transform:translateY(-50%);
+    width:8px; height:8px; border-radius:50%; background:var(--blue); }
+  /* the quadrant / card holding the text */
+  .callout{ flex:1; background:var(--card); border-radius:15px; padding:13px 17px;
+    border:1px solid var(--line); border-left:5px solid var(--blue);
+    box-shadow:0 11px 28px rgba(30,40,120,.11); }
+  .callout h4{ margin:0 0 5px; color:var(--blue-d); font-size:13.5px;
+    display:flex; align-items:center; gap:7px; }
+  .callout h4 .tag-step{ background:var(--green); color:#fff; border-radius:20px;
+    padding:1px 9px; font-size:10px; font-weight:700; }
+  .callout p{ margin:4px 0; font-size:11.7px; color:#3a3f63; }
+  .callout ul{ margin:5px 0 2px; padding-left:17px; }
+  .callout li{ margin:3px 0; font-size:11.5px; color:#3a3f63; }
+  .callout .cap-sub{ font-size:10.3px; color:var(--muted); margin-top:6px; }
+
+  /* ---------- DATA TABLE (annexe SMS) ---------- */
+  code{ background:#EEF2FF; color:var(--enm); padding:1px 5px; border-radius:5px;
+    font-family:"Consolas","SFMono-Regular",monospace; font-size:.9em; }
+  table.data{ width:100%; border-collapse:collapse; margin:10px 0; font-size:11px;
+    page-break-inside:avoid; }
+  table.data th{ background:var(--blue); color:#fff; text-align:left; padding:7px 9px; font-weight:600; }
+  table.data td{ border:1px solid var(--line); padding:6px 9px; vertical-align:top; }
+  table.data tr:nth-child(even) td{ background:var(--bg-soft); }
+
+  footer{ margin-top:30px; padding-top:12px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:10.3px; display:flex; align-items:center;
+    justify-content:space-between; }
+  footer img{ height:22px; opacity:.9; }
+
+  /* ---------- TOC ---------- */
+  .toc{ background:var(--bg-soft); border-radius:14px; padding:15px 23px; margin:0 0 14px; }
+  .toc .sec{ border:0; margin:0 0 8px; padding:0; }
+  .toc .sec h2{ font-size:15px; }
+  .toc ol{ columns:2; column-gap:34px; margin:0; padding-left:18px; }
+  .toc li{ margin:4px 0; font-size:11.7px; }
+</style>
+</head>
+<body>
+
+<!-- per-page watermark -->
+<div class="watermark"><img src="brand/2metech_watermark.png"></div>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="top">
+    <img class="enm-logo" src="brand/enmkit.png">
+    <div class="rule"></div>
+    <div class="kicker">Guide d'utilisation</div>
+    <h1>Piloter vos kits<br>par SMS</h1>
+    <p class="tag">Commandez vos lignes électriques et suivez votre consommation — où que vous soyez, même sans Internet.</p>
+  </div>
+  <div class="mid">
+    <div class="badge">Application <b>EnMKit</b> &nbsp;·&nbsp; Version <b>1.0.0</b> &nbsp;·&nbsp; 21/06/2026</div>
+    <div class="by">
+      <span>UNE SOLUTION SIGNÉE</span>
+      <img src="brand/2metech.png">
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="toc">
+    <div class="sec"><span class="num">≡</span><h2>Sommaire</h2></div>
+    <ol>
+      <li>Premier lancement — l'accueil</li>
+      <li>Code d'accès — proposé, mais skippable</li>
+      <li>Le tableau de bord (vide au départ)</li>
+      <li>Ajouter un appartement (et ses lignes)</li>
+      <li>Votre parc complet</li>
+      <li>Piloter les lignes d'un logement</li>
+      <li>Gérer une ligne (double-tap)</li>
+      <li>Suivre la consommation</li>
+      <li>Configurer le kit</li>
+      <li>Partage de config par QR Code</li>
+      <li>Réglages de l'application</li>
+      <li>Sécurité — code, empreinte, récupération</li>
+      <li>Aide intégrée (FAQ)</li>
+      <li>Annexe — les messages SMS</li>
+    </ol>
+  </div>
+
+  <div class="lead">
+    <p><strong>À qui s'adresse ce guide ?</strong></p>
+    <p>Ce guide suit un <strong>scénario concret</strong> : celui d'un <strong>bailleur</strong>
+    qui possède plusieurs logements (Appartement A, B, C) et qui souhaite piloter à distance
+    l'électricité de chacun depuis un seul téléphone — <strong>de l'installation jusqu'à la
+    gestion fine des lignes</strong>, et le <strong>partage de configuration entre deux
+    téléphones par QR Code</strong>.</p>
+  </div>
+
+  <div class="note"><strong>Le principe d'EnMKit.</strong> Chaque logement est équipé d'un
+  <em>kit</em> (un boîtier relié à une carte SIM). L'application envoie des
+  <strong>SMS de commande</strong> au numéro du kit pour allumer / couper les circuits (<strong>lignes</strong>)
+  et relever la consommation. Aucune connexion Internet n'est requise : tout passe par le réseau GSM.
+  Quand le kit confirme, <strong>tous les téléphones autorisés</strong> se synchronisent — même application fermée —
+  et chaque confirmation est conservée dans un <strong>historique horodaté</strong> par ligne (§6.3).</div>
+
+  <!-- 1 -->
+  <div class="sec"><span class="num">1</span><h2>Premier lancement — l'accueil</h2></div>
+  <div class="annot">
+    <div class="shotbox s3">
+      <img src="screenshots_web/01-onboarding-1.jpg">
+      <img src="screenshots_web/02-onboarding-2.jpg">
+      <img src="screenshots_web/03-onboarding-3.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Trois écrans d'introduction</h4>
+      <ul>
+        <li><strong>Pilotez à distance</strong> — vos lignes par SMS, sans Internet.</li>
+        <li><strong>Suivez la consommation</strong> — conso de chaque kit + historique.</li>
+        <li><strong>Sécurisé et multi-kits</strong> — tout votre parc en un seul endroit.</li>
+      </ul>
+      <p class="cap-sub">Appuyez sur <strong>Suivant</strong> / <strong>Commencer</strong>. Le lien <strong>Passer</strong> saute l'introduction.</p>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="sec"><span class="num">2</span><h2>Code d'accès — proposé, mais skippable</h2></div>
+  <div class="annot">
+    <div class="shotbox s2">
+      <img src="screenshots_web/41-premier-lancement-code-skippable.jpg">
+      <img src="screenshots_web/42-skip-acces-direct-home.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4><span class="tag-step">Nouveau</span> Une sécurité proposée, jamais imposée</h4>
+      <p>Juste après l'introduction, l'app <strong>propose</strong> de créer un code — mais un bouton
+      <strong>« Passer pour l'instant »</strong> permet d'aller <strong>directement</strong> au tableau de bord.</p>
+      <ul>
+        <li><strong>Créer un code</strong> (4 chiffres) → protège l'ouverture de l'app.</li>
+        <li><strong>Passer</strong> → accès direct, sans code.</li>
+      </ul>
+      <p class="cap-sub">🔐 Proposition affichée <strong>une seule fois</strong>. Activable plus tard dans Réglages → Sécurité (§12).</p>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="sec"><span class="num">3</span><h2>Le tableau de bord (vide au départ)</h2></div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/06-liste-vide.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>« Mes kits » — encore vide</h4>
+      <p>Au tout début, <strong>aucun kit n'est enregistré</strong>. La carte <strong>« Mon parc »</strong> affiche <strong>0 kit</strong>.</p>
+      <p class="cap-sub">Le bouton <strong>+</strong> (en bas à droite) ajoute votre premier kit.</p>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="sec"><span class="num">4</span><h2>Ajouter un appartement (et choisir les lignes)</h2></div>
+  <div class="annot">
+    <div class="shotbox s2">
+      <img src="screenshots_web/07-ajout-kit-vide.jpg">
+      <img src="screenshots_web/08-ajout-kit-rempli.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Fenêtre « Nouveau kit »</h4>
+      <p>Renseignez le <strong>Nom du kit</strong> et le <strong>Numéro du kit</strong> (sa carte SIM), par ex. <em>Loïc</em> et <em>699173771</em>.</p>
+      <p class="cap-sub">💡 Nommez chaque kit d'après le logement (<em>Appartement A, B…</em>) pour vous y retrouver.</p>
+    </div>
+  </div>
+  <div class="annot">
+    <div class="shotbox s2">
+      <img src="screenshots_web/33-creation-nombre-lignes.jpg">
+      <img src="screenshots_web/34-creation-lignes-personnalise.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4><span class="tag-step">Nouveau</span> Choisir le nombre de lignes</h4>
+      <p>Avant de valider : <strong>4</strong>, <strong>7</strong> ou <strong>Personnalisé</strong> (1 à 7, via <strong>− / +</strong>). Les lignes sont créées automatiquement (<em>Ligne 1, Ligne 2…</em>), à renommer ensuite (§7).</p>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="sec"><span class="num">5</span><h2>Votre parc complet</h2></div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/09-parc-3-appartements.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Trois appartements gérés</h4>
+      <p>Après avoir répété l'opération, le bailleur gère <strong>Appartement A, B et C</strong>. La carte « Mon parc » indique <strong>3 kits, 3 configurés</strong>.</p>
+      <p class="cap-sub">Chaque carte montre le nom, le numéro du kit et un point de statut. Touchez-la pour ouvrir le logement.</p>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="sec"><span class="num">6</span><h2>Piloter les lignes d'un logement</h2></div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/44-lignes-boutons-onoff.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>L'onglet Lignes — le poste de commande</h4>
+      <ul>
+        <li>Trois onglets : <strong>Lignes</strong>, <strong>Conso</strong>, <strong>Config</strong>.</li>
+        <li>Compteur <strong>« 4/7 »</strong> : un kit gère jusqu'à <strong>7 lignes</strong>, numérotées <strong>1 à 7</strong> (ordre des lignes dans le kit).</li>
+        <li><strong>Actions rapides</strong> : <strong>Tout allumer</strong> / <strong>Tout éteindre</strong>.</li>
+        <li>Chaque ligne : son nom + <strong>deux boutons ON / OFF</strong> qui envoient la commande par SMS.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/46-historique-accuses.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Des boutons d'action — l'état réel se lit dans l'historique</h4>
+      <p>Les boutons <strong>ON / OFF</strong> sont volontairement <strong>neutres</strong> : appuyer ne fait qu'<strong>envoyer la commande</strong> au kit (<code>r1on</code>…<code>r7on</code>, où le chiffre est le <strong>numéro de ligne 1–7</strong>). L'app n'affiche <strong>aucun état « supposé »</strong> sur les boutons, pour ne pas induire en erreur.</p>
+      <p>Pour connaître l'<strong>état réellement confirmé</strong>, touchez l'<strong>icône horloge</strong> d'une ligne : son <strong>historique des accusés</strong> liste chaque confirmation (<em>Allumée / Éteinte</em>), le <strong>message exact renvoyé par le kit</strong> (ex. <code>r1on</code>) et l'<strong>heure</strong>.</p>
+      <p class="cap-sub">⏳ Pendant l'envoi, le bouton pressé affiche brièvement « envoi en cours » et le contrôle est verrouillé pour éviter un double SMS.</p>
+    </div>
+  </div>
+  <div class="note">🔑 <strong>L'historique fait foi.</strong> Un même kit peut être piloté par <strong>plusieurs téléphones autorisés</strong> ;
+  les confirmations sont journalisées <strong>même application fermée</strong> ou depuis un <strong>autre onglet</strong>, et complètent
+  l'historique <strong>automatiquement</strong>.</div>
+
+  <!-- SMS -->
+  <div class="sec"><span class="num">★</span><h2>Le dialogue SMS, en images</h2></div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/48-sms-messagerie.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Tout passe par SMS — voici le dialogue réel</h4>
+      <p>Depuis la messagerie du téléphone, on voit le <strong>dialogue exact</strong> entre l'app et le kit :</p>
+      <ul>
+        <li><strong>Commander une ligne</strong> : l'app envoie <code>r1on</code> / <code>r1off</code> (le chiffre = le numéro de ligne 1–7).</li>
+        <li><strong>Demander la consommation</strong> : l'app envoie <code>cons</code> ; le kit répond <code>Consommation : 2.2 KWh</code>.</li>
+        <li><strong>Configurer le kit</strong> : l'app envoie <code>n1:…:n2:…:en:…:ip:…</code> ; le kit <strong>renvoie le même message</strong> en accusé de configuration.</li>
+      </ul>
+      <p class="cap-sub">📶 Aucune connexion Internet n'est requise : tout fonctionne par <strong>SMS</strong>, où que vous soyez.</p>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="sec"><span class="num">7</span><h2>Gérer une ligne (double-tap : renommer / supprimer)</h2></div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/32-ligne-edition-double-tap.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4><span class="tag-step">Nouveau</span> Édition par double-tap</h4>
+      <p><strong>Double-tapez</strong> une ligne : son nom devient modifiable, accompagné de deux boutons ronds épurés — <strong>✓ vert</strong> (valider) et <strong>✕ rouge</strong> (supprimer).</p>
+      <p>Saisissez le nouveau nom (<em>Climatiseur, Chambre, Salon…</em>) puis <strong>✓</strong>. L'<strong>ampérage</strong> n'est plus demandé : une ligne se résume à son nom et son état.</p>
+      <p class="cap-sub">Pour ajouter : <strong>« + Ajouter une ligne »</strong> (un nom suffit).</p>
+    </div>
+  </div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/43-kit-demo-appartement-a.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Des lignes parlantes</h4>
+      <p>Nommez les lignes selon ce qu'elles alimentent : ici <strong>Climatiseur</strong>, <strong>Salon</strong>, <strong>Chambre</strong>… bien plus clair qu'un numéro.</p>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="sec"><span class="num">8</span><h2>Suivre la consommation</h2></div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/17-onglet-conso.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>L'onglet Conso</h4>
+      <p><strong>« Actualiser la consommation »</strong> interroge le kit par SMS : il répond avec le relevé.</p>
+      <p class="cap-sub">Les mesures s'accumulent ensuite dans l'<strong>Historique</strong>.</p>
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="sec"><span class="num">9</span><h2>Configurer le kit</h2></div>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/18-onglet-config.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>L'onglet Config — tout au même endroit</h4>
+      <ul>
+        <li><strong>Informations du kit</strong> — nom et numéro du kit.</li>
+        <li><strong>Compteur</strong> — impulsion par kWh et consommation initiale.</li>
+        <li><strong>Numéros autorisés</strong> — qui peut commander par SMS.</li>
+        <li><strong>Envoyer la configuration</strong> au boîtier (SMS).</li>
+        <li><strong>Générer le QR Code</strong> de partage (§10).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="annot">
+    <div class="shotbox s2">
+      <img src="screenshots_web/19-edition-infos-kit.jpg">
+      <img src="screenshots_web/20-edition-compteur.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Deux éditions via le crayon ✏️</h4>
+      <ul>
+        <li><strong>Informations</strong> : corriger le <strong>nom</strong> et le <strong>numéro du kit</strong>.</li>
+        <li><strong>Compteur</strong> : <strong>impulsion par kWh</strong> + <strong>consommation initiale</strong> (kWh).</li>
+      </ul>
+      <p class="cap-sub">Les <strong>numéros autorisés</strong> se saisissent directement dans <strong>deux champs</strong> de l'onglet Config (<em>Numéro 1 / Numéro 2</em>) — le kit n'en gère que deux — puis <strong>« Enregistrer »</strong>. Pratique pour habiliter un <strong>gardien</strong> ou un <strong>colocataire</strong>.</p>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="sec"><span class="num">10</span><h2>Partager la configuration par QR Code</h2></div>
+  <p>Un atout majeur pour un bailleur : <strong>dupliquer ou transmettre la configuration d'un
+  kit d'un téléphone à un autre</strong>, sans tout ressaisir.</p>
+  <div class="annot">
+    <div class="shotbox single">
+      <img src="screenshots_web/22-qr-export.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4><span class="tag-step">Étape A</span> Téléphone source</h4>
+      <p>Config → <strong>« Générer le QR Code »</strong>. Le QR <strong>contient toute la configuration</strong> (numéro, lignes…). <strong>« Partager le QR Code »</strong> l'envoie aussi en image.</p>
+    </div>
+  </div>
+  <div class="annot">
+    <div class="shotbox s2">
+      <img src="screenshots_web/23-permission-camera.jpg">
+      <img src="screenshots_web/24-scanner-qr.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4><span class="tag-step">Étape B</span> Téléphone destinataire</h4>
+      <p>Touchez l'<strong>icône scanner</strong> (en haut à droite), autorisez la <strong>caméra</strong>, puis cadrez le QR du premier téléphone. Le kit est alors <strong>importé automatiquement</strong>.</p>
+    </div>
+  </div>
+  <div class="note">💡 <strong>Cas d'usage bailleur.</strong> Transmettez par QR Code l'accès d'un
+  logement précis au locataire ou au gardien — sans donner accès au reste du parc. &nbsp;
+  🛟 <strong>Sauvegarde :</strong> conservez une copie des QR pour <strong>restaurer</strong> un kit
+  en cas de changement de téléphone. L'<strong>état des lignes se synchronise</strong> entre appareils autorisés.</div>
+
+  <!-- 11 -->
+  <div class="sec"><span class="num">11</span><h2>Réglages de l'application</h2></div>
+  <div class="annot">
+    <div class="shotbox s2">
+      <img src="screenshots_web/25-reglages-haut.jpg">
+      <img src="screenshots_web/26-reglages-bas.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Personnalisation &amp; sécurité</h4>
+      <ul>
+        <li><strong>Apparence</strong> : Clair / Sombre / Auto.</li>
+        <li><strong>Couleur d'accent</strong> et <strong>Langue</strong> (Français / English).</li>
+        <li><strong>Sécurité</strong> (code, <strong>empreinte</strong>, <strong>récupération</strong>), <strong>Aide (FAQ)</strong> et <strong>À propos</strong>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 12 -->
+  <div class="sec"><span class="num">12</span><h2>Sécurité — code, empreinte et récupération</h2></div>
+  <div class="annot">
+    <div class="shotbox s2">
+      <img src="screenshots_web/35-reglages-securite-toggle.jpg">
+      <img src="screenshots_web/47-deverrouillage-empreinte.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4><span class="tag-step">Nouveau</span> Quatre réglages de sécurité</h4>
+      <p><strong>Code de sécurité</strong> : l'interrupteur active/désactive le code (activer → créer ; désactiver → saisir le code actuel). <strong>« Modifier le code d'accès »</strong> : ancien + nouveau + confirmation.</p>
+      <p><strong>Déverrouillage par empreinte</strong> : ouvrez l'app avec votre <strong>empreinte digitale</strong> au lieu du code. Nécessite une empreinte enregistrée sur le téléphone ; sinon « Aucune empreinte enregistrée ». 🔑 Le <strong>code reste le secours</strong>.</p>
+      <p><strong>Questions de récupération</strong> : deux questions secrètes qui permettent de retrouver l'accès via <strong>« Code oublié ? »</strong> si vous oubliez le code.</p>
+    </div>
+  </div>
+
+  <!-- 13 -->
+  <div class="sec"><span class="num">13</span><h2>Aide intégrée (FAQ)</h2></div>
+  <div class="annot">
+    <div class="shotbox s3">
+      <img src="screenshots_web/27-faq.jpg">
+      <img src="screenshots_web/28-faq-qr-config.jpg">
+      <img src="screenshots_web/29-faq-qr-detail.jpg">
+      <span class="dot"></span>
+    </div>
+    <div class="path"></div>
+    <div class="callout">
+      <h4>Une FAQ classée par thème</h4>
+      <p>Dans <strong>Réglages → Aide</strong> : <strong>Compte &amp; Connexion</strong>, <strong>Appareil / Kit</strong>, <strong>QR &amp; Configuration</strong> et <strong>Dépannage</strong>.</p>
+      <p class="cap-sub">La rubrique <strong>QR &amp; Configuration</strong> détaille le partage du §10 (générer / importer / après import).</p>
+    </div>
+  </div>
+
+  <!-- 14 -->
+  <div class="sec"><span class="num">14</span><h2>Annexe — les messages SMS échangés avec le kit</h2></div>
+  <div class="note">🔧 <strong>Pour les utilisateurs avancés.</strong> Vous n'avez normalement
+  <strong>rien à taper à la main</strong> : l'application compose et envoie ces SMS pour vous quand
+  vous actionnez un interrupteur ou un bouton. Cette annexe explique <em>ce qui circule</em> entre le téléphone et le kit.</div>
+  <table class="data">
+    <thead><tr><th>Quand vous…</th><th>Message envoyé</th><th>Le kit répond</th></tr></thead>
+    <tbody>
+      <tr><td>Allumez la ligne <em>N</em></td><td><code>r&lt;N&gt;on</code> (ex. <code>r2on</code>)</td><td>renvoie <code>r2on</code> (confirmation)</td></tr>
+      <tr><td>Coupez la ligne <em>N</em></td><td><code>r&lt;N&gt;off</code> (ex. <code>r2off</code>)</td><td>renvoie <code>r2off</code> (confirmation)</td></tr>
+      <tr><td>Actualisez la consommation</td><td><code>cons</code></td><td>renvoie <code>Consommation : … KWh</code></td></tr>
+      <tr><td>Enregistrez le <strong>numéro autorisé 1</strong></td><td><code>n1:&lt;numéro&gt;</code></td><td>renvoie <code>n1:…</code></td></tr>
+      <tr><td>Enregistrez le <strong>numéro autorisé 2</strong></td><td><code>n2:&lt;numéro&gt;</code></td><td>renvoie <code>n2:…</code></td></tr>
+      <tr><td>Réglez la <strong>consommation initiale</strong></td><td><code>en:&lt;kWh&gt;</code></td><td>renvoie <code>en:…</code></td></tr>
+      <tr><td>Réglez les <strong>impulsions</strong> du compteur</td><td><code>ip:&lt;nombre&gt;</code></td><td>renvoie <code>ip:…</code></td></tr>
+      <tr><td>Terminez l'envoi de configuration</td><td><code>Fin_config</code></td><td>—</td></tr>
+    </tbody>
+  </table>
+  <div class="note">📦 <strong>Configuration groupée.</strong> Le bouton <strong>« Envoyer la configuration au kit »</strong> (§9)
+  envoie tous les réglages dans <strong>un seul SMS</strong>, champs séparés par <code>:</code> — ex.
+  <code>n1:+237…:n2:+237…:en:…:ip:…</code> — et un <strong>aperçu</strong> s'affiche pour validation avant l'envoi. &nbsp;
+  ⚠️ Ces mots-clés correspondent au <strong>langage du boîtier</strong> : ils ne se modifient pas côté application.
+  Les numéros sont automatiquement mis au format <code>+237</code>.</div>
+  <div class="note">🕘 <strong>Interprétation des réponses.</strong> Un message <code>rNon</code> / <code>rNoff</code>
+  met à jour l'état de la ligne <em>N</em> sur <strong>tous les téléphones autorisés</strong> (même app fermée) et est
+  <strong>horodaté dans l'historique des accusés</strong> de la ligne (§6.3), avec le <strong>texte brut</strong> reçu.
+  Un message contenant <strong>« … kWh »</strong> est enregistré comme un relevé de consommation.</div>
+
+  <!-- Recap -->
+  <div class="sec"><span class="num">✓</span><h2>Récapitulatif — le parcours du bailleur</h2></div>
+  <div class="lead">
+    <ol style="margin:0; padding-left:18px;">
+      <li><strong>Installer</strong> l'app ; <strong>créer un code</strong> seulement si souhaité — la page est <strong>skippable</strong> (§1–2, §12).</li>
+      <li><strong>Ajouter chaque appartement</strong> comme un kit, avec son numéro de kit et son <strong>nombre de lignes</strong> (§4–5).</li>
+      <li><strong>Nommer et piloter les lignes</strong> (numérotées <strong>1–7</strong>) par <strong>double-tap</strong>, avec <strong>actions groupées</strong> et <strong>historique des accusés</strong> (§6–7).</li>
+      <li><strong>Suivre la consommation</strong> (§8).</li>
+      <li><strong>Configurer</strong> le kit : infos, compteur, numéros autorisés (§9).</li>
+      <li><strong>Partager / dupliquer</strong> la configuration par <strong>QR Code</strong> — l'état des lignes se <strong>synchronise</strong> (§10).</li>
+      <li><strong>Personnaliser et sécuriser</strong> l'application (§11–12), avec une <strong>FAQ</strong> (§13) et l'<strong>annexe SMS</strong> (§14).</li>
+    </ol>
+  </div>
+
+  <footer>
+    <span>EnMKit · v1.0.0 — Guide d'utilisation · Captures réalisées sur l'application réelle (historique des accusés inclus).</span>
+    <img src="brand/2metech.png">
+  </footer>
+</div>
+
+</body>
+</html>

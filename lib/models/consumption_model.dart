@@ -1,10 +1,12 @@
 class ConsumptionModel {
   double kwh;
   DateTime timestamp;
+  String? kitNumber;
 
   ConsumptionModel({
     required this.kwh,
     required this.timestamp,
+    this.kitNumber,
   });
 
   // Convertir en Map pour SQLite
@@ -12,6 +14,7 @@ class ConsumptionModel {
     return {
       'kwh': kwh,
       'timestamp': timestamp.toIso8601String(),
+      'kitNumber': kitNumber,
     };
   }
 
@@ -20,6 +23,7 @@ class ConsumptionModel {
     return ConsumptionModel(
       kwh: (map['kwh'] as num).toDouble(),
       timestamp: DateTime.parse(map['timestamp']),
+      kitNumber: map['kitNumber'],
     );
   }
 }

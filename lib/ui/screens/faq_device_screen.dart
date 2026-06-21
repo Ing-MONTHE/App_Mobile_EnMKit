@@ -8,12 +8,9 @@ class FaqDeviceScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Appareil / Kit'),
-        backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: const Color(0xFF1E293B),
       ),
-      backgroundColor: const Color(0xFFF8FAFC),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -22,13 +19,15 @@ class FaqDeviceScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHero(
+                context,
                 icon: Icons.memory,
                 title: 'Configurer et utiliser le Kit',
                 subtitle:
-                    'Numéro du Kit, relais, numéros autorisés et synchronisation du système.'
+                    'Numéro du Kit, lignes, numéros autorisés et synchronisation du système.',
               ),
               const SizedBox(height: 24),
               _buildSection(
+                context,
                 'Configurer le numéro du Kit',
                 Icons.tag,
                 const [
@@ -39,16 +38,18 @@ class FaqDeviceScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildSection(
-                'Gérer les relais',
+                context,
+                'Gérer les lignes',
                 Icons.device_hub,
                 const [
-                  'Paramètres → « Relais Configurés » (Administrateur).',
+                  'Paramètres → « Lignes Configurées » (Administrateur).',
                   'Ajouter: indique le nom (ex: Salon) et l\'ampérage (4/8/12A).',
-                  'Modifier/Supprimer: utilise les icônes dédiées sur chaque relais.'
+                  'Modifier/Supprimer: utilise les icônes dédiées sur chaque ligne.'
                 ],
               ),
               const SizedBox(height: 16),
               _buildSection(
+                context,
                 'Numéros autorisés',
                 Icons.phone_android,
                 const [
@@ -59,6 +60,7 @@ class FaqDeviceScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildSection(
+                context,
                 'État système et synchronisation',
                 Icons.info_outline,
                 const [
@@ -69,16 +71,17 @@ class FaqDeviceScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildSection(
+                context,
                 'Conseils d\'installation',
                 Icons.build_rounded,
                 const [
-                  'Respecte l\'ampérage maximal des relais.',
+                  'Respecte l\'ampérage maximal des lignes.',
                   'Isole et fixe proprement les connexions.',
                   'Garde le Kit dans un environnement ventilé et sec.'
                 ],
               ),
               const SizedBox(height: 28),
-              _buildTipCard(),
+              _buildTipCard(context),
               const SizedBox(height: 24),
             ],
           ),
@@ -88,26 +91,23 @@ class FaqDeviceScreen extends StatelessWidget {
   }
 }
 
-Widget _buildHero({required IconData icon, required String title, required String subtitle}) {
+Widget _buildHero(BuildContext context,
+    {required IconData icon, required String title, required String subtitle}) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.06),
-          blurRadius: 16,
-          offset: const Offset(0, 6),
-        ),
-      ],
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
     child: Row(
       children: [
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)]),
+            gradient: const LinearGradient(
+                colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)]),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: Colors.white),
@@ -117,9 +117,17 @@ Widget _buildHero({required IconData icon, required String title, required Strin
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: scheme.onSurface)),
               const SizedBox(height: 6),
-              Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4)),
+              Text(subtitle,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
+                      height: 1.4)),
             ],
           ),
         )
@@ -128,27 +136,33 @@ Widget _buildHero({required IconData icon, required String title, required Strin
   );
 }
 
-Widget _buildSection(String title, IconData icon, List<String> points) {
+Widget _buildSection(
+    BuildContext context, String title, IconData icon, List<String> points) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
-      ],
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
+    clipBehavior: Clip.antiAlias,
     child: Theme(
-      data: ThemeData().copyWith(dividerColor: Colors.transparent),
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         leading: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: const Color(0xFF3B82F6).withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-          child: Icon(icon, color: const Color(0xFF3B82F6), size: 22),
+          decoration: BoxDecoration(
+              color: scheme.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10)),
+          child: Icon(icon, color: scheme.primary, size: 22),
         ),
-        title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+        title: Text(title,
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: scheme.onSurface)),
         children: [
-          const Divider(height: 1),
+          Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.5)),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: Column(
@@ -159,9 +173,15 @@ Widget _buildSection(String title, IconData icon, List<String> points) {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 16),
+                            const Icon(Icons.check_circle,
+                                color: Color(0xFF10B981), size: 16),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(p, style: const TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.4))),
+                            Expanded(
+                                child: Text(p,
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: scheme.onSurfaceVariant,
+                                        height: 1.4))),
                           ],
                         ),
                       ))
@@ -174,28 +194,26 @@ Widget _buildSection(String title, IconData icon, List<String> points) {
   );
 }
 
-Widget _buildTipCard() {
+Widget _buildTipCard(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(18),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
-    child: const Row(
+    child: Row(
       children: [
-        Icon(Icons.lightbulb, color: Color(0xFFF59E0B)),
-        SizedBox(width: 12),
+        const Icon(Icons.lightbulb, color: Color(0xFFF59E0B)),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             'Astuce: utilise « État Système » pour confirmer la synchronisation après chaque changement.',
-            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+            style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
           ),
         )
       ],
     ),
   );
 }
-
-

@@ -26,6 +26,22 @@ class KitRepository {
     );
   }
 
+  /// Change le numéro GSM (clé) d'un kit et répercute le changement sur toutes
+  /// les entités rattachées (relais, consommations, numéros autorisés), dans
+  /// une transaction. [updated] doit déjà porter le nouveau kitNumber.
+  Future<void> changeKitNumber(String oldNumber, KitModel updated) async {
+    final db = await _dbService.database;
+    final newNumber = updated.kitNumber;
+    await db.transaction((txn) async {
+      await txn.update('kits', updated.toMap(),
+          where: 'kitNumber = ?', whereArgs: [oldNumber]);
+      for (final table in ['relays', 'consumptions', 'allowed_numbers']) {
+        await txn.update(table, {'kitNumber': newNumber},
+            where: 'kitNumber = ?', whereArgs: [oldNumber]);
+      }
+    });
+  }
+
   Future<String?> getKitNumber() async {
     final db = await _dbService.database;
     final res = await db.query("kits", limit: 1);
@@ -40,5 +56,23 @@ class KitRepository {
   Future<void> clearKit() async {
     final db = await _dbService.database;
     await db.delete('kits');
+  }
+
+  /// Supprime UN kit (par son numéro GSM, clé) ET toutes ses données rattachées
+  /// — lignes, consommations, numéros autorisés, accusés — dans une transaction,
+  /// pour ne laisser aucun orphelin en base.
+  Future<void> deleteKit(String kitNumber) async {
+    final db = await _dbService.database;
+    await db.transaction((txn) async {
+      for (final table in [
+        'relays',
+        'consumptions',
+        'allowed_numbers',
+        'relay_acks',
+      ]) {
+        await txn.delete(table, where: 'kitNumber = ?', whereArgs: [kitNumber]);
+      }
+      await txn.delete('kits', where: 'kitNumber = ?', whereArgs: [kitNumber]);
+    });
   }
 }

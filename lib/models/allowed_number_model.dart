@@ -1,10 +1,12 @@
 class AllowedNumberModel {
   int? id; // auto-increment
   String phoneNumber;
+  String? kitNumber;
 
   AllowedNumberModel({
     this.id,
     required this.phoneNumber,
+    this.kitNumber,
   });
 
   // Convertir en Map pour SQLite
@@ -12,6 +14,7 @@ class AllowedNumberModel {
     return {
       'id': id,
       'phoneNumber': phoneNumber,
+      'kitNumber': kitNumber,
     };
   }
 
@@ -20,6 +23,7 @@ class AllowedNumberModel {
     return AllowedNumberModel(
       id: map['id'],
       phoneNumber: map['phoneNumber'],
+      kitNumber: map['kitNumber'],
     );
   }
 }

@@ -6,11 +6,14 @@ import 'package:enmkit/models/consumption_model.dart';
 class ConsumptionViewModel extends ChangeNotifier {
   final ConsumptionRepository _repository;
 
+  /// Kit ciblé par ce ViewModel (null = toutes les consos, compat. mono-kit).
+  final String? kitNumber;
+
   List<ConsumptionModel> _consumptions = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  ConsumptionViewModel(this._repository);
+  ConsumptionViewModel(this._repository, {this.kitNumber});
 
   // Getters
   List<ConsumptionModel> get consumptions => _consumptions;
@@ -24,7 +27,7 @@ class ConsumptionViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _consumptions = await _repository.getAllConsumptions();
+      _consumptions = await _repository.getAllConsumptions(kitNumber: kitNumber);
     } catch (e) {
       _errorMessage = "Erreur lors du chargement : $e";
     } finally {
@@ -36,6 +39,7 @@ class ConsumptionViewModel extends ChangeNotifier {
   // Ajouter une consommation
   Future<void> addConsumption(ConsumptionModel consumption) async {
     try {
+      consumption.kitNumber ??= kitNumber;
       await _repository.addConsumption(consumption);
       _consumptions.add(consumption);
       notifyListeners();

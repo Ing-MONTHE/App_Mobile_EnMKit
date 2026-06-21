@@ -17,16 +17,20 @@ class QrService {
     required this.allowedRepo,
   });
 
-  /// Génère le JSON complet pour le QR Code
-  Future<String> generateQrData() async {
-    // 1️⃣ Récupérer les données du kit
-    final kit = await kitRepo.getKit();
+  /// Génère le JSON du QR Code. Si [kitNumber] est fourni, n'exporte QUE ce kit
+  /// et ses entités rattachées (relais, numéros autorisés) — export multi-kits.
+  Future<String> generateQrData({String? kitNumber}) async {
+    // 1️⃣ Récupérer le(s) kit(s) — filtré sur le kit ciblé si demandé
+    final allKits = await kitRepo.getKit();
+    final kit = kitNumber == null
+        ? allKits
+        : allKits.where((k) => k.kitNumber == kitNumber).toList();
 
-    // 2️⃣ Récupérer les relais
-    final relays = await relayRepo.getAllRelays();
+    // 2️⃣ Récupérer les relais du kit
+    final relays = await relayRepo.getAllRelays(kitNumber: kitNumber);
 
-    // 3️⃣ Récupérer les numéros autorisés
-    final allowedUsers = await allowedRepo.getAllNumbers();
+    // 3️⃣ Récupérer les numéros autorisés du kit
+    final allowedUsers = await allowedRepo.getAllNumbers(kitNumber: kitNumber);
 
     // 4️⃣ Créer un objet complet
     final qrObject = {
@@ -40,22 +44,27 @@ class QrService {
   }
 
   /// Génère le QR Code en Base64 (optionnel, utile pour stockage ou partage)
-  Future<String> generateQrDataBase64() async {
-    final jsonData = await generateQrData();
+  Future<String> generateQrDataBase64({String? kitNumber}) async {
+    final jsonData = await generateQrData(kitNumber: kitNumber);
     final bytes = utf8.encode(jsonData);
     return base64Encode(bytes);
   }
 
   /// Widget PrettyQr généré à partir du JSON
-  Future<Widget> generateQrWidget({double size = 200}) async {
-    final qrData = await generateQrData();
+  Future<Widget> generateQrWidget({double size = 200, String? kitNumber}) async {
+    final qrData = await generateQrData(kitNumber: kitNumber);
 
-    return PrettyQr(
-      data: qrData,
-      size: size,
-      roundEdges: true,
-      // typeNumber retiré : PrettyQr choisit automatiquement la version
-      errorCorrectLevel: QrErrorCorrectLevel.M,
+    return SizedBox(
+      width: size,
+      height: size,
+      child: PrettyQrView.data(
+        data: qrData,
+        errorCorrectLevel: QrErrorCorrectLevel.M,
+        // Coins arrondis (équivalent de l'ancien roundEdges: true).
+        decoration: const PrettyQrDecoration(
+          shape: PrettyQrSmoothSymbol(),
+        ),
+      ),
     );
   }
 }

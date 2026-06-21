@@ -20,12 +20,9 @@ class FaqScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('FAQ'),
-        backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: const Color(0xFF1E293B),
       ),
-      backgroundColor: const Color(0xFFF8FAFC),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -184,66 +181,55 @@ Widget _buildSettingCard(
   IconData icon,
   VoidCallback onTap,
 ) {
-  return InkWell(  // ✅ InkWell pour effet ripple
+  final scheme = Theme.of(context).colorScheme;
+  return InkWell(
     onTap: onTap,
     borderRadius: BorderRadius.circular(12),
     child: Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,  // ✅ Réduit de 20 → 16
-        vertical: 14,    // ✅ Réduit de 20 → 14
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,  // ✅ Blanc pur
-        borderRadius: BorderRadius.circular(12),  // ✅ Bordures réduites (16 → 12)
-        border: Border.all(  // ✅ Bordure subtile au lieu d'ombre
-          color: const Color(0xFFE2E8F0),
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.5),
           width: 1,
         ),
-        // ✅ OMBRES RETIRÉES
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),  // ✅ Réduit de 12 → 10
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFF3B82F6).withOpacity(0.1),  // ✅ Fond léger au lieu de gradient
+              color: scheme.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(
-              icon, 
-              color: const Color(0xFF3B82F6),  // ✅ Icône bleue
-              size: 22,  // ✅ Réduit de 24 → 22
-            ),
+            child: Icon(icon, color: scheme.primary, size: 22),
           ),
-          const SizedBox(width: 14),  // ✅ Réduit de 16 → 14
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 15,  // ✅ Réduit de 16 → 15
+                  style: TextStyle(
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1E293B),
+                    color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF64748B),
+                    color: scheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(
-            Icons.chevron_right,  // ✅ Changé de arrow_forward_ios
-            color: Color(0xFF94A3B8),
-            size: 20,
-          ),
+          Icon(Icons.chevron_right, color: scheme.onSurfaceVariant, size: 20),
         ],
       ),
     ),

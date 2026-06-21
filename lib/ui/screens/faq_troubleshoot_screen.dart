@@ -8,12 +8,9 @@ class FaqTroubleshootScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dépannage'),
-        backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: const Color(0xFF1E293B),
       ),
-      backgroundColor: const Color(0xFFF8FAFC),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -21,9 +18,10 @@ class FaqTroubleshootScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHero(),
+              _buildHero(context),
               const SizedBox(height: 24),
               _buildSection(
+                context,
                 'Le Kit n\'apparaît pas',
                 Icons.visibility_off_outlined,
                 const [
@@ -34,6 +32,7 @@ class FaqTroubleshootScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildSection(
+                context,
                 'La consommation ne se met pas à jour',
                 Icons.bolt,
                 const [
@@ -44,16 +43,17 @@ class FaqTroubleshootScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildSection(
-                'Relais non réactif',
+                context,
+                'Ligne non réactive',
                 Icons.power_settings_new,
                 const [
-                  'Vérifie les connexions et l\'ampérage du relais.',
-                  'Contrôle que le relais est bien créé et actif dans « Relais Configurés » (Admin).',
+                  'Vérifie les connexions et l\'ampérage de la ligne.',
+                  'Contrôle que la ligne est bien créée et active dans « Lignes Configurées » (Admin).',
                   'Redémarre l\'appareil puis réessaie.'
                 ],
               ),
               const SizedBox(height: 28),
-              _buildSupportCard(),
+              _buildSupportCard(context),
             ],
           ),
         ),
@@ -62,25 +62,34 @@ class FaqTroubleshootScreen extends StatelessWidget {
   }
 }
 
-Widget _buildHero() {
+Widget _buildHero(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 16, offset: const Offset(0, 6))],
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
-    child: const Row(
+    child: Row(
       children: [
-        Icon(Icons.build_outlined, color: Color(0xFF3B82F6)),
-        SizedBox(width: 12),
+        const Icon(Icons.build_outlined, color: Color(0xFF3B82F6)),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Résoudre rapidement les incidents courants', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-              SizedBox(height: 6),
-              Text('Guides rapides pour le Kit, la consommation et les relais.', style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4)),
+              Text('Résoudre rapidement les incidents courants',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: scheme.onSurface)),
+              const SizedBox(height: 6),
+              Text('Guides rapides pour le Kit, la consommation et les lignes.',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
+                      height: 1.4)),
             ],
           ),
         )
@@ -89,25 +98,33 @@ Widget _buildHero() {
   );
 }
 
-Widget _buildSection(String title, IconData icon, List<String> points) {
+Widget _buildSection(
+    BuildContext context, String title, IconData icon, List<String> points) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
+    clipBehavior: Clip.antiAlias,
     child: Theme(
-      data: ThemeData().copyWith(dividerColor: Colors.transparent),
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         leading: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: const Color(0xFF3B82F6).withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-          child: Icon(icon, color: const Color(0xFF3B82F6), size: 22),
+          decoration: BoxDecoration(
+              color: scheme.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10)),
+          child: Icon(icon, color: scheme.primary, size: 22),
         ),
-        title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+        title: Text(title,
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: scheme.onSurface)),
         children: [
-          const Divider(height: 1),
+          Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.5)),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: Column(
@@ -118,9 +135,15 @@ Widget _buildSection(String title, IconData icon, List<String> points) {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 16),
+                            const Icon(Icons.check_circle,
+                                color: Color(0xFF10B981), size: 16),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(p, style: const TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.4))),
+                            Expanded(
+                                child: Text(p,
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: scheme.onSurfaceVariant,
+                                        height: 1.4))),
                           ],
                         ),
                       ))
@@ -133,28 +156,26 @@ Widget _buildSection(String title, IconData icon, List<String> points) {
   );
 }
 
-Widget _buildSupportCard() {
+Widget _buildSupportCard(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(18),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
     ),
-    child: const Row(
+    child: Row(
       children: [
-        Icon(Icons.support_agent, color: Color(0xFF10B981)),
-        SizedBox(width: 12),
+        const Icon(Icons.support_agent, color: Color(0xFF10B981)),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             'Si le problème persiste, contacte le support avec le numéro du Kit.',
-            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+            style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
           ),
         )
       ],
     ),
   );
 }
-
-

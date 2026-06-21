@@ -22,8 +22,6 @@ class OnboardingVM extends ChangeNotifier {
   }
 
   void skipOnboarding() {
-    // Ici tu peux naviguer vers login ou home
-    // Navigator.pushReplacementNamed(context, '/login');
-    print('Onboarding terminé');
+    // Fin de l'onboarding : la navigation est gérée par le wrapper selon l'état.
   }
 }
