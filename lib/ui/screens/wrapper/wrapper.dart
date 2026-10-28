@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:enmkit/core/support_service.dart';
 import 'package:enmkit/providers.dart';
 import 'package:enmkit/ui/screens/access/access_screen.dart';
 import 'package:enmkit/ui/screens/onboarding/onboarding_screen.dart';
@@ -74,6 +75,10 @@ class _RootPageState extends ConsumerState<RootPage>
           .whereType<String>()
           .where((n) => n.isNotEmpty)
           .toList();
+      // Le SUPPORT est ajouté à la liste d'autorisation : le récepteur natif
+      // ne garde que les expéditeurs connus, ses réponses seraient sinon
+      // purement et simplement jetées — y compris application fermée.
+      numbers.add(SupportService.supportNumber);
       await ref.read(backgroundSmsBridgeProvider).setKitNumbers(numbers);
     } catch (_) {
       // Canal natif indisponible (ex. plateforme non Android) : ignore.
@@ -88,19 +93,46 @@ class _RootPageState extends ConsumerState<RootPage>
       final processor = ref.read(smsInboxProcessorProvider);
       final affected = <String>{};
       for (final m in msgs) {
-        final kitNumber = await processor.process(m);
-        if (kitNumber != null) {
-          affected.add(kitNumber);
-          // Réinjecte le SMS brut dans le flux temps réel du kit : ainsi les
-          // attentes d'accusé (confirmation de config, joignabilité) le voient
-          // même si readsms n'a rien émis — le natif étant la voie fiable.
-          ref.read(kitSmsListenerProvider(kitNumber)).injectTrustedSms(m.body);
+        // try/catch PAR MESSAGE : la file native est déjà vidée par drainPending,
+        // donc un seul message en échec ne doit pas faire perdre tous les autres
+        // déjà drainés (un drain qui plante au 2ᵉ SMS perdait les suivants).
+        try {
+          // Réponse du support : elle ne concerne aucun kit, elle rejoint le
+          // fil d'assistance.
+          if (SupportService.isSupportNumber(m.sender)) {
+            await ref
+                .read(supportProvider)
+                .receive(m.body, m.ts);
+            continue;
+          }
+          final kitNumber = await processor.process(m);
+          if (kitNumber != null) {
+            affected.add(kitNumber);
+            // Réinjecte le SMS brut dans le flux temps réel du kit : ainsi les
+            // attentes d'accusé (confirmation de config, joignabilité) le voient
+            // même si readsms n'a rien émis — le natif étant la voie fiable.
+            ref.read(kitSmsListenerProvider(kitNumber)).injectTrustedSms(m.body);
+          }
+        } catch (_) {
+          // Message isolé illisible : on passe au suivant sans tout perdre.
         }
       }
-      // Invalide les providers scopés des kits impactés pour rafraîchir l'écran.
+      // Rafraîchit EN PLACE les ViewModels des kits impactés (sans les recréer).
+      // On NE FAIT PLUS `ref.invalidate` : invalider détruisait le ViewModel des
+      // lignes en pleine réception, et l'accusé était alors traité sur une liste
+      // de lignes encore vide → rejeté (« accusé non intercepté »). Cela laissait
+      // aussi le SmsListener avec un ConsumptionViewModel détruit en référence.
       for (final k in affected) {
-        ref.invalidate(kitConsumptionProvider(k));
-        ref.invalidate(kitRelaysProvider(k));
+        ref.read(kitConsumptionProvider(k)).fetchConsumptions();
+        ref.read(kitRelaysProvider(k)).refreshFromDb();
+      }
+      // …ET la liste des kits elle-même : le drain peut avoir reconnu l'écho de
+      // configuration et basculé le kit en « à valider » EN BASE. Sans ce
+      // rechargement, la copie mémoire reste périmée et le bouton de validation
+      // n'apparaît jamais — l'écho arrivant le plus souvent application fermée,
+      // c'est précisément le cas qu'il faut couvrir.
+      if (affected.isNotEmpty) {
+        await ref.read(kitProvider).fetchKits();
       }
     } catch (_) {
       // Ne jamais faire planter l'app sur un drain raté.

@@ -37,6 +37,26 @@ subprojects {
         }
     }
     project.plugins.withId("com.android.library") { injectNamespace() }
+    // sms_sender_background compile contre android-33, alors que ses
+    // dépendances AndroidX exigent au moins 34 (checkAarMetadata échoue).
+    // Enregistré avant l'application du plugin pour passer avant le
+    // verrouillage du DSL par AGP.
+    if (!project.state.executed) {
+        project.afterEvaluate {
+            if (!project.plugins.hasPlugin("com.android.library")) return@afterEvaluate
+            val androidExt = project.extensions.findByName("android") ?: return@afterEvaluate
+            try {
+                val current = androidExt.javaClass.getMethod("getCompileSdk")
+                    .invoke(androidExt) as Int?
+                if (current != null && current < 34) {
+                    androidExt.javaClass
+                        .getMethod("setCompileSdk", Integer::class.java)
+                        .invoke(androidExt, 36)
+                }
+            } catch (_: NoSuchMethodException) {
+            }
+        }
+    }
     project.plugins.withId("com.android.application") { injectNamespace() }
 
     project.evaluationDependsOn(":app")

@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:enmkit/core/sms_service_hybrid.dart';
+import 'package:enmkit/core/utils/ack_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:enmkit/core/db_service.dart';
 import 'package:enmkit/models/relay_ack_model.dart';
@@ -44,14 +45,24 @@ class RelayViewModel extends ChangeNotifier {
     return (_acksByRelayId[relayId]?.isNotEmpty) ?? false;
   }
 
+  // Dédup d'OUVERTURE AUTO de la feuille de confirmation : dernier accusé ayant
+  // déclenché l'ouverture (ligne + état + instant). Volontairement INDÉPENDANT
+  // de l'historique affiché (qui est rechargé depuis la base après le drain
+  // natif) afin de ne pas confondre une RE-LIVRAISON du même accusé (readsms +
+  // chemin natif, à quelques secondes d'écart) avec une vraie commande répétée.
+  int? _lastAutoRelayId;
+  bool? _lastAutoState;
+  DateTime? _lastAutoAt;
+
   // Commande en attente de confirmation : id ligne -> état demandé (true = ON).
   // Permet d'afficher « commande envoyée, en attente du kit » sur le bon segment
   // sans modifier l'état réel affiché (qui ne change qu'à l'écho SMS du kit).
   final Map<int, bool> _pendingTargetByRelayId = {};
 
-  // Délai au-delà duquel on cesse d'afficher l'attente si le kit n'a pas
-  // répondu (commande quand même envoyée ; on retombe sur le dernier état réel).
-  static const Duration _pendingTimeout = Duration(seconds: 60);
+  // Délai au-delà duquel on cesse d'afficher l'attente (le spinner ON/OFF) si le
+  // kit n'a pas encore répondu. La commande reste envoyée : si l'accusé arrive
+  // plus tard, il est traité normalement (et ouvre la feuille de confirmation).
+  static const Duration _pendingTimeout = Duration(seconds: 15);
   final Map<int, Timer> _pendingTimers = {};
 
   /// État demandé pour une ligne en attente de l'écho du kit, ou null si aucune
@@ -94,6 +105,21 @@ class RelayViewModel extends ChangeNotifier {
     await _loadAckHistory();
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Recharge les lignes ET l'historique des accusés depuis la base, SANS
+  /// bascule de l'indicateur de chargement (rafraîchissement « silencieux »).
+  ///
+  /// Appelé après que le chemin natif d'arrière-plan a journalisé un accusé :
+  /// on met à jour ce ViewModel VIVANT en place plutôt que de le recréer
+  /// (l'ancien comportement — `ref.invalidate` — détruisait le ViewModel en
+  /// pleine réception, et l'accusé était alors traité sur une liste de lignes
+  /// encore vide, donc rejeté ; c'était la cause des accusés non interceptés).
+  Future<void> refreshFromDb() async {
+    _relays = await _repository.getAllRelays(kitNumber: kitNumber);
+    _relays.sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
+    await _loadAckHistory();
     notifyListeners();
   }
 
@@ -277,11 +303,15 @@ class RelayViewModel extends ChangeNotifier {
   /// Le kit renvoie la commande soumise (« rXon » / « rXoff »). On reflète
   /// l'état réel ON/OFF de la ligne concernée — que cette app ait initié
   /// l'action ou non — afin que tous les numéros autorisés restent synchronisés.
-  void processIncomingSms(String message) {
-    if (message.isEmpty) return;
+  int? processIncomingSms(String message) {
+    if (message.isEmpty) return null;
     final lower = message.toLowerCase();
     bool changed = false;
-    final matches = RegExp(r'r(\d+)\s*(on|off)').allMatches(lower);
+    // Ligne (id base) du dernier accusé reconnu — sert à ouvrir automatiquement
+    // la feuille « Confirmation de la commande » côté UI (null = aucun accusé).
+    int? ackedRelayId;
+    // « of » (1 f, langage du kit) ou « off » sont acceptés pour l'extinction.
+    final matches = RegExp(r'r(\d+)\s*(on|off?)').allMatches(lower);
     for (final m in matches) {
       // Le kit renvoie « rN » où N = NUMÉRO DE LIGNE (1..N), pas l'id base.
       final line = int.tryParse(m.group(1)!);
@@ -297,6 +327,43 @@ class RelayViewModel extends ChangeNotifier {
       // Retour visuel instantané : on reflète l'état réel confirmé par le kit.
       _repository.applyKitAck(relayId, isActive: isOn, kitNumber: kitNumber);
       changed = true;
+      final now = DateTime.now();
+      // Ouverture AUTO de la feuille de confirmation : on ne la signale (via
+      // [ackedRelayId]) que pour un accusé qui n'est PAS une re-livraison du
+      // dernier déjà ouvert (cf. AckLogic.isAutoOpenDuplicate). Indépendant de
+      // l'historique affiché, donc robuste au rechargement depuis la base.
+      final autoDup = AckLogic.isAutoOpenDuplicate(
+        lastRelayId: _lastAutoRelayId,
+        lastState: _lastAutoState,
+        lastAt: _lastAutoAt,
+        relayId: relayId,
+        isOn: isOn,
+        at: now,
+      );
+      if (!autoDup) {
+        _lastAutoRelayId = relayId;
+        _lastAutoState = isOn;
+        _lastAutoAt = now;
+        ackedRelayId = relayId;
+      }
+      // Affichage instantané dans la feuille de confirmation : on insère
+      // l'accusé en tête de l'historique mémoire (le natif reste l'unique
+      // écrivain EN BASE). Dédup 30 s pour éviter les doublons quand le même
+      // SMS est rejoué (rebuild) ou que le ViewModel est recréé après le drain.
+      final list = (_acksByRelayId[relayId] ??= <RelayAck>[]);
+      final dup = AckLogic.isDuplicate(list, isOn, now);
+      if (!dup) {
+        list.insert(
+          0,
+          RelayAck(
+            relayId: relayId,
+            kitNumber: kitNumber,
+            isActive: isOn,
+            at: now,
+            raw: message.trim(),
+          ),
+        );
+      }
     }
     // IMPORTANT — l'HISTORISATION de l'accusé (journal horodaté + texte brut)
     // est délibérément confiée au SEUL chemin natif d'arrière-plan
@@ -309,6 +376,7 @@ class RelayViewModel extends ChangeNotifier {
     // d'une même commande. En laissant le natif comme écrivain unique, rejouer
     // la même commande est désormais capturé à chaque fois.
     if (changed) notifyListeners();
+    return ackedRelayId;
   }
 
   @override

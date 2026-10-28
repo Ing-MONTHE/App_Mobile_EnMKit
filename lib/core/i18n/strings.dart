@@ -258,7 +258,7 @@ class AppStrings {
     // --- Lignes ---------------------------------------------------------------
     'relays.active': {'fr': 'Actives', 'en': 'Active'},
     'relays.inactive': {'fr': 'Inactives', 'en': 'Inactive'},
-    'relays.control': {'fr': 'Contrôle des lignes', 'en': 'Line control'},
+    'relays.control': {'fr': 'Commande des lignes', 'en': 'Line commands'},
     'relays.loading': {'fr': 'Chargement des lignes…', 'en': 'Loading lines…'},
     'relays.empty.title': {'fr': 'Aucune ligne', 'en': 'No lines'},
     'relays.empty.msg': {
@@ -300,22 +300,53 @@ class AppStrings {
     'relays.allOn': {'fr': 'Tout allumer', 'en': 'Turn all on'},
     'relays.allOff': {'fr': 'Tout éteindre', 'en': 'Turn all off'},
 
+    // --- Statut de connexion du kit (pilotage conditionné à la config) -------
+    'relays.locked': {
+      'fr': 'Envoyez d\'abord la configuration au kit (onglet Config) pour piloter les lignes.',
+      'en': 'Send the configuration to the kit first (Config tab) to control the lines.'
+    },
+    'relays.status.on.title': {
+      'fr': 'Kit connecté',
+      'en': 'Kit connected'
+    },
+    'relays.status.on.sub': {
+      'fr': 'Configuration reçue par le kit — pilotage des lignes actif.',
+      'en': 'Configuration received by the kit — line control active.'
+    },
+    'relays.status.off.title': {
+      'fr': 'Kit non configuré',
+      'en': 'Kit not configured'
+    },
+    'relays.status.off.sub': {
+      'fr': 'Envoyez la configuration (onglet Config) pour activer le pilotage des lignes.',
+      'en': 'Send the configuration (Config tab) to enable line control.'
+    },
+
     // --- Historique des accusés de réception (par ligne) ---------------------
-    'relays.history': {'fr': 'Historique', 'en': 'History'},
+    'relays.history': {'fr': 'Confirmations', 'en': 'Confirmations'},
     'relays.history.title': {
-      'fr': 'Accusés de réception',
-      'en': 'Acknowledgements'
+      'fr': 'Confirmation de la commande',
+      'en': 'Command confirmation'
     },
     'relays.history.sub': {
       'fr': 'Confirmations renvoyées par le kit pour cette ligne.',
       'en': 'Confirmations sent back by the kit for this line.'
     },
     'relays.history.empty': {
-      'fr': 'Aucun accusé pour le moment.\nIls apparaîtront ici dès que le kit confirmera une commande.',
-      'en': 'No acknowledgement yet.\nThey will appear here once the kit confirms a command.'
+      'fr': 'Aucune confirmation pour le moment.\nElles apparaîtront ici dès que le kit confirmera une commande.',
+      'en': 'No confirmation yet.\nThey will appear here once the kit confirms a command.'
     },
-    'relays.history.on': {'fr': 'Allumée', 'en': 'Turned on'},
-    'relays.history.off': {'fr': 'Éteinte', 'en': 'Turned off'},
+    'relays.history.on': {'fr': 'alimenté(e)', 'en': 'powered on'},
+    'relays.history.off': {'fr': 'désalimenté(e)', 'en': 'powered off'},
+    // Phrase complète : nom de la ligne + état (ex. « salon1 est alimenté(e) »).
+    'relays.history.line.on': {
+      'fr': '{0} est alimenté(e)',
+      'en': '{0} is powered on'
+    },
+    'relays.history.line.off': {
+      'fr': '{0} est désalimenté(e)',
+      'en': '{0} is powered off'
+    },
     'relays.history.today': {'fr': "Aujourd'hui", 'en': 'Today'},
     'relays.history.yesterday': {'fr': 'Hier', 'en': 'Yesterday'},
 
@@ -339,8 +370,8 @@ class AppStrings {
 
     // --- Consommation ---------------------------------------------------------
     'cons.refresh': {
-      'fr': 'Actualiser la consommation',
-      'en': 'Refresh usage',
+      'fr': 'Vérifier votre\nconsommation électrique',
+      'en': 'Check your\nelectricity usage',
     },
     'cons.lastMeasure': {'fr': 'Dernière mesure', 'en': 'Last reading'},
     'cons.noMeasure': {'fr': 'Aucune mesure', 'en': 'No reading'},
@@ -409,6 +440,10 @@ class AppStrings {
     'config.meterTitle': {'fr': 'Paramètres compteur', 'en': 'Meter settings'},
     'config.gsm.hint': {'fr': 'Ex : 6XX XX XX XX', 'en': 'E.g. 6XX XX XX XX'},
     'config.pulses.hint': {'fr': 'Ex : 1000', 'en': 'E.g. 1000'},
+    'config.pulses.invalid': {
+      'fr': "L'impulsion par kWh doit être un nombre entier supérieur à 0.",
+      'en': 'Pulses per kWh must be a whole number greater than 0.',
+    },
     'config.initial.hint': {'fr': 'Ex : 0', 'en': 'E.g. 0'},
     'config.allowed.title': {'fr': 'Numéro autorisé', 'en': 'Allowed number'},
     'config.allowed.sub': {
@@ -431,6 +466,139 @@ class AppStrings {
     'config.ackOk': {
       'fr': 'Configuration confirmée par le kit',
       'en': 'Configuration confirmed by the kit',
+    },
+    'config.sentWaiting': {
+      'fr': 'Configuration envoyée. En attente du retour du kit…',
+      'en': 'Configuration sent. Waiting for the kit to reply…',
+    },
+    'config.state.waitingTitle': {
+      'fr': 'Configuration envoyée',
+      'en': 'Configuration sent',
+    },
+    'config.state.waitingBody': {
+      'fr':
+          'Le kit n\'a pas encore répondu. Sa réponse peut prendre plusieurs minutes : elle sera reconnue même si vous quittez l\'application.',
+      'en':
+          'The kit has not replied yet. It can take several minutes; the reply is recognised even if you leave the app.',
+    },
+    'config.state.badgeWaiting': {'fr': 'EN COURS', 'en': 'PENDING'},
+    'config.state.okTitle': {
+      'fr': 'Le retour du kit correspond',
+      'en': 'The kit\'s reply matches',
+    },
+    'config.state.okBody': {
+      'fr':
+          'Le kit a renvoyé exactement ce qui lui a été envoyé. Validez pour clore la configuration — elle sera alors verrouillée.',
+      'en':
+          'The kit echoed back exactly what was sent. Confirm to close the configuration — it will then be locked.',
+    },
+    'config.state.badgeOk': {'fr': 'OK', 'en': 'OK'},
+    'config.state.finalizeCta': {
+      'fr': 'Valider et verrouiller',
+      'en': 'Confirm and lock',
+    },
+    'config.state.lockedTitle': {
+      'fr': 'Configuration verrouillée',
+      'en': 'Configuration locked',
+    },
+    'config.state.lockedBody': {
+      'fr':
+          'La configuration est close et ne peut plus être modifiée ni renvoyée au kit. Restent disponibles : le pilotage des lignes et la consommation.',
+      'en':
+          'The configuration is closed and can no longer be changed or resent. Line control and consumption remain available.',
+    },
+    'config.state.badgeLocked': {'fr': 'VERROUILLÉ', 'en': 'LOCKED'},
+    'config.locked.hint': {
+      'fr': 'Verrouillé — configuration close',
+      'en': 'Locked — configuration closed',
+    },
+    'kits.toConfirm': {'fr': '{0} à valider', 'en': '{0} to confirm'},
+    'nav.help': {'fr': 'Aide', 'en': 'Help'},
+    'help.title': {'fr': 'Aide & assistance', 'en': 'Help & support'},
+    'help.sub': {
+      'fr':
+          'Exprimez votre besoin : il part au support par SMS, et sa réponse s\'affiche ici.',
+      'en':
+          'Describe your need: it is sent to support by SMS, and their reply appears here.',
+    },
+    'help.q.topic': {'fr': 'Votre besoin', 'en': 'Your need'},
+    'help.q.action': {'fr': 'Quelle action ?', 'en': 'Which action?'},
+    'help.q.number': {'fr': 'Numéro concerné', 'en': 'Number concerned'},
+    'help.q.kit': {'fr': 'Kit concerné', 'en': 'Kit concerned'},
+    'help.q.details': {'fr': 'Précisions', 'en': 'Details'},
+    'help.q.details.hint': {
+      'fr': 'Décrivez brièvement (facultatif)',
+      'en': 'Briefly describe (optional)',
+    },
+    'help.send': {'fr': 'Envoyer au support', 'en': 'Send to support'},
+    'help.whatsapp': {
+      'fr': 'Continuer sur WhatsApp',
+      'en': 'Continue on WhatsApp',
+    },
+    'help.sent': {
+      'fr': 'Demande envoyée au support',
+      'en': 'Request sent to support',
+    },
+    'help.sendFailed': {
+      'fr': 'Envoi impossible. Vérifiez le réseau et le crédit SMS.',
+      'en': 'Could not send. Check network and SMS credit.',
+    },
+    'help.thread': {'fr': 'Conversation', 'en': 'Conversation'},
+    'help.threadEmpty': {
+      'fr':
+          'Aucun échange pour l\'instant. Votre demande et les réponses du support apparaîtront ici.',
+      'en':
+          'No messages yet. Your request and support replies will appear here.',
+    },
+    'help.reply': {'fr': 'Votre réponse', 'en': 'Your reply'},
+    'help.reply.hint': {'fr': 'Écrire un message…', 'en': 'Write a message…'},
+    'config.finalizeCheck': {
+      'fr':
+          'Vérifiez que ces informations sont correctes. Si l\'une est erronée, annulez et corrigez la configuration avant de valider.',
+      'en':
+          'Check that these details are correct. If any is wrong, cancel and fix the configuration before confirming.',
+    },
+    'config.finalizeWarning': {
+      'fr':
+          'Cette validation est définitive : les mises à jour de configuration seront closes, et toute modification ultérieure devra passer par les administrateurs.',
+      'en':
+          'This confirmation is final: configuration updates will be closed, and any later change will have to go through the administrators.',
+    },
+    'config.finalizeTitle': {
+      'fr': 'Le kit a bien reçu la configuration',
+      'en': 'The kit received the configuration',
+    },
+    'config.finalizeBody': {
+      'fr':
+          'Le kit a renvoyé exactement ce qui lui a été envoyé. Validez pour clore la configuration.',
+      'en':
+          'The kit echoed back exactly what was sent. Confirm to close the configuration.',
+    },
+    'config.finalizeCta': {
+      'fr': 'OK',
+      'en': 'OK',
+    },
+    'config.pendingChip': {
+      'fr': 'À valider',
+      'en': 'To confirm',
+    },
+    'config.pendingTitle': {
+      'fr': 'Configuration à valider',
+      'en': 'Configuration to confirm',
+    },
+    'config.pendingBody': {
+      'fr':
+          'Le kit a confirmé la configuration reçue. Il ne reste qu\'à la valider pour la clore.',
+      'en':
+          'The kit confirmed the configuration it received. Only the final confirmation is missing.',
+    },
+    'config.finalized': {
+      'fr': 'Configuration terminée',
+      'en': 'Configuration completed',
+    },
+    'config.finalizeError': {
+      'fr': 'Échec de l\'envoi de la validation : {0}',
+      'en': 'Could not send the confirmation: {0}',
     },
     'config.ackTimeout': {
       'fr': 'Envoyée, mais aucune confirmation reçue. Vérifiez le kit.',

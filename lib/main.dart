@@ -1,3 +1,5 @@
+import 'package:enmkit/core/db_service.dart';
+import 'package:enmkit/core/security_reset.dart';
 import 'package:enmkit/providers.dart';
 import 'package:enmkit/ui/screens/wrapper/wrapper.dart';
 import 'package:enmkit/ui/theme/app_theme.dart';
@@ -5,7 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // À chaque (ré)installation/mise à jour : réinitialise le code secret (et lui
+  // seul) AVANT l'affichage, pour que l'écran de verrouillage reflète l'état
+  // réinitialisé. N'échoue jamais le démarrage si la vérification a un souci.
+  try {
+    await SecurityResetService(DBService()).resetPinIfBuildChanged();
+  } catch (_) {}
   runApp(const ProviderScope(child: MyApp()));
 }
 

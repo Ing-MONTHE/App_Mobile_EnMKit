@@ -24,7 +24,7 @@ class DBService {
 
     return await openDatabase(
       path,
-      version: 12,
+      version: 16,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -104,7 +104,10 @@ class DBService {
       kitNumber TEXT PRIMARY KEY,
       name TEXT,
       initialConsumption REAL,
-      pulseCount INTEGER
+      pulseCount INTEGER,
+      configured INTEGER DEFAULT 0,
+      pendingConfigMsg TEXT,
+      configAckPending INTEGER NOT NULL DEFAULT 0
     )
   ''');
 
@@ -132,6 +135,18 @@ class DBService {
     )
   ''');
 
+  // TABLE méta clé/valeur : marqueurs techniques internes (ex. dernière version
+  // de build installée, pour réinitialiser le code secret à chaque mise à jour).
+  await db.execute('''
+    CREATE TABLE app_meta(
+      key TEXT PRIMARY KEY,
+      value TEXT
+    )
+  ''');
+
+  // TABLE fil d'assistance (voir createSupportTable).
+  await db.execute(createSupportTable);
+
   // insertion admin par défaut
   await db.insert('users', {
     'phoneNumber': DefaultData.adminPhoneNumber,
@@ -149,6 +164,19 @@ class DBService {
     });
   } 
   }
+
+  /// Fil d'assistance : messages ÉCHANGÉS AVEC LE SUPPORT par SMS. Persisté
+  /// pour que la conversation survive aux redémarrages et que les réponses
+  /// reçues APPLICATION FERMÉE s'y retrouvent.
+  static const String createSupportTable = '''
+    CREATE TABLE IF NOT EXISTS support_messages(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      outgoing INTEGER NOT NULL,
+      body TEXT NOT NULL,
+      at INTEGER NOT NULL,
+      kitNumber TEXT
+    )
+  ''';
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
@@ -242,6 +270,38 @@ class DBService {
     if (oldVersion < 12) {
       // L'accusé brut (texte du SMS du kit) est joint à chaque entrée d'historique.
       await db.execute('ALTER TABLE relay_acks ADD COLUMN raw TEXT');
+    }
+    if (oldVersion < 13) {
+      // Indique si une configuration a déjà été envoyée AVEC SUCCÈS au kit :
+      // le pilotage des lignes n'est opérationnel qu'à partir de ce moment.
+      await db.execute(
+          'ALTER TABLE kits ADD COLUMN configured INTEGER DEFAULT 0');
+    }
+    if (oldVersion < 14) {
+      // Marqueurs techniques (dont la dernière version de build) : sert à
+      // réinitialiser le code secret à chaque (ré)installation/mise à jour.
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS app_meta(
+          key TEXT PRIMARY KEY,
+          value TEXT
+        )
+      ''');
+    }
+    if (oldVersion < 16) {
+      // Fil d'assistance (voir createSupportTable).
+      await db.execute(createSupportTable);
+    }
+    if (oldVersion < 15) {
+      // Finalisation de configuration en DEUX temps :
+      //  • pendingConfigMsg  : trame exactement envoyée au kit, conservée tant
+      //    que son écho n'a pas été reconnu (NULL = rien en attente) ;
+      //  • configAckPending  : l'écho du kit CONCORDE, il ne manque plus que la
+      //    validation de l'utilisateur (« Fin_config »).
+      // Persistés car l'écho arrive souvent APPLICATION FERMÉE : sans cela, le
+      // rattrapage d'une popup manquée serait impossible au redémarrage.
+      await db.execute('ALTER TABLE kits ADD COLUMN pendingConfigMsg TEXT');
+      await db.execute(
+          'ALTER TABLE kits ADD COLUMN configAckPending INTEGER NOT NULL DEFAULT 0');
     }
   }
 }

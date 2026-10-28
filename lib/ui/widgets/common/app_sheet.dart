@@ -126,6 +126,8 @@ class SheetField extends StatelessWidget {
     this.keyboardType,
     this.textCapitalization = TextCapitalization.none,
     this.autofocus = false,
+    this.onChanged,
+    this.maxLines = 1,
   });
 
   final TextEditingController controller;
@@ -135,6 +137,13 @@ class SheetField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
   final bool autofocus;
+
+  /// Notifié à chaque frappe — utile quand l'UI dépend de la saisie (activer
+  /// un bouton, recalculer un aperçu).
+  final ValueChanged<String>? onChanged;
+
+  /// Champ multiligne (ex. description libre d'un besoin).
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +166,8 @@ class SheetField extends StatelessWidget {
           keyboardType: keyboardType,
           textCapitalization: textCapitalization,
           autofocus: autofocus,
+          onChanged: onChanged,
+          maxLines: maxLines,
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: icon != null ? Icon(icon) : null,

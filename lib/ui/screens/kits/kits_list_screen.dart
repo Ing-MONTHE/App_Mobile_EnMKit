@@ -4,6 +4,7 @@ import 'package:enmkit/providers.dart';
 import 'package:enmkit/ui/screens/kit_detail/kit_detail_screen.dart';
 import 'package:enmkit/ui/screens/kits/scan_kit_screen.dart';
 import 'package:enmkit/ui/theme/app_theme.dart';
+import 'package:enmkit/ui/widgets/common/config_finalize.dart';
 import 'package:enmkit/ui/widgets/common/app_sheet.dart';
 import 'package:enmkit/ui/widgets/common/brand_loader.dart';
 import 'package:enmkit/ui/widgets/common/premium.dart';
@@ -435,11 +436,21 @@ class _Header extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
     final t = ref.watch(tProvider);
-    final configured = kits.where((k) => k.isConfigured).length;
-    final pending = kits.length - configured;
-    final configuredLabel = configured > 1
-        ? t.tf('kits.configuredPlural', [configured])
-        : t.tf('kits.configured', [configured]);
+    // États RÉELS face au kit. L'ancien calcul comptait les kits « possédant un
+    // numéro GSM », ce qui est vrai de tous : l'accueil affichait donc en
+    // permanence « tout configuré, zéro en attente », y compris quand un kit
+    // attendait sa validation.
+    final locked = kits.where((k) => k.configSent).length;
+    final toConfirm = kits.where((k) => k.configAckPending).length;
+    final waiting = kits
+        .where((k) =>
+            !k.configSent &&
+            !k.configAckPending &&
+            (k.pendingConfigMsg?.isNotEmpty ?? false))
+        .length;
+    final configuredLabel = locked > 1
+        ? t.tf('kits.configuredPlural', [locked])
+        : t.tf('kits.configured', [locked]);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
@@ -530,15 +541,22 @@ class _Header extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 14),
-                Row(
+                // Trois états possibles, mais on n'affiche que ceux qui
+                // existent : une pastille à zéro n'apprend rien et alourdit.
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     _HeroChip(
-                        icon: Icons.check_circle_rounded,
-                        label: configuredLabel),
-                    const SizedBox(width: 10),
-                    _HeroChip(
-                        icon: Icons.schedule_rounded,
-                        label: t.tf('kits.pending', [pending])),
+                        icon: Icons.lock_rounded, label: configuredLabel),
+                    if (toConfirm > 0)
+                      _HeroChip(
+                          icon: Icons.verified_rounded,
+                          label: t.tf('kits.toConfirm', [toConfirm])),
+                    if (waiting > 0)
+                      _HeroChip(
+                          icon: Icons.schedule_rounded,
+                          label: t.tf('kits.pending', [waiting])),
                   ],
                 ),
               ],
@@ -662,22 +680,47 @@ class _KitCard extends ConsumerWidget {
                             shape: BoxShape.circle),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        kit.kitNumber ?? t.t('kits.noNumber'),
-                        style: TextStyle(
-                            color: scheme.onSurfaceVariant, fontSize: 12.5),
+                      // Flexible AUSSI : sans cela le numéro gardait sa largeur
+                      // pleine, écrasait le nom jusqu'à le faire disparaître et
+                      // débordait quand la puce « À valider » s'ajoute.
+                      Flexible(
+                        child: Text(
+                          kit.kitNumber ?? t.t('kits.noNumber'),
+                          style: TextStyle(
+                              color: scheme.onSurfaceVariant, fontSize: 12.5),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Pastille de statut compacte (point coloré).
-                Container(
-                  width: 9,
-                  height: 9,
-                  decoration:
-                      BoxDecoration(color: statusColor, shape: BoxShape.circle),
-                ),
+                // RATTRAPAGE : configuration confirmée par le kit mais pas
+                // encore validée (popup manquée, ou écho arrivé application
+                // fermée). Visible sans ouvrir le kit ; disparaît dès que la
+                // validation est partie.
+                if (kit.configAckPending && kit.kitNumber != null) ...[
+                  _FinalizeChip(
+                    label: t.t('config.pendingChip'),
+                    onTap: () =>
+                        askAndFinalizeConfig(context, ref, kit.kitNumber!),
+                  ),
+                  const SizedBox(width: 8),
+                ] else if (kit.configSent) ...[
+                  // Configuration close : cadenas, visible d'un coup d'œil.
+                  Icon(Icons.lock_rounded,
+                      size: 15,
+                      color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
+                  const SizedBox(width: 6),
+                ] else
+                  // Pastille de statut compacte (point coloré).
+                  Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                        color: statusColor, shape: BoxShape.circle),
+                  ),
                 const SizedBox(width: 10),
                 Icon(Icons.chevron_right_rounded,
                     size: 20, color: scheme.onSurfaceVariant),
@@ -743,6 +786,50 @@ class _AddFab extends StatelessWidget {
           boxShadow: AppTheme.elevedShadow(tint: AppTheme.indigo, strength: 1),
         ),
         child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+      ),
+    );
+  }
+}
+
+/// Puce d'action « à valider » sur la carte d'un kit : le kit a confirmé la
+/// configuration reçue, il ne manque que la validation finale. Tapable, elle
+/// ouvre la confirmation et disparaît une fois la validation envoyée.
+class _FinalizeChip extends StatelessWidget {
+  const _FinalizeChip({required this.label, required this.onTap});
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          decoration: BoxDecoration(
+            color: AppTheme.success.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.success.withValues(alpha: 0.45)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.verified_rounded,
+                  size: 14, color: AppTheme.success),
+              const SizedBox(width: 5),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.success,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

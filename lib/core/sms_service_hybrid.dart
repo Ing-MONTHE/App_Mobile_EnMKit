@@ -114,7 +114,7 @@ class SmsServiceHybrid {
       throw Exception("L'identifiant de la ligne est nul");
     }
 
-    final command = relay.isActive ? "r${relay.id}on" : "r${relay.id}off";
+    final command = relay.isActive ? "r${relay.id}on" : "r${relay.id}of";
     await _sendCommand(command);
   }
 
@@ -125,7 +125,7 @@ class SmsServiceHybrid {
     if (relay.id == null) {
       throw Exception("L'identifiant de la ligne est nul");
     }
-    await _sendCommand("r${relay.id}${on ? 'on' : 'off'}");
+    await _sendCommand("r${relay.id}${on ? 'on' : 'of'}");
   }
 
   /// Envoie la commande pour une LIGNE par son NUMÉRO dans le kit (1..N, tel que
@@ -134,7 +134,8 @@ class SmsServiceHybrid {
   /// « r10on » bâti sur un id base. C'est la couche appelante qui fournit le bon
   /// numéro de ligne (position de la ligne dans le kit).
   Future<void> commandLine(int lineNumber, bool on) async {
-    await _sendCommand("r$lineNumber${on ? 'on' : 'off'}");
+    // OFF = « rXof » (un seul « f »), conformément au langage du kit.
+    await _sendCommand("r$lineNumber${on ? 'on' : 'of'}");
   }
 
   Future<void> requestConsumption() async {
@@ -173,15 +174,21 @@ class SmsServiceHybrid {
     required double initialConsumption,
     required int pulsation,
   }) {
-    final parts = <String>[];
-    if (firstPhone != null && firstPhone.isNotEmpty) {
-      parts.add("n1:${formatPhoneNumber(firstPhone)}");
-    }
-    if (secondPhone != null && secondPhone.isNotEmpty) {
-      parts.add("n2:${formatPhoneNumber(secondPhone)}");
-    }
-    parts.add("en:$initialConsumption");
-    parts.add("ip:$pulsation");
+    // TRAME FIXE : les quatre marqueurs sont TOUJOURS émis, dans cet ordre.
+    // Un champ non renseigné part avec une valeur VIDE (« n2:: ») et n'est
+    // JAMAIS omis : le kit repère ses champs par marqueur et ne parse pas une
+    // trame amputée — il n'appliquerait alors pas la config et n'accuserait
+    // pas réception.
+    //   n1:+237695864083:n2::en:110.0:ip:1000
+    String pair(String key, String? phone) =>
+        "$key:${(phone == null || phone.isEmpty) ? '' : formatPhoneNumber(phone)}";
+
+    final parts = <String>[
+      pair("n1", firstPhone),
+      pair("n2", secondPhone),
+      "en:$initialConsumption",
+      "ip:$pulsation",
+    ];
     return parts.join(":");
   }
 
@@ -313,12 +320,16 @@ class SmsServiceHybrid {
   }) {
     final Map<String, String> expectedMessages = {};
     
-    if (firstPhone != null) {
+    // Un champ VIDE part bien dans la trame (« n2:: ») mais n'est PAS attendu en
+    // accusé : on n'exige pas du kit qu'il ré-écho une valeur vide — l'attente
+    // tomberait en timeout (120 s) pour un champ que l'utilisateur n'a pas
+    // renseigné.
+    if (firstPhone != null && firstPhone.isNotEmpty) {
       final formattedPhone = formatPhoneNumber(firstPhone);
       expectedMessages['n1'] = "n1:$formattedPhone";
     }
-    
-    if (secondPhone != null) {
+
+    if (secondPhone != null && secondPhone.isNotEmpty) {
       final formattedPhone = formatPhoneNumber(secondPhone);
       expectedMessages['n2'] = "n2:$formattedPhone";
     }

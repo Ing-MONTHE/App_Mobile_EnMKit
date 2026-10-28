@@ -246,9 +246,25 @@ class _AccessScreenState extends ConsumerState<AccessScreen> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
+            // La colonne répartit l'espace avec des Spacer, ce qui suppose une
+            // hauteur SUFFISANTE : sur petit écran, grande police système ou
+            // clavier ouvert, le contenu débordait (mesuré : 105 px coupés en
+            // bas, soit les actions — dont « Passer pour l'instant »).
+            // On garde la répartition quand la place existe, et on bascule en
+            // défilement quand elle manque.
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Spacer(flex: 2),
+                // Espacements FIXES et non des Spacer : dans une zone
+                // défilante la hauteur est non bornée, et un Spacer y est
+                // impossible à résoudre. (IntrinsicHeight ne peut pas servir
+                // d'échappatoire ici : le pavé numérique est un viewport
+                // paresseux, dont la hauteur intrinsèque n'est pas calculable.)
+                const SizedBox(height: 32),
                 const AppLogo(size: 84),
                 const SizedBox(height: 30),
                 Text(
@@ -285,7 +301,7 @@ class _AccessScreenState extends ConsumerState<AccessScreen> {
                         )
                       : null,
                 ),
-                const Spacer(flex: 3),
+                const SizedBox(height: 28),
                 _Keypad(
                   onDigit: _onDigit,
                   onBackspace: _onBackspace,
@@ -294,6 +310,9 @@ class _AccessScreenState extends ConsumerState<AccessScreen> {
                 _bottomActions(vm, scheme),
                 const SizedBox(height: 12),
               ],
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -317,7 +336,12 @@ class _Dots extends StatelessWidget {
         final on = i < filled;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutBack,
+          // PAS de courbe à dépassement (easeOutBack) ici : l'interpolation de
+          // la décoration met l'ombre à l'échelle par un facteur qui devient
+          // NÉGATIF pendant le dépassement, d'où un blurRadius négatif et
+          // l'assertion « Text shadow blur radius should be non-negative »
+          // (BoxShadow.lerpList) au moment où un point se vide.
+          curve: Curves.easeOut,
           margin: const EdgeInsets.symmetric(horizontal: 9),
           width: on ? 20 : 14,
           height: on ? 20 : 14,

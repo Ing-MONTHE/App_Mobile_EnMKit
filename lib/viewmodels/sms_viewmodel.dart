@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:enmkit/core/db_service.dart';
+import 'package:enmkit/core/sms_inbox_processor.dart';
 import 'package:enmkit/core/utils/sms_parser.dart';
 import 'package:enmkit/models/consumption_model.dart';
 import 'package:enmkit/repositories/consumption_repository.dart';
+import 'package:enmkit/repositories/kit_repository.dart';
 import 'package:enmkit/viewmodels/consumption_viewmodel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:readsms/readsms.dart';
@@ -18,6 +20,7 @@ enum KitReachability { unknown, checking, reachable, unreachable }
 class SmsListenerViewModel extends ChangeNotifier {
 
   final _consumptionRepo = ConsumptionRepository(DBService());
+  final _kitRepo = KitRepository(DBService());
   final String? kitNumber;
   final ConsumptionViewModel? consumptionVM; // Injecté pour mise à jour immédiate UI
   late String? trustedSender; // 🔧 Numéro autorisé 
@@ -58,15 +61,22 @@ class SmsListenerViewModel extends ChangeNotifier {
     if (_reachability == KitReachability.checking) {
       _reachability = KitReachability.reachable;
       _reachabilityTimer?.cancel();
-      notifyListeners();
     }
+    // Conso arrivée par la voie native pendant une attente : clôt le retour
+    // visuel (persistance + refresh déjà faits côté natif/drain).
+    if (_consumptionStatus == ConsumptionStatus.waiting &&
+        SmsParser.extractConsumption(body) != null) {
+      _consumptionStatus = ConsumptionStatus.received;
+      _consumptionUiTimer?.cancel();
+    }
+    // Écho de config arrivé par la voie native (souvent application fermée) :
+    // la persistance est déjà faite côté natif, mais l'UI ouverte doit tout de
+    // même voir la confirmation — la détection est idempotente.
+    _detectConfigEcho(body);
     _recordTrusted(body);
     _trustedSmsController.add(body);
+    notifyListeners();
   }
-
-  // Fenêtre d'acceptation de réponse consommation
-  bool _awaitingConsumption = false;
-  DateTime? _awaitConsumptionUntil;
 
   // Statut exposé à l'UI (état d'attente + timeout).
   ConsumptionStatus _consumptionStatus = ConsumptionStatus.idle;
@@ -93,18 +103,13 @@ class SmsListenerViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Arme l'écoute d'une réponse de consommation.
-  /// [window] : durée pendant laquelle une réponse tardive est encore acceptée
-  /// et enregistrée (la donnée reste valable). [uiTimeout] : délai au bout
-  /// duquel, sans réponse, l'UI bascule en « timeout » (plus court, pour ne pas
-  /// laisser l'utilisateur attendre indéfiniment ; une réponse arrivant ensuite
-  /// dans [window] repassera quand même en « reçu »).
+  /// Arme le RETOUR VISUEL d'une demande de consommation : bascule l'UI en
+  /// « attente », et sans réponse avant [uiTimeout] elle passe en « timeout ».
+  /// N.B. : l'ENREGISTREMENT de la conso ne dépend PAS de cette fenêtre — toute
+  /// conso reçue (sollicitée ou non) est persistée, cf. [_processTrustedSms].
   void armConsumptionWindow({
-    Duration window = const Duration(minutes: 1),
     Duration uiTimeout = const Duration(seconds: 60),
   }) {
-    _awaitingConsumption = true;
-    _awaitConsumptionUntil = DateTime.now().add(window);
     _consumptionStatus = ConsumptionStatus.waiting;
     _consumptionUiTimer?.cancel();
     _consumptionUiTimer = Timer(uiTimeout, () {
@@ -170,74 +175,96 @@ class SmsListenerViewModel extends ChangeNotifier {
     return aTail == bTail;
   }
 
-  void _processTrustedSms(String message) {
-    // 👉 Ne traiter la consommation QUE si on attend une réponse cons ET que le SMS ressemble à une réponse de conso
+  /// Vrai dès qu'un écho de configuration CONCORDANT vient d'arriver pour ce
+  /// kit. Simple SIGNAL à destination de l'UI (ouverture de la confirmation) —
+  /// l'état durable, lui, vit en base (`configAckPending`).
+  bool configEchoPending = false;
+
+  /// Reconnaît l'écho de configuration renvoyé par le kit et bascule le kit en
+  /// « attente de validation ».
+  ///
+  /// Le chemin NATIF (SmsInboxProcessor) fait le même travail de son côté pour
+  /// les SMS reçus application fermée : l'opération est IDEMPOTENTE, les deux
+  /// livraisons du même écho aboutissent donc au même état.
+  Future<void> _detectConfigEcho(String message) async {
+    final number = kitNumber;
+    if (number == null || number.isEmpty) return;
     try {
-      final now = DateTime.now();
-      final windowActive = _awaitingConsumption && (_awaitConsumptionUntil == null || now.isBefore(_awaitConsumptionUntil!));
-      // Accepte aussi une consommation si elle arrive peu après la fenêtre (grâce à une marge)
-      final graceWindowActive = _awaitConsumptionUntil != null && now.isBefore(_awaitConsumptionUntil!.add(const Duration(minutes: 1)));
-      if ((windowActive || graceWindowActive) && _looksLikeConsumptionResponse(message)) {
-        // 1) Cherche un motif "nombre + kWh"
-        final kwhRegex = RegExp(r'(\d+(?:[\.,]\d+)?)\s*kWh', caseSensitive: false);
-        RegExpMatch? match = kwhRegex.firstMatch(message);
-
-        String? numericText;
-        if (match != null) {
-          numericText = match.group(1);
-        } else {
-          // 2) Sinon, essaye de récupérer un nombre après des mots-clés conso
-          final genericAfterConsRegex = RegExp(
-            r'(cons(?:ommation)?\s*[:=]?\s*)(\d+(?:[\.,]\d+)?)',
-            caseSensitive: false,
-          );
-          match = genericAfterConsRegex.firstMatch(message);
-          if (match != null) {
-            numericText = match.group(2);
-          }
-        }
-
-        if (numericText != null) {
-          final parsed = double.tryParse(numericText.replaceAll(',', '.'));
-          if (parsed != null) {
-            // Rattache la mesure au kit courant et n'enregistre qu'UNE fois :
-            // le ViewModel scopé persiste en base ET met l'UI à jour. Sans VM
-            // (cas limite), on retombe sur le repository directement.
-            final model = ConsumptionModel(
-              kwh: parsed,
-              timestamp: DateTime.now(),
-              kitNumber: kitNumber,
-            );
-            if (consumptionVM != null) {
-              consumptionVM!.addConsumption(model);
-            } else {
-              _consumptionRepo.addConsumption(model);
-            }
-            lastSms = "$parsed kWh";
-            // Considère la première réponse comme consumée et ferme la fenêtre
-            _awaitingConsumption = false;
-            _awaitConsumptionUntil = null;
-            _consumptionStatus = ConsumptionStatus.received;
-            _consumptionUiTimer?.cancel();
-            notifyListeners();
-          }
+      final kits = await _kitRepo.getKit();
+      String? pending;
+      for (final k in kits) {
+        if (k.kitNumber == number) {
+          pending = k.pendingConfigMsg;
+          break;
         }
       }
+      // Rien en attente (jamais configuré, ou déjà validé) : rien à faire.
+      if (pending == null || pending.isEmpty) return;
+      if (!SmsParser.configEchoMatches(message, pending)) return;
+      await _kitRepo.markConfigAckPending(number);
+      if (!configEchoPending) {
+        configEchoPending = true;
+        notifyListeners();
+      }
     } catch (_) {
-      // Ignore parsing errors
+      // Ne jamais planter la réception d'un SMS sur cette détection.
     }
-
   }
 
-  /// Heuristique simple pour différencier une réponse de consommation d'un ACK
-  bool _looksLikeConsumptionResponse(String message) {
-    final lower = message.toLowerCase();
-    return lower.contains('kwh') ||
-        lower.contains('cons:') ||
-        lower.contains('cons=') ||
-        lower.startsWith('cons ') ||
-        lower.contains('consommation') ||
-        lower.startsWith('conso ');
+  /// Acquitte le signal une fois la confirmation prise en charge par l'UI.
+  void clearConfigEchoSignal() {
+    if (!configEchoPending) return;
+    configEchoPending = false;
+    notifyListeners();
+  }
+
+  void _processTrustedSms(String message) {
+    // Écho de configuration : indépendant de la consommation, donc traité AVANT
+    // le retour anticipé ci-dessous (un écho n'est pas un relevé).
+    _detectConfigEcho(message);
+    try {
+      // Parseur central partagé avec le chemin natif (cohérence garantie).
+      final kwh = SmsParser.extractConsumption(message);
+      if (kwh == null) return; // Pas une conso (ex. accusé « r1on ») : on ignore.
+
+      // Une réponse de conso reçue clôt le retour visuel d'attente.
+      if (_consumptionStatus == ConsumptionStatus.waiting) {
+        _consumptionStatus = ConsumptionStatus.received;
+        _consumptionUiTimer?.cancel();
+      }
+      lastSms = "$kwh kWh";
+      notifyListeners();
+
+      // Enregistre TOUTE conso — SOLLICITÉE OU NON. Aucune fenêtre requise : un
+      // relevé qui arrive spontanément doit s'afficher. Dédup partagée (base,
+      // 45 s) pour ne pas dupliquer un SMS déjà capté par le chemin natif.
+      _persistConsumptionDeduped(kwh);
+    } catch (_) {
+      // Ignore les erreurs de parsing/persistance.
+    }
+  }
+
+  /// Persiste un relevé [kwh] sauf s'il double un relevé déjà présent (même
+  /// valeur dans la fenêtre de dédup partagée) — typiquement le même SMS déjà
+  /// enregistré par le chemin natif.
+  Future<void> _persistConsumptionDeduped(double kwh) async {
+    try {
+      final at = DateTime.now();
+      final existing =
+          await _consumptionRepo.getAllConsumptions(kitNumber: kitNumber);
+      if (SmsInboxProcessor.isDuplicateConsumption(existing, kwh, at)) return;
+      final model =
+          ConsumptionModel(kwh: kwh, timestamp: at, kitNumber: kitNumber);
+      // Le ViewModel scopé persiste ET met l'UI à jour ; sans VM (cas limite),
+      // on retombe sur le repository directement.
+      if (consumptionVM != null) {
+        await consumptionVM!.addConsumption(model);
+      } else {
+        await _consumptionRepo.addConsumption(model);
+      }
+    } catch (_) {
+      // Ne jamais planter sur un enregistrement de conso.
+    }
   }
 
   /// Attend un accusé contenant [expectedSubstring]. Retourne true si reçu avant [timeout].

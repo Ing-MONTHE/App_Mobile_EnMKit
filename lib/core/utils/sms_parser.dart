@@ -64,12 +64,53 @@ class SmsParser {
     double? initialConsumption,
     int? pulsation,
   }) {
-    final List<String> parts = [];
-    if (firstPhone != null && firstPhone.isNotEmpty) parts.add('n1:$firstPhone');
-    if (secondPhone != null && secondPhone.isNotEmpty) parts.add('n2:$secondPhone');
-    if (initialConsumption != null) parts.add('en:$initialConsumption');
-    if (pulsation != null) parts.add('ip:$pulsation');
+    // TRAME FIXE — voir SmsServiceHybrid.buildConcatenatedConfig : les quatre
+    // marqueurs sont toujours présents, un champ non renseigné partant VIDE
+    // (« n1:+237695864083:n2::en:110.0:ip:1000 »). Les deux constructeurs
+    // doivent rester alignés, sinon la trame diffère selon le chemin d'envoi.
+    final List<String> parts = [
+      'n1:${firstPhone ?? ''}',
+      'n2:${secondPhone ?? ''}',
+      'en:${initialConsumption ?? ''}',
+      'ip:${pulsation ?? ''}',
+    ];
     return parts.join(':');
+  }
+
+  /// Décompose une trame de configuration TELLE QUE L'APP L'ENVOIE
+  /// (« n1:+237…:n2::en:110.0:ip:1000 ») en couples clé→valeur. Une valeur peut
+  /// être VIDE (champ non renseigné). Renvoie {} si la trame n'a pas cette
+  /// forme — on ne devine jamais sur une chaîne inattendue.
+  static Map<String, String> parseSentConfig(String frame) {
+    const keys = {'n1', 'n2', 'en', 'ip'};
+    final tokens = frame.trim().split(':');
+    if (tokens.length < 2 || tokens.length.isOdd) return {};
+    final out = <String, String>{};
+    for (var i = 0; i + 1 < tokens.length; i += 2) {
+      final k = tokens[i].trim().toLowerCase();
+      if (!keys.contains(k)) return {};
+      out[k] = tokens[i + 1].trim();
+    }
+    return out;
+  }
+
+  /// Vrai si [echo] — le SMS que le kit RENVOIE après une configuration —
+  /// correspond à la trame [sentFrame] que l'application lui a envoyée.
+  ///
+  /// La comparaison est VOLONTAIREMENT tolérante, paire par paire, et NON une
+  /// égalité de chaînes : le kit ré-écho avec un format variable (espaces,
+  /// casse, suffixe « kWh », entier au lieu de décimal, « ; » au lieu de « : »).
+  /// Une égalité stricte ne se vérifierait quasiment jamais en conditions
+  /// réelles, et la confirmation ne s'afficherait pas.
+  ///
+  /// Les champs VIDES de la trame (« n2:: ») sont ignorés : on n'exige pas du
+  /// kit qu'il ré-écho une valeur que l'utilisateur n'a pas renseignée.
+  static bool configEchoMatches(String echo, String sentFrame) {
+    final pairs = parseSentConfig(sentFrame);
+    final checked = pairs.entries.where((e) => e.value.isNotEmpty).toList();
+    // Aucune valeur exploitable => on ne peut RIEN confirmer.
+    if (checked.isEmpty) return false;
+    return checked.every((e) => configAckMatches(echo, e.key, e.value));
   }
 
   /// Vrai si l'accusé [message] du kit confirme la paire de config

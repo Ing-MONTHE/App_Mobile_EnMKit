@@ -58,6 +58,12 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // IMPORTANT : on DÉSACTIVE R8/minification en release. Avec AGP 8 +
+            // R8 full mode, le shrinking mutilait les classes du moteur Flutter
+            // (DartMessenger natif null) → crash au démarrage. L'app n'a pas
+            // besoin de minification ; on privilégie la fiabilité.
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }

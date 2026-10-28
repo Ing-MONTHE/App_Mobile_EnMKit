@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:enmkit/core/constants/defaults.dart';
 import 'package:enmkit/models/relay_ack_model.dart';
 import 'package:enmkit/models/relay_model.dart';
@@ -14,110 +16,103 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Onglet Relais : liste, pilotage, édition et suppression des relais d'un kit
 /// (scopé sur [kitNumber]). Maximum [DefaultData.maxRelaysPerKit] relais.
-class RelaysTab extends ConsumerWidget {
+class RelaysTab extends ConsumerStatefulWidget {
   const RelaysTab({super.key, required this.kitNumber});
   final String? kitNumber;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RelaysTab> createState() => _RelaysTabState();
+}
+
+class _RelaysTabState extends ConsumerState<RelaysTab> {
+  /// Abonnement UNIQUE au flux des SMS de confiance du kit. On traite chaque
+  /// accusé EXACTEMENT une fois — contrairement à un `StreamBuilder`, qui
+  /// re-déclenchait le traitement à chaque reconstruction du widget (le flux
+  /// rejouant la même valeur). C'est ce traitement unique qui pilote
+  /// l'ouverture automatique de la feuille « Confirmation de la commande ».
+  StreamSubscription<String>? _smsSub;
+
+  @override
+  void initState() {
+    super.initState();
+    // L'abonnement est posé après la 1re frame (lecture sûre des providers).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final listener = ref.read(kitSmsListenerProvider(widget.kitNumber));
+      _smsSub = listener.trustedSms$.listen(_onTrustedSms);
+    });
+  }
+
+  @override
+  void dispose() {
+    _smsSub?.cancel();
+    super.dispose();
+  }
+
+  /// Traite un accusé reçu du kit : reflète l'état réel sur le ViewModel VIVANT
+  /// (jamais recréé pendant la réception) et, si l'accusé n'est pas une simple
+  /// re-livraison, ouvre la feuille « Confirmation de la commande ».
+  void _onTrustedSms(String sms) {
+    if (!mounted || sms.isEmpty) return;
+    final vm = ref.read(kitRelaysProvider(widget.kitNumber));
+    final ackedRelayId = vm.processIncomingSms(sms);
+    if (ackedRelayId != null && mounted) {
+      _showAckHistorySheet(context, ref, vm, ackedRelayId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final kitNumber = widget.kitNumber;
     final vm = ref.watch(kitRelaysProvider(kitNumber));
-    final listener = ref.watch(kitSmsListenerProvider(kitNumber));
     final t = ref.watch(tProvider);
 
-    return StreamBuilder<String>(
-      stream: listener.trustedSms$,
-      builder: (context, snapshot) {
-        final sms = snapshot.data ?? '';
-        if (sms.isNotEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            vm.processIncomingSms(sms);
-          });
-        }
+    if (vm.isLoading) {
+      return BrandLoader(message: t.t('relays.loading'));
+    }
 
-        if (vm.isLoading) {
-          return BrandLoader(message: t.t('relays.loading'));
-        }
-
-        final canAdd = vm.relays.length < DefaultData.maxRelaysPerKit;
-
-        return RefreshIndicator(
-          onRefresh: () => vm.fetchRelays(),
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-            children: [
-              _KitControlCard(kitNumber: kitNumber, vm: vm)
-                  .animate()
-                  .fadeIn(duration: 350.ms)
-                  .slideY(begin: 0.10, end: 0, curve: Curves.easeOutCubic),
-              const SizedBox(height: 22),
-              if (vm.relays.isEmpty)
-                EmptyStateView(
-                  icon: Icons.power_rounded,
-                  title: t.t('relays.empty.title'),
-                  message: t.t('relays.empty.msg'),
-                  actionLabel: t.t('relays.add'),
-                  onAction: () => _showRelaySheet(context, ref, vm),
-                )
-              else ...[
-                Padding(
-                  padding: const EdgeInsets.only(left: 4, bottom: 12),
-                  child: Row(
-                    children: [
-                      Text(
-                        t.t('relays.control'),
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const Spacer(),
-                      Text(
-                        '${vm.relays.length}/${DefaultData.maxRelaysPerKit}',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+    return RefreshIndicator(
+      onRefresh: () => vm.fetchRelays(),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+        children: [
+          const SizedBox(height: 4),
+          if (vm.relays.isEmpty)
+            EmptyStateView(
+              icon: Icons.power_rounded,
+              title: t.t('relays.empty.title'),
+              message: t.t('relays.empty.msg'),
+              actionLabel: t.t('relays.add'),
+              onAction: () => _showRelaySheet(context, ref, vm),
+            )
+          else ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 12),
+              child: Text(
+                t.t('relays.control'),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            ...vm.relays.asMap().entries.map(
+                  (e) => Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: _RelayCard(
+                      relay: e.value,
+                      vm: vm,
+                      onDelete: () => _confirmDelete(context, ref, vm, e.value),
+                    )
+                        .animate()
+                        .fadeIn(delay: (180 + 70 * e.key).ms, duration: 350.ms)
+                        .slideX(begin: 0.12, end: 0, curve: Curves.easeOut),
                   ),
                 ),
-                ...vm.relays.asMap().entries.map(
-                      (e) => Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
-                        child: _RelayCard(
-                          relay: e.value,
-                          vm: vm,
-                          onDelete: () => _confirmDelete(context, ref, vm, e.value),
-                        )
-                            .animate()
-                            .fadeIn(
-                                delay: (180 + 70 * e.key).ms, duration: 350.ms)
-                            .slideX(begin: 0.12, end: 0, curve: Curves.easeOut),
-                      ),
-                    ),
-                const SizedBox(height: 4),
-                if (canAdd)
-                  OutlinedButton.icon(
-                    onPressed: () => _showRelaySheet(context, ref, vm),
-                    icon: const Icon(Icons.add),
-                    label: Text(t.t('relays.add')),
-                  )
-                else
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    alignment: Alignment.center,
-                    child: Text(
-                      t.tf('relays.max', [DefaultData.maxRelaysPerKit]),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-              ],
-            ],
-          ),
-        );
-      },
+            // Le bouton « Ajouter une ligne » a été retiré : le nombre de
+            // lignes (4 ou 7) est fixé une fois pour toutes à l'enregistrement
+            // du kit ; on n'en ajoute plus ensuite.
+          ],
+        ],
+      ),
     );
   }
 
@@ -165,7 +160,7 @@ class RelaysTab extends ConsumerWidget {
                 await vm.addRelay(RelayModel(
                   name: name.isEmpty ? null : name,
                   amperage: DefaultData.defaultAmperage,
-                  kitNumber: kitNumber,
+                  kitNumber: widget.kitNumber,
                 ));
                 await vm.fetchRelays();
                 if (ctx.mounted) Navigator.pop(ctx);
@@ -200,6 +195,32 @@ class RelaysTab extends ConsumerWidget {
   }
 }
 
+/// Affiche la feuille « Confirmation de la commande » d'une ligne (donnée par
+/// son [relayId]). Utilisée à la fois à l'ouverture MANUELLE (icône horloge) et
+/// à l'ouverture AUTOMATIQUE dès qu'un accusé arrive du kit.
+void _showAckHistorySheet(
+  BuildContext context,
+  WidgetRef ref,
+  RelayViewModel vm,
+  int? relayId,
+) {
+  final t = ref.read(tProvider);
+  final acks = vm.acksForRelay(relayId);
+  final relay = vm.relays.firstWhere(
+    (r) => r.id == relayId,
+    orElse: () => RelayModel(id: relayId, amperage: 0),
+  );
+  final lineName = relay.name ?? 'Ligne ${relayId ?? ''}';
+  showAppSheet<void>(
+    context: context,
+    icon: Icons.history_rounded,
+    title: t.t('relays.history.title'),
+    subtitle: '$lineName · ${t.t('relays.history.sub')}',
+    accent: AppTheme.indigo,
+    builder: (ctx) => _AckHistoryList(acks: acks, lineName: lineName),
+  );
+}
+
 /// Boîte de confirmation réutilisable (édition / suppression).
 Future<bool?> _confirmDialog(
   BuildContext context,
@@ -229,124 +250,6 @@ Future<bool?> _confirmDialog(
       ],
     ),
   );
-}
-
-/// Carte de contrôle du kit : test de joignabilité (ping « hello ») + actions
-/// groupées (tout allumer / tout éteindre).
-class _KitControlCard extends ConsumerWidget {
-  const _KitControlCard({required this.kitNumber, required this.vm});
-  final String? kitNumber;
-  final RelayViewModel vm;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = ref.watch(tProvider);
-    final scheme = Theme.of(context).colorScheme;
-    // Section « Connexion du kit » retirée (pour l'instant). On ne garde que les
-    // actions rapides Tout allumer / Tout éteindre.
-    if (vm.relays.isEmpty) return const SizedBox.shrink();
-
-    return SoftCard(
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            t.t('relays.quickActions'),
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.3,
-              color: scheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: _BulkButton(
-                  icon: Icons.flash_on_rounded,
-                  label: t.t('relays.allOn'),
-                  color: AppTheme.success,
-                  onTap: () => _setAll(context, ref, true),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _BulkButton(
-                  icon: Icons.flash_off_rounded,
-                  label: t.t('relays.allOff'),
-                  color: AppTheme.inkSoft,
-                  onTap: () => _setAll(context, ref, false),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _setAll(BuildContext context, WidgetRef ref, bool on) async {
-    final t = ref.read(tProvider);
-    try {
-      await vm.setAllRelays(on);
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(t.tf('relays.failed', [e]))),
-        );
-      }
-    }
-  }
-}
-
-/// Bouton d'action groupée (tout allumer / tout éteindre), doux et teinté.
-class _BulkButton extends StatelessWidget {
-  const _BulkButton({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: color.withValues(alpha: 0.12),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 18, color: color),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13.5,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _RelayCard extends ConsumerStatefulWidget {
@@ -387,20 +290,9 @@ class _RelayCardState extends ConsumerState<_RelayCard> {
     if (mounted) setState(() => _editing = false);
   }
 
-  /// Ouvre l'historique horodaté des accusés de réception de cette ligne.
+  /// Ouvre l'historique horodaté des confirmations de commande de cette ligne.
   void _openHistory(BuildContext context) {
-    final t = ref.read(tProvider);
-    final relay = widget.relay;
-    final acks = widget.vm.acksForRelay(relay.id);
-    showAppSheet<void>(
-      context: context,
-      icon: Icons.history_rounded,
-      title: t.t('relays.history.title'),
-      subtitle: '${relay.name ?? 'Ligne ${relay.id ?? ''}'} · '
-          '${t.t('relays.history.sub')}',
-      accent: AppTheme.indigo,
-      builder: (ctx) => _AckHistoryList(acks: acks),
-    );
+    _showAckHistorySheet(context, ref, widget.vm, widget.relay.id);
   }
 
   @override
@@ -415,7 +307,7 @@ class _RelayCardState extends ConsumerState<_RelayCard> {
     const accent = AppTheme.inkSoft;
     // Commande en vol : état demandé en attente de l'écho du kit (null = aucune).
     final pendingOn = widget.vm.pendingTargetForRelay(relay.id);
-    // Historique d'accusés disponible pour cette ligne ?
+    // Historique de confirmations disponible pour cette ligne ?
     final hasHistory = widget.vm.hasHistoryForRelay(relay.id);
 
     return GestureDetector(
@@ -476,17 +368,15 @@ class _RelayCardState extends ConsumerState<_RelayCard> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              // Historique horodaté des accusés (n'apparaît que
-                              // s'il existe au moins une confirmation du kit).
+                              // Historique des confirmations de commande
+                              // (n'apparaît que s'il existe au moins une
+                              // confirmation renvoyée par le kit).
                               if (hasHistory)
                                 _HistoryButton(
                                   onTap: () => _openHistory(context),
                                 ),
                             ],
                           ),
-                          // Plus de badge de statut (« En marche » / « En
-                          // attente… ») sous le nom : l'état se lit uniquement
-                          // sur le sélecteur ON/OFF, pour une fiche épurée.
                         ],
                       ),
               ),
@@ -720,7 +610,7 @@ class _Seg extends StatelessWidget {
   }
 }
 
-/// Petit bouton « horloge » ouvrant l'historique des accusés d'une ligne.
+/// Petit bouton « horloge » ouvrant l'historique des confirmations d'une ligne.
 class _HistoryButton extends StatelessWidget {
   const _HistoryButton({required this.onTap});
   final VoidCallback onTap;
@@ -743,11 +633,15 @@ class _HistoryButton extends StatelessWidget {
   }
 }
 
-/// Liste de l'historique des accusés de réception d'une ligne (sheet).
-/// Regroupe les entrées par jour et affiche l'heure de chaque confirmation.
+/// Liste de l'historique des confirmations de commande d'une ligne (sheet).
+/// Chaque entrée affiche l'état confirmé (« alimenté(e) » / « désalimenté(e) »),
+/// l'accusé brut réellement reçu du kit, et l'heure de la confirmation.
 class _AckHistoryList extends ConsumerWidget {
-  const _AckHistoryList({required this.acks});
+  const _AckHistoryList({required this.acks, required this.lineName});
   final List<RelayAck> acks;
+
+  /// Nom de la ligne, pour composer la phrase complète (« salon1 est alimenté(e) »).
+  final String lineName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -791,8 +685,7 @@ class _AckHistoryList extends ConsumerWidget {
           final raw = a.raw?.trim();
           final hasRaw = raw != null && raw.isNotEmpty;
           return Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
             decoration: BoxDecoration(
               color: scheme.surfaceContainerHighest.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(14),
@@ -818,10 +711,15 @@ class _AckHistoryList extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Phrase complète : « {nom de la ligne} est alimenté(e) /
+                      // désalimenté(e) ».
                       Text(
-                        on
-                            ? t.t('relays.history.on')
-                            : t.t('relays.history.off'),
+                        t.tf(
+                          on
+                              ? 'relays.history.line.on'
+                              : 'relays.history.line.off',
+                          [lineName],
+                        ),
                         style: const TextStyle(
                             fontSize: 14.5, fontWeight: FontWeight.w700),
                       ),
@@ -838,20 +736,14 @@ class _AckHistoryList extends ConsumerWidget {
                               color: scheme.onSurfaceVariant
                                   .withValues(alpha: 0.8),
                             ),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 raw,
                                 style: TextStyle(
+                                  fontSize: 12.5,
                                   color: scheme.onSurfaceVariant,
-                                  fontSize: 12,
-                                  height: 1.3,
-                                  fontFeatures: const [
-                                    FontFeature.tabularFigures()
-                                  ],
                                 ),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],

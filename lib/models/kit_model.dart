@@ -6,11 +6,28 @@ class KitModel {
   double? initialConsumption;
   int? pulseCount;
 
+  /// Vrai si une configuration a déjà été envoyée AU KIT avec succès (accusé
+  /// reçu). Le pilotage effectif des lignes n'est opérationnel qu'à partir de là.
+  bool configSent;
+
+  /// Trame de configuration exactement envoyée au kit, conservée tant que son
+  /// écho n'a pas été reconnu. NULL = aucune configuration en attente d'écho.
+  /// Persistée car l'écho du kit arrive souvent APPLICATION FERMÉE : c'est elle
+  /// qui permet de reconnaître l'écho au redémarrage.
+  String? pendingConfigMsg;
+
+  /// Vrai quand l'écho du kit CONCORDE avec [pendingConfigMsg] : il ne manque
+  /// plus que la validation de l'utilisateur pour clore la configuration.
+  bool configAckPending;
+
   KitModel({
     this.kitNumber,
     this.name,
     this.initialConsumption = 0.0,
     this.pulseCount,
+    this.configSent = false,
+    this.pendingConfigMsg,
+    this.configAckPending = false,
   });
 
   /// Nom lisible du kit (repli sur le numéro si aucun nom n'est défini).
@@ -29,6 +46,9 @@ class KitModel {
       'name': name,
       'initialConsumption': initialConsumption,
       'pulseCount': pulseCount,
+      'configured': configSent ? 1 : 0,
+      'pendingConfigMsg': pendingConfigMsg,
+      'configAckPending': configAckPending ? 1 : 0,
     };
   }
 
@@ -38,6 +58,9 @@ class KitModel {
       name: map['name'],
       initialConsumption: (map['initialConsumption'] as num?)?.toDouble() ?? 0.0,
       pulseCount: map['pulseCount'],
+      configSent: (map['configured'] ?? 0) == 1,
+      pendingConfigMsg: map['pendingConfigMsg'] as String?,
+      configAckPending: (map['configAckPending'] ?? 0) == 1,
     );
   }
 
@@ -47,12 +70,18 @@ class KitModel {
     String? name,
     double? initialConsumption,
     int? pulseCount,
+    bool? configSent,
+    String? pendingConfigMsg,
+    bool? configAckPending,
   }) {
     return KitModel(
       kitNumber: kitNumber ?? this.kitNumber,
       name: name ?? this.name,
       initialConsumption: initialConsumption ?? this.initialConsumption,
       pulseCount: pulseCount ?? this.pulseCount,
+      configSent: configSent ?? this.configSent,
+      pendingConfigMsg: pendingConfigMsg ?? this.pendingConfigMsg,
+      configAckPending: configAckPending ?? this.configAckPending,
     );
   }
 }

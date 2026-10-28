@@ -1,3 +1,4 @@
+import 'package:enmkit/ui/screens/support/support_screen.dart';
 import 'package:flutter/material.dart';
 
 class FaqAccountScreen extends StatelessWidget {
@@ -170,7 +171,9 @@ Widget _buildActionButtons(BuildContext context) {
         child: SizedBox(
           height: 48,
           child: OutlinedButton.icon(
-            onPressed: () => _showSupportDialog(context),
+            onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const SupportPage()),
+          ),
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Color(0xFF3B82F6)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -288,7 +291,7 @@ Widget _buildSupportCard(BuildContext context) {
               ),
               const SizedBox(height: 4),
               Text(
-                'Contacte le support avec ton email et le numéro du Kit.',
+                'Décrivez votre besoin : la demande part par SMS, sans Internet.',
                 style:
                     TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
               ),
@@ -297,7 +300,9 @@ Widget _buildSupportCard(BuildContext context) {
         ),
         const SizedBox(width: 8),
         TextButton(
-          onPressed: () => _showSupportDialog(context),
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const SupportPage()),
+          ),
           child: const Text('Contacter',
               style: TextStyle(
                   color: Color(0xFF10B981), fontWeight: FontWeight.w700)),
@@ -307,41 +312,5 @@ Widget _buildSupportCard(BuildContext context) {
   );
 }
 
-void _showSupportDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: const Color(0xFF1E293B),
-      title: const Text('Contacter le support', style: TextStyle(color: Colors.white)),
-      content: const Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Merci de préparer les informations suivantes :',
-            style: TextStyle(color: Colors.white70),
-          ),
-          SizedBox(height: 8),
-          Text('- Email du compte', style: TextStyle(color: Colors.white, height: 1.4)),
-          Text('- Numéro du Kit (si configuré)', style: TextStyle(color: Colors.white, height: 1.4)),
-          Text('- Description du problème', style: TextStyle(color: Colors.white, height: 1.4)),
-          SizedBox(height: 12),
-          Text(
-            'Canaux de contact:',
-            style: TextStyle(color: Colors.white70),
-          ),
-          SizedBox(height: 6),
-          Text('• Email: support@enmkit.app', style: TextStyle(color: Colors.white)),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Fermer', style: TextStyle(color: Colors.white70)),
-        ),
-      ],
-    ),
-  );
-}
 
 

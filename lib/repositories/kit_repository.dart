@@ -52,6 +52,56 @@ class KitRepository {
   }
 
 
+  /// Marque (ou démarque) un kit comme ayant reçu une configuration AVEC SUCCÈS
+  /// — débloque le pilotage effectif des lignes.
+  Future<void> markConfigSent(String kitNumber, {bool sent = true}) async {
+    final db = await _dbService.database;
+    await db.update(
+      'kits',
+      {'configured': sent ? 1 : 0},
+      where: 'kitNumber = ?',
+      whereArgs: [kitNumber],
+    );
+  }
+
+  /// Mémorise la trame de configuration qui vient d'être ENVOYÉE au kit, en
+  /// attente de son écho. Remet à zéro l'éventuelle validation pendante : une
+  /// nouvelle configuration annule la précédente.
+  Future<void> setPendingConfig(String kitNumber, String message) async {
+    final db = await _dbService.database;
+    await db.update(
+      'kits',
+      {'pendingConfigMsg': message, 'configAckPending': 0},
+      where: 'kitNumber = ?',
+      whereArgs: [kitNumber],
+    );
+  }
+
+  /// L'écho du kit concorde : la configuration attend la validation de
+  /// l'utilisateur. Idempotent — deux livraisons du même écho (flux `readsms`
+  /// ET chemin natif) laissent le même état.
+  Future<void> markConfigAckPending(String kitNumber) async {
+    final db = await _dbService.database;
+    await db.update(
+      'kits',
+      {'configAckPending': 1},
+      where: 'kitNumber = ?',
+      whereArgs: [kitNumber],
+    );
+  }
+
+  /// Configuration close (« Fin_config » envoyé) : plus rien en attente, et le
+  /// kit est marqué comme configuré.
+  Future<void> clearPendingConfig(String kitNumber) async {
+    final db = await _dbService.database;
+    await db.update(
+      'kits',
+      {'pendingConfigMsg': null, 'configAckPending': 0, 'configured': 1},
+      where: 'kitNumber = ?',
+      whereArgs: [kitNumber],
+    );
+  }
+
    /// Supprime l'enregistrement existant
   Future<void> clearKit() async {
     final db = await _dbService.database;

@@ -23,6 +23,9 @@ import 'package:enmkit/viewmodels/sms_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:enmkit/core/db_service.dart';
 import 'package:enmkit/models/kit_model.dart';
+import 'package:enmkit/core/support_service.dart';
+import 'package:enmkit/repositories/support_repository.dart';
+import 'package:enmkit/viewmodels/support_viewmodel.dart';
 
 
 final onboardingVMProvider = ChangeNotifierProvider((ref) => OnboardingVM());
@@ -206,4 +209,20 @@ final kitSmsListenerProvider =
     ChangeNotifierProvider.family<SmsListenerViewModel, String?>((ref, kitNumber) {
   final consumptionVm = ref.read(kitConsumptionProvider(kitNumber));
   return SmsListenerViewModel(kitNumber: kitNumber, consumptionVM: consumptionVm);
+});
+
+/// Service d'assistance : envoi des demandes au support et relais WhatsApp.
+final supportServiceProvider = Provider<SupportService>((ref) => SupportService());
+
+/// Dépôt du fil d'assistance (SMS échangés avec le support).
+final supportRepositoryProvider = Provider<SupportRepository>((ref) {
+  return SupportRepository(ref.watch(dbServiceProvider));
+});
+
+/// Fil d'assistance : conversation persistée avec le support.
+final supportProvider = ChangeNotifierProvider<SupportViewModel>((ref) {
+  return SupportViewModel(
+    ref.watch(supportRepositoryProvider),
+    ref.watch(supportServiceProvider),
+  );
 });

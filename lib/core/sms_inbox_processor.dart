@@ -21,6 +21,24 @@ class SmsInboxProcessor {
     required this.relayRepo,
   });
 
+  /// Fenêtre de dédup conso : ne sert qu'à fusionner le doublon « même SMS vu
+  /// par readsms ET par le natif » (écart de quelques secondes). Au-delà, deux
+  /// relevés de même valeur sont considérés DISTINCTS et tous deux conservés.
+  static const Duration consumptionDedupWindow = Duration(seconds: 45);
+
+  /// Vrai si [kwh] reçu à [at] est un doublon d'un relevé déjà présent dans
+  /// [existing] (même valeur dans la [window]). Partagé par le chemin natif ET
+  /// le chemin temps réel readsms, pour une dédup cohérente entre les deux.
+  static bool isDuplicateConsumption(
+    List<ConsumptionModel> existing,
+    double kwh,
+    DateTime at, {
+    Duration window = consumptionDedupWindow,
+  }) {
+    return existing.any(
+        (c) => c.kwh == kwh && at.difference(c.timestamp).abs() <= window);
+  }
+
   /// Traite un SMS. Retourne le numéro du kit concerné dès que l'expéditeur
   /// correspond à un kit connu (afin que le SMS brut puisse être réinjecté dans
   /// le flux temps réel — ex. confirmation de config), ou null si l'expéditeur
@@ -44,10 +62,12 @@ class SmsInboxProcessor {
     final kwh = SmsParser.extractConsumption(sms.body);
     if (kwh != null) {
       final existing = await consumptionRepo.getAllConsumptions(kitNumber: kitNumber);
-      // Dédup : évite un doublon si le même relevé a déjà été enregistré
-      // (ex. par le flux temps réel) à quelques minutes près.
-      final dup = existing.any((c) =>
-          c.kwh == kwh && sms.ts.difference(c.timestamp).inMinutes.abs() <= 3);
+      // Dédup : collapse UNIQUEMENT le même SMS physique vu par les DEUX chemins
+      // (temps réel `readsms` + natif), qui arrivent à quelques secondes d'écart.
+      // Fenêtre VOLONTAIREMENT COURTE : le kit renvoie souvent la MÊME valeur
+      // (ex. « 0.50 kWh » répété, « 0.05 kWh » 3 fois) ; une fenêtre large
+      // (l'ancienne de 3 min) jetait ces relevés légitimes → conso « aléatoire ».
+      final dup = isDuplicateConsumption(existing, kwh, sms.ts);
       if (!dup) {
         await consumptionRepo.addConsumption(
           ConsumptionModel(kwh: kwh, timestamp: sms.ts, kitNumber: kitNumber),
@@ -58,7 +78,8 @@ class SmsInboxProcessor {
     // 2) Accusé de réception ligne : "rNon" / "rNoff" où N = NUMÉRO DE LIGNE
     //    (1..N) tel que reconnu par le kit, et NON l'id base. On mappe donc N
     //    vers la vraie ligne du kit = la N-ième ligne (par ordre de création).
-    final matches = RegExp(r'r(\d+)\s*(on|off)', caseSensitive: false)
+    // « of » (1 f, langage du kit) ou « off » sont acceptés pour l'extinction.
+    final matches = RegExp(r'r(\d+)\s*(on|off?)', caseSensitive: false)
         .allMatches(sms.body.toLowerCase());
     if (matches.isNotEmpty) {
       // Lignes du kit triées par id = ordre de création => position = n° ligne.
@@ -82,6 +103,21 @@ class SmsInboxProcessor {
           raw: sms.body.trim(),
         ));
       }
+    }
+
+    // 3) ÉCHO DE CONFIGURATION : le kit renvoie la trame qu'il a reçue. Si elle
+    //    concorde avec celle que l'application lui a envoyée, la configuration
+    //    passe « en attente de validation » par l'utilisateur.
+    //    Cet état est PERSISTÉ ici parce que cet écho arrive très souvent
+    //    APPLICATION FERMÉE (récepteur natif) : c'est lui qui fera ressortir le
+    //    bouton de validation au prochain lancement si la popup a été manquée.
+    final pending = kit.pendingConfigMsg;
+    if (kitNumber != null &&
+        pending != null &&
+        pending.isNotEmpty &&
+        !kit.configAckPending &&
+        SmsParser.configEchoMatches(sms.body, pending)) {
+      await kitRepo.markConfigAckPending(kitNumber);
     }
 
     return kitNumber;

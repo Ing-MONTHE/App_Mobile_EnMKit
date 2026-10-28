@@ -73,9 +73,9 @@ class ConsumptionTab extends ConsumerWidget {
     final listener = ref.read(kitSmsListenerProvider(kitNumber));
     final sms = ref.read(kitSmsServiceProvider(kitNumber));
     final t = ref.read(tProvider);
-    // La donnée reste acceptée 5 min ; l'UI bascule en « timeout » après 60 s.
+    // Retour visuel : « attente » puis « timeout » après 60 s sans réponse.
+    // (L'enregistrement de la conso ne dépend plus d'une fenêtre.)
     listener.armConsumptionWindow(
-      window: const Duration(minutes: 5),
       uiTimeout: const Duration(seconds: 60),
     );
     sms.requestConsumption();
@@ -194,12 +194,17 @@ class _CurrentCard extends ConsumerWidget {
                           const Icon(Icons.refresh_rounded,
                               color: Colors.white, size: 20),
                           const SizedBox(width: 8),
-                          Text(
-                            t.t('cons.refresh'),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14.5,
+                          Flexible(
+                            child: Text(
+                              t.t('cons.refresh'),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14.5,
+                                height: 1.2,
+                              ),
                             ),
                           ),
                         ],
