@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Design system EnMKit — direction « fintech moderne » (Revolut / N26 / Wise).
+/// Design system EnMKit : direction « fintech moderne » (Revolut / N26 / Wise).
 ///
 /// Palette riche (indigo→violet), typographie Plus Jakarta Sans expressive,
 /// profondeur par ombres multi-couches, dégradés vibrants et accents éclatants.

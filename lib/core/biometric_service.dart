@@ -5,7 +5,7 @@ import 'package:local_auth_android/local_auth_android.dart';
 /// Enveloppe le plugin `local_auth` pour le déverrouillage rapide par empreinte.
 ///
 /// Usage volontairement minimal : savoir si la biométrie est exploitable, et
-/// lancer l'invite système. Aucune donnée biométrique ne transite par l'app —
+/// lancer l'invite système. Aucune donnée biométrique ne transite par l'app,
 /// c'est le système qui authentifie.
 class BiometricService {
   final LocalAuthentication _auth = LocalAuthentication();

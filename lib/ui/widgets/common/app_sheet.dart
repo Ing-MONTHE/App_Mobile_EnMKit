@@ -138,7 +138,7 @@ class SheetField extends StatelessWidget {
   final TextCapitalization textCapitalization;
   final bool autofocus;
 
-  /// Notifié à chaque frappe — utile quand l'UI dépend de la saisie (activer
+  /// Notifié à chaque frappe : utile quand l'UI dépend de la saisie (activer
   /// un bouton, recalculer un aperçu).
   final ValueChanged<String>? onChanged;
 

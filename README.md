@@ -1,4 +1,4 @@
-# EnMKit — Application mobile
+# EnMKit · Application mobile
 
 **Pilotez vos kits électriques par SMS, sans Internet.**
 
@@ -19,7 +19,7 @@ relevé de consommation, configuration du boîtier, et partage de configuration 
 
 ## 1. Prérequis
 
-- **Flutter SDK** stable (≥ 3.41) et **Dart** ≥ 3.7 — `flutter doctor` au vert.
+- **Flutter SDK** stable (≥ 3.41) et **Dart** ≥ 3.7 ; `flutter doctor` au vert.
 - **Android SDK** + `platform-tools` (`adb`) pour déployer sur appareil.
 - Un **appareil Android physique** (l'envoi/réception de SMS réels nécessite une SIM ;
   l'émulateur ne reçoit pas de SMS du kit).
@@ -126,10 +126,10 @@ App_Mobile_EnMKit/
 |---|---|
 | `adb: command not found` | Ajouter `platform-tools` au PATH |
 | Appareil absent de `adb devices` | `adb kill-server && adb start-server`, rebrancher le câble |
-| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | Rebâtir en **release** (même keystore) — voir §5 |
+| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | Rebâtir en **release** (même keystore), voir §5 |
 | L'app ne reçoit pas les SMS du kit fermée | Autoriser autostart + exclure de l'optimisation batterie |
 | Le kit ne répond pas | Tester la joignabilité (bouton **Tester**, ping `cons`) ; vérifier crédit SMS de la SIM du kit |
 
 ---
 
-*EnMKit — Application mobile. Documentation dans `docs/`.*
+*EnMKit · Application mobile. Documentation dans `docs/`.*

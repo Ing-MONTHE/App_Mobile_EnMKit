@@ -1,11 +1,13 @@
 import 'package:enmkit/core/education/education_content.dart';
 import 'package:enmkit/providers.dart';
+import 'package:enmkit/ui/screens/assistant/assistant_screen.dart';
 import 'package:enmkit/ui/screens/education/education_screen.dart';
 import 'package:enmkit/ui/screens/education/live_cards.dart';
 import 'package:enmkit/ui/screens/education/quiz_screen.dart';
 import 'package:enmkit/ui/theme/app_theme.dart';
 import 'package:enmkit/ui/widgets/common/doodle_background.dart';
 import 'package:enmkit/ui/widgets/common/soft_card.dart';
+import 'package:enmkit/viewmodels/assistant_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -206,6 +208,27 @@ class TpDetailScreen extends ConsumerWidget {
                     style: TextStyle(color: scheme.onSurfaceVariant)),
               ),
             ],
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppTheme.radiusControl)),
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AssistantScreen(
+                    kitNumber: educationKit(ref)?.kitNumber,
+                    initialAudience: AssistantAudience.learner,
+                    moduleCode: code,
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.forum_rounded),
+              label: Text(t.t('edu.askAssistant')),
+            ),
           ],
         ),
       ),

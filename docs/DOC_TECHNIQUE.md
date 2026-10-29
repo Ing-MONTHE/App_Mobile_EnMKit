@@ -1,4 +1,4 @@
-# Documentation technique — EnMKit
+# Documentation technique · EnMKit
 
 Application Flutter de pilotage de **kits électriques par SMS**, multi-kits,
 **fonctionnant sans Internet** (tout passe par le réseau GSM).
@@ -14,7 +14,7 @@ Application Flutter de pilotage de **kits électriques par SMS**, multi-kits,
 Chaque **kit** est un boîtier muni d'une carte SIM, relié à plusieurs **lignes**
 (circuits électriques). L'application envoie des **SMS de commande** au numéro du kit
 pour allumer/couper une ligne ou relever la consommation, et **écoute les SMS de
-réponse** (écho) pour synchroniser l'état — y compris **application fermée**.
+réponse** (écho) pour synchroniser l'état, y compris **application fermée**.
 
 ```
 ┌────────────┐   SMS commande (rNon/rNoff, cons, n1:/n2:/en:/ip:)   ┌──────────┐
@@ -89,7 +89,7 @@ lib/
 > indexés par `kitNumber` : chaque kit a son flux SMS, ses lignes et sa conso, sans
 > mélange entre logements.
 
-### 2.3 Flow d'accès — le code de sécurité, **priorité abaissée**
+### 2.3 Flow d'accès : le code de sécurité, **priorité abaissée**
 
 Le point d'entrée `RootPage` (`ui/screens/wrapper/wrapper.dart`) décide de l'écran via
 `_screenFor(status, settingsVM)`. **L'ordre des décisions est déterminant :**
@@ -184,9 +184,9 @@ Fichier : `kit_control.db`. **Version courante : 17.** Ouverture dans
 | `configurations` | `id`, `language`, `themeMode`, `notificationsEnabled` |
 | `app_security` | `id=1`, `pinHash`, `salt` |
 | `app_settings` | `id=1`, `themeMode`, `locale`, `accent`, `onboardingSeen`, `securityCodeEnabled`, `securityPromptSeen` |
-| `hourly_consumptions` (v17) | `kitNumber`, `hourStart` (`YYYY-MM-DDTHH:00:00`, heure locale Douala naïve), `kWh` (énergie DE l'heure), `receivedAt` — `UNIQUE(kitNumber, hourStart)` |
+| `hourly_consumptions` (v17) | `kitNumber`, `hourStart` (`YYYY-MM-DDTHH:00:00`, heure locale Douala naïve), `kWh` (énergie DE l'heure), `receivedAt` ; `UNIQUE(kitNumber, hourStart)` |
 | `server_settings` (v17) | `id=1`, `apiUrl`, `clientKey` (secret, jamais journalisé), `updatedAt` |
-| `edu_progress` (v17) | `tpCode`, `stepIndex`, `done` — PK (tpCode, stepIndex) |
+| `edu_progress` (v17) | `tpCode`, `stepIndex`, `done` ; PK (tpCode, stepIndex) |
 | `edu_quiz_scores` (v17) | `tpCode` (PK), `lastScore`, `bestScore`, `total`, `at` |
 | `edu_scenarios` (v17) | `tpCode`, `label` (A/B), `kitNumber`, `startAt`, `endAt` (NULL = en cours) |
 
@@ -205,7 +205,7 @@ Fichier : `kit_control.db`. **Version courante : 17.** Ouverture dans
 | **8** | **Renommage `Relais N` → `Ligne N`** des noms par défaut déjà stockés |
 | **9** | `app_settings.securityPromptSeen` (proposition de code skippable) + marquée *vue* pour les installs existantes |
 | 10–16 | Récupération du PIN / biométrie, `relay_acks`, `kits.configured`, `app_meta`, écho de config, `support_messages` (voir `db_service.dart`) |
-| **17** | `DBService.createV17Tables` : `hourly_consumptions` (+ index), `server_settings`, `edu_progress`, `edu_quiz_scores`, `edu_scenarios` — tout en `IF NOT EXISTS`, aucune table existante modifiée |
+| **17** | `DBService.createV17Tables` : `hourly_consumptions` (+ index), `server_settings`, `edu_progress`, `edu_quiz_scores`, `edu_scenarios` ; tout en `IF NOT EXISTS`, aucune table existante modifiée |
 
 Migration v8 (extrait) :
 
@@ -226,7 +226,7 @@ sécurité. Le **basculement optionnel** est porté par `app_settings.securityCo
 
 ---
 
-## 4. Protocole SMS (matériel) — **ne pas modifier les mots-clés**
+## 4. Protocole SMS (matériel) : **ne pas modifier les mots-clés**
 
 Construction et envoi dans `core/sms_service_hybrid.dart`.
 
@@ -239,7 +239,7 @@ Construction et envoi dans `core/sms_service_hybrid.dart`.
 | Numéro autorisé 2 | `n2:<numéro>` | écho `n2:…` |
 | Consommation initiale | `en:<kWh>` | écho `en:…` |
 | Impulsions compteur | `ip:<count>` | écho `ip:…` |
-| Fin de configuration | `Fin_config` | — |
+| Fin de configuration | `Fin_config` | - |
 
 La configuration groupée concatène plusieurs champs séparés par `;`
 (ex. `n1:…;n2:…;en:…;ip:…`). Les numéros sont normalisés au format `+237`
@@ -250,7 +250,7 @@ La configuration groupée concatène plusieurs champs séparés par `;`
 | Réponse du kit | Motif | Traitement |
 |---|---|---|
 | Écho de ligne | `r(\d+)\s*(on\|off)` (toutes occurrences) | `applyKitAck` → `isActive` + `ackReceived` |
-| Relevé conso | `(\d+(?:[.,]\d+)?)\s*kwh` | ajout `consumptions` (dédup ≤ 45 s) — **ignoré si le SMS contient des trames horaires** |
+| Relevé conso | `(\d+(?:[.,]\d+)?)\s*kwh` | ajout `consumptions` (dédup ≤ 45 s) ; **ignoré si le SMS contient des trames horaires** |
 | Trames horaires | `^(\d{2})/(\d{2})/(\d{2});(\d{1,2});(\d+(?:[.,]\d+)?)$` par ligne | upsert `hourly_consumptions` (dernier reçu gagne) |
 | Écho config | `n1:` / `n2:` / `en:` / `ip:` | `parseAckMessage` |
 
@@ -281,7 +281,7 @@ rafale SMS).
 |---|---|---|---|
 | **Code d'accès (PIN)** | `app_security` + `app_settings.securityCodeEnabled` | Protège l'**ouverture locale** de l'app (voir §2.3) | **Optionnel** (désactivable) |
 | **Numéro du kit** (`trustedSender`) | `kits.kitNumber` | **Seule source SMS acceptée** : filtré côté **app** (`SmsListenerViewModel.isFromTrusted`) **et côté natif** (`SmsReceiver` → `SmsStore.isKnownKit(sender)`) avant empilage | Identité du kit |
-| **Numéros autorisés** (`n1` / `n2`) | `allowed_numbers` + envoyés au kit (`n1:`/`n2:`) | Qui peut **commander le kit** — contrôle appliqué **par le KIT**, pas par l'app | Jusqu'à 2 |
+| **Numéros autorisés** (`n1` / `n2`) | `allowed_numbers` + envoyés au kit (`n1:`/`n2:`) | Qui peut **commander le kit** : contrôle appliqué **par le KIT**, pas par l'app | Jusqu'à 2 |
 | **Admin (héritage)** | table `users` (`666666666` / `1234`, cf. `defaults.dart`) | Vestige de l'ancien login par identifiants | Legacy |
 
 > **Appariement des numéros** : comparaison sur les **8 derniers chiffres** (tolère les
@@ -382,7 +382,7 @@ Contrat partagé : `EnMKit_platform/docs/CONTRACT.md` §2 (trames) et §6 (moteu
 
 ## 11. Éducation énergétique & assistant
 
-- **Contenu** : `lib/core/education/education_content.dart` — 7 `EduModule` (TP1–TP7,
+- **Contenu** : `lib/core/education/education_content.dart`, 7 `EduModule` (TP1–TP7,
   forme de `GET /education/modules`), `EcoTip`, `GlossaryEntry`, textes bilingues `Bi`
   (le catalogue `strings.dart` garde les libellés d'interface). Notation :
   `quiz_scoring.dart` (70 % pour réussir, meilleur score conservé).
@@ -402,5 +402,5 @@ Contrat partagé : `EnMKit_platform/docs/CONTRACT.md` §2 (trames) et §6 (moteu
 
 ---
 
-*EnMKit — Documentation technique. Voir aussi `docs/GUIDE_UTILISATION.md`,
+*EnMKit · Documentation technique. Voir aussi `docs/GUIDE_UTILISATION.md`,
 `docs/NOTES_DE_VERSION.md` et `README.md`.*

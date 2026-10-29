@@ -20,6 +20,9 @@ enum ApiFailure {
   /// Assistant indisponible côté serveur (503 `assistant_unavailable`).
   unavailable,
 
+  /// Quota journalier de questions atteint (429 `assistant_quota_exceeded`).
+  quotaExceeded,
+
   /// Autre erreur (4xx/5xx, réponse illisible).
   error,
 }
@@ -54,10 +57,18 @@ class ChatMessage {
 }
 
 class ChatReply {
-  const ChatReply({required this.reply, this.model, this.usedInsights = false});
+  const ChatReply({
+    required this.reply,
+    this.model,
+    this.usedInsights = false,
+    this.quotaRemaining,
+  });
   final String reply;
   final String? model;
   final bool usedInsights;
+
+  /// Questions restantes aujourd'hui (null = illimité).
+  final int? quotaRemaining;
 }
 
 /// Client HTTP minimal de l'API EnMKit (endpoints « app », clé `X-Client-Key`).
@@ -86,7 +97,7 @@ class EnmkitApiClient {
     final client = (json['client'] as Map?) ?? const {};
     final kits = (json['kits'] as List?) ?? const [];
     return AppMe(
-      clientName: (client['name'] as String?) ?? '—',
+      clientName: (client['name'] as String?) ?? '-',
       kitNumbers: [
         for (final k in kits)
           if (k is Map && k['kit_number'] is String) k['kit_number'] as String
@@ -100,9 +111,11 @@ class EnmkitApiClient {
     required String audience,
     required String lang,
     required List<ChatMessage> messages,
+    String? moduleCode,
   }) async {
     final body = jsonEncode({
       if (kitNumber != null && kitNumber.isNotEmpty) 'kit_number': kitNumber,
+      if (moduleCode != null) 'module_code': moduleCode,
       'audience': audience,
       'lang': lang,
       'messages': messages.map((m) => m.toJson()).toList(),
@@ -117,6 +130,7 @@ class EnmkitApiClient {
       reply: reply,
       model: json['model'] as String?,
       usedInsights: json['used_insights'] == true,
+      quotaRemaining: (json['quota_remaining'] as num?)?.toInt(),
     );
   }
 
@@ -160,6 +174,7 @@ class EnmkitApiClient {
       throw ApiException(ApiFailure.unauthorized, detail);
     }
     if (res.statusCode == 503) throw ApiException(ApiFailure.unavailable, detail);
+    if (res.statusCode == 429) throw ApiException(ApiFailure.quotaExceeded, detail);
     if (res.statusCode < 200 || res.statusCode >= 300 || json == null) {
       throw ApiException(ApiFailure.error, detail ?? 'HTTP ${res.statusCode}');
     }

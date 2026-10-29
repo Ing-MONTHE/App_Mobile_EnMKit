@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Écran d'assistance : l'utilisateur exprime un besoin par un questionnaire
 /// guidé, la demande part au support par SMS, et la conversation se poursuit
-/// dans le fil ci-dessous — les réponses du support arrivant par SMS, y
+/// dans le fil ci-dessous, les réponses du support arrivant par SMS, y
 /// compris application fermée.
 class SupportScreen extends ConsumerStatefulWidget {
   const SupportScreen({super.key});
@@ -39,8 +39,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
   /// questionnaire, ne réclamer que ce qui sert à traiter la demande.
   bool get _needsNumber => _topic == SupportTopic.numberConfig;
 
-  /// La demande est complète quand l'objet est choisi, et — pour une
-  /// configuration de numéro — que l'action et le numéro sont renseignés.
+  /// La demande est complète quand l'objet est choisi et, pour une
+  /// configuration de numéro, que l'action et le numéro sont renseignés.
   bool get _canSend {
     if (_topic == null) return false;
     if (_topic == SupportTopic.numberConfig) {
@@ -391,7 +391,7 @@ class _Choice extends StatelessWidget {
 }
 
 /// Bulle de conversation : demande envoyée à droite, réponse du support à
-/// gauche — lecture immédiate du sens de l'échange.
+/// gauche : lecture immédiate du sens de l'échange.
 class _Bubble extends StatelessWidget {
   const _Bubble({required this.message});
   final SupportMessage message;

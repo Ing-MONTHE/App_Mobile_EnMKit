@@ -1,11 +1,11 @@
-# Guide d'utilisation — EnMKit
+# Guide d'utilisation · EnMKit
 
 **Pilotez vos kits électriques par SMS, où que vous soyez, même sans Internet.**
 
 Version de l'application : **1.0.0** (lot « IA & éducation énergétique ») · Document mis à jour le 29/10/2026
 
 > 🆕 **Nouveautés de ce lot :** onglet **Analyse IA** hors-ligne (trames horaires, score,
-> prévisions FCFA, anomalies — §8.1), module **Apprendre** (TP1–TP7, quiz, glossaire —
+> prévisions FCFA, anomalies, voir §8.1), module **Apprendre** (TP1–TP7, quiz, glossaire, voir
 > §13 bis) et **assistant énergie** en ligne optionnel (§11.1).
 
 > ℹ️ **Note de version.** Cette édition du guide intègre les évolutions récentes :
@@ -43,18 +43,18 @@ deux téléphones par QR Code**.
 
 ---
 
-## 1. Premier lancement — l'accueil
+## 1. Premier lancement : l'accueil
 
 À la première ouverture, l'application présente ses trois atouts en trois écrans.
 
 | | |
 |---|---|
 | ![Onboarding 1](screenshots/01-onboarding-1.png) | ![Onboarding 2](screenshots/02-onboarding-2.png) |
-| **Pilotez vos kits à distance** — commandez vos lignes par SMS, sans Internet. | **Suivez votre consommation** — consultez la conso de chaque kit et gardez un historique. |
+| **Pilotez vos kits à distance** : commandez vos lignes par SMS, sans Internet. | **Suivez votre consommation** : consultez la conso de chaque kit et gardez un historique. |
 
 ![Onboarding 3](screenshots/03-onboarding-3.png)
 
-**Sécurisé et multi-kits** — un code d'accès *optionnel* peut protéger l'application, et
+**Sécurisé et multi-kits** : un code d'accès *optionnel* peut protéger l'application, et
 vous gérez tout votre parc depuis un seul endroit. C'est exactement ce dont un bailleur a
 besoin.
 
@@ -63,23 +63,23 @@ Appuyez sur **Suivant** pour avancer, ou **Commencer** au dernier écran. (Le li
 
 ---
 
-## 2. Code d'accès — proposé au 1er lancement, mais **skippable**
+## 2. Code d'accès : proposé au 1er lancement, mais **skippable**
 
 > 🆕 **Changement important.** Le code d'accès **n'est plus obligatoire**. Juste après
-> l'introduction, l'application vous **propose** d'en créer un — mais cette étape
+> l'introduction, l'application vous **propose** d'en créer un, mais cette étape
 > comporte un bouton **« Passer pour l'instant »** : elle ne **bloque jamais** l'accès.
 
 Deux choix s'offrent à vous sur cette page :
 
-- **Créer un code** — saisissez un code (4 chiffres minimum) puis **confirmez-le**. Il
+- **Créer un code** : saisissez un code (4 chiffres minimum) puis **confirmez-le**. Il
   protégera désormais l'ouverture de l'application.
-- **« Passer pour l'instant »** — vous arrivez **directement** sur le tableau de bord,
+- **« Passer pour l'instant »** : vous arrivez **directement** sur le tableau de bord,
   sans aucun code. Vous pourrez toujours l'activer plus tard.
 
 | | |
 |---|---|
 | ![Page de code skippable](screenshots/41-premier-lancement-code-skippable.png) | ![Accès direct après « Passer »](screenshots/42-skip-acces-direct-home.png) |
-| **Créez votre code** — pavé numérique + bouton **« Passer pour l'instant »** sous le clavier : l'étape ne bloque jamais. | Après **« Passer pour l'instant »**, accès **direct** à « Mes kits », sans code. |
+| **Créez votre code** : pavé numérique + bouton **« Passer pour l'instant »** sous le clavier ; l'étape ne bloque jamais. | Après **« Passer pour l'instant »**, accès **direct** à « Mes kits », sans code. |
 
 > 🔐 **Conseil.** Choisissez un code que vous retiendrez mais qui n'est pas évident
 > (évitez 0000 ou 1234). Vous pourrez le **désactiver**, le **changer**, ou l'**activer**
@@ -114,7 +114,7 @@ logement, le **numéro de la carte SIM** du kit, puis **choisissez le nombre de 
 
 > 🆕 **Nombre de lignes.** Avant de valider, sélectionnez **4**, **7** ou
 > **Personnalisé** (de 1 à 7). Les lignes sont créées automatiquement
-> (*Ligne 1*, *Ligne 2*, …) — vous les renommerez ensuite (§7).
+> (*Ligne 1*, *Ligne 2*, …), vous les renommerez ensuite (§7).
 
 | | |
 |---|---|
@@ -168,7 +168,7 @@ pour couper. Le bouton **plein** indique l'**état réellement confirmé par le 
 
 Le point important à comprendre :
 
-> 🔑 **Appuyer envoie une commande — l'affichage ne bascule qu'à la réponse du kit.**
+> 🔑 **Appuyer envoie une commande, l'affichage ne bascule qu'à la réponse du kit.**
 > Quand vous appuyez sur ON ou OFF, l'application envoie le SMS et la ligne passe en
 > **« En attente… »** (petit cercle qui tourne, badge orange). L'état affiché **ne change
 > pas tout de suite** : il bascule **seulement** quand le kit renvoie sa confirmation
@@ -222,7 +222,7 @@ ouvrir l'**historique des accusés de réception** de cette ligne.
 
 Chaque entrée indique :
 
-- l'**action confirmée** — *Allumée* ou *Éteinte* ;
+- l'**action confirmée** : *Allumée* ou *Éteinte* ;
 - le **message exact renvoyé par le kit** (l'accusé brut, ex. `r1on` / `r1off`), **joint**
   à l'entrée pour lever toute ambiguïté ;
 - l'**heure** de la confirmation (*Aujourd'hui 22:57*, *Hier 20:00*, ou la date pour les
@@ -246,7 +246,7 @@ Chaque entrée indique :
 > **nom** et son **état**.
 
 **Double-tapez** une ligne pour passer en **mode édition** : le nom devient un champ de
-saisie, accompagné de deux boutons circulaires épurés —
+saisie, accompagné de deux boutons circulaires épurés :
 **✓ vert** pour *valider* et **✕ rouge** pour *supprimer*.
 
 ![Ligne en mode édition (double-tap)](screenshots/32-ligne-edition-double-tap.png)
@@ -258,7 +258,7 @@ renommer *Ligne 1* en **« Climatiseur »** ou *Ligne 2* en **« Chambre »** :
 2. Effacez le nom et saisissez le nouveau (*Climatiseur*, *Chambre*, *Salon*, *Pompe*…).
 3. Appuyez sur le **✓ vert** pour enregistrer (ou le **✕ rouge** pour supprimer la ligne).
 
-La ligne s'affiche alors avec son nouveau nom — beaucoup plus parlant.
+La ligne s'affiche alors avec son nouveau nom, beaucoup plus parlant.
 
 Pour **ajouter** un nouveau circuit, utilisez **« + Ajouter une ligne »** : donnez-lui
 simplement un **nom**, puis validez.
@@ -282,7 +282,7 @@ Le kit envoie aussi, **chaque heure**, un SMS de **trames horaires** :
 les enregistre automatiquement (même fermée) et l'onglet **Analyse IA** les exploite,
 **sur le téléphone, sans Internet** :
 
-- **Score d'efficacité** (0–100) et **note A à E** — pénalités : veille, pointe du soir,
+- **Score d'efficacité** (0–100) et **note A à E**, avec pénalités : veille, pointe du soir,
   hausse de consommation, anomalies ;
 - **Prévisions** de la journée et du mois, en **kWh et en FCFA** (barème par tranches) ;
 - **Courbe des 48 dernières heures** comparée au **profil type** (pointillés) ;
@@ -304,14 +304,14 @@ bas de page.
 
 On y trouve trois cartes :
 
-1. **Informations du kit** — nom et numéro GSM.
-2. **Compteur** — nombre d'impulsions et consommation initiale.
-3. **Numéros autorisés** — les numéros qui auront le droit de commander le kit par SMS.
+1. **Informations du kit** : nom et numéro GSM.
+2. **Compteur** : nombre d'impulsions et consommation initiale.
+3. **Numéros autorisés** : les numéros qui auront le droit de commander le kit par SMS.
 
 Et deux boutons :
 
-- **Envoyer la configuration au kit** — transmet les réglages au boîtier par SMS.
-- **Générer le QR Code** — crée un QR Code de partage (voir §10).
+- **Envoyer la configuration au kit** : transmet les réglages au boîtier par SMS.
+- **Générer le QR Code** : crée un QR Code de partage (voir §10).
 
 ### 9.1 Modifier les informations du kit
 
@@ -327,7 +327,7 @@ Touchez le **crayon** de la carte *Compteur* :
 
 ![Édition du compteur](screenshots/20-edition-compteur.png)
 
-Renseignez le **nombre d'impulsions** du compteur et la **consommation initiale (kWh)** —
+Renseignez le **nombre d'impulsions** du compteur et la **consommation initiale (kWh)** :
 le relevé de départ qui sert de base aux calculs.
 
 ### 9.3 Autoriser un numéro
@@ -349,7 +349,7 @@ Saisissez le **numéro de téléphone** qui pourra commander le kit par SMS, pui
 C'est l'un des points forts d'EnMKit pour un bailleur : **dupliquer ou transmettre la
 configuration d'un kit d'un téléphone à un autre**, sans tout ressaisir.
 
-### Étape A — Sur le téléphone source : générer le QR Code
+### Étape A · Sur le téléphone source : générer le QR Code
 
 Depuis l'onglet **Config**, appuyez sur **« Générer le QR Code »** :
 
@@ -359,7 +359,7 @@ L'écran **« QR Code du kit »** affiche un QR qui **contient toute la configur
 actuelle** (numéro GSM, lignes, etc.). Le bouton **« Partager le QR Code »** permet aussi
 de l'envoyer en image (par message, e-mail…).
 
-### Étape B — Sur le téléphone destinataire : scanner pour importer
+### Étape B · Sur le téléphone destinataire : scanner pour importer
 
 Sur le **second téléphone**, depuis la liste des kits, appuyez sur l'**icône scanner**
 (en haut à droite). À la première utilisation, l'application demande l'accès à la
@@ -376,7 +376,7 @@ logement.
 
 > 💡 **Cas d'usage bailleur.** Vous configurez tous les appartements sur votre téléphone,
 > puis vous transmettez par QR Code l'accès d'un logement précis au locataire ou au gardien
-> concerné — sans lui donner accès au reste du parc.
+> concerné, sans lui donner accès au reste du parc.
 >
 > 🛟 **Sauvegarde.** Conservez une copie des QR Codes : ils permettent de **restaurer**
 > rapidement un kit en cas de changement de téléphone.
@@ -406,7 +406,7 @@ hors-ligne** (badge « Réponse hors-ligne ») construite à partir de l'analyse
 
 ---
 
-## 12. Sécurité — code, empreinte et récupération
+## 12. Sécurité : code, empreinte et récupération
 
 Dans **Réglages → Sécurité**, vous gérez **quatre** éléments :
 
@@ -441,7 +441,7 @@ votre empreinte digitale** au lieu de saisir le code à chaque fois.
 
 L'entrée **« Questions de récupération »** vous laisse définir **deux questions secrètes**
 et leurs réponses. C'est ce qui permet de **récupérer l'accès** via *« Code oublié ? »*
-(voir l'écran d'ouverture) si vous oubliez votre code — sans perdre vos kits.
+(voir l'écran d'ouverture) si vous oubliez votre code, sans perdre vos kits.
 
 > ℹ️ Si vous aviez déjà un code dans une version précédente, il a été **conservé** : la
 > sécurité reste activée tant que vous ne la désactivez pas.
@@ -467,7 +467,7 @@ La rubrique **QR & Configuration** détaille justement le partage vu au §10 :
 
 ---
 
-## 13 bis. 🆕 Apprendre — Éducation énergétique (Smart Home Learning Lab)
+## 13 bis. 🆕 Apprendre : Éducation énergétique (Smart Home Learning Lab)
 
 L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc EnMKit**
 (L1–L2 ampoules, L3–L4 prises) :
@@ -488,7 +488,7 @@ L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc En
   **glossaire** (kWh, puissance, veille, pointe, imp/kWh, disjoncteur…), en français et
   en anglais.
 
-## 14. Annexe — Les messages SMS échangés avec le kit
+## 14. Annexe : Les messages SMS échangés avec le kit
 
 > 🔧 **Pour les utilisateurs avancés.** Vous n'avez normalement **rien à taper à la
 > main** : l'application compose et envoie ces SMS pour vous quand vous actionnez un
@@ -506,16 +506,16 @@ L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc En
 | Enregistrez le **numéro autorisé 2** | `n2:<numéro>` | renvoie `n2:…` |
 | Réglez la **consommation initiale** | `en:<kWh>` | renvoie `en:…` |
 | Réglez les **impulsions** du compteur | `ip:<nombre>` | renvoie `ip:…` |
-| Terminez l'envoi de configuration | `Fin_config` | — |
+| Terminez l'envoi de configuration | `Fin_config` | - |
 
 > 📦 **Configuration groupée.** Quand vous appuyez sur **« Envoyer la configuration au
-> kit »** (§9), tous les réglages partent dans **un seul SMS**, champs séparés par `;` —
+> kit »** (§9), tous les réglages partent dans **un seul SMS**, champs séparés par `;`,
 > ex. `n1:+237…;n2:+237…;en:…;ip:…`. Cela limite le nombre de SMS facturés.
 
 **Comment l'application interprète les réponses du kit :**
 
 - Un message contenant **`rNon` / `rNoff`** met à jour l'état (allumée / arrêtée) de la
-  ligne *N* — sur **tous les téléphones autorisés**, même application fermée. Il est en
+  ligne *N*, sur **tous les téléphones autorisés**, même application fermée. Il est en
   outre **horodaté et conservé** dans l'**historique des accusés** de la ligne (§6.3),
   avec le **texte brut du message** reçu.
 - Un message contenant **« … kWh »** est enregistré comme un relevé de consommation.
@@ -529,7 +529,7 @@ L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc En
 
 ---
 
-## Récapitulatif — le parcours du bailleur
+## Récapitulatif : le parcours du bailleur
 
 1. **Installer** l'app ; **activer un code** d'accès seulement si souhaité (§1–2, §12).
 2. **Ajouter chaque appartement** comme un kit, avec son numéro GSM et son **nombre de
@@ -538,7 +538,7 @@ L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc En
    joignabilité** et **actions groupées** (§6–7).
 4. **Suivre la consommation** et son **analyse IA** hors-ligne (§8, §8.1).
 5. **Configurer** le kit : infos, compteur, numéros autorisés (§9).
-6. **Partager / dupliquer** la configuration par **QR Code** entre téléphones — l'état des
+6. **Partager / dupliquer** la configuration par **QR Code** entre téléphones : l'état des
    lignes se **synchronise** entre appareils autorisés (§10).
 7. **Personnaliser et sécuriser** l'application (§11–12), avec une **FAQ** intégrée (§13).
 8. **Former** avec le module **Apprendre** (TP1–TP7, quiz) et, si un serveur est
@@ -546,6 +546,6 @@ L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc En
 
 ---
 
-*EnMKit · v1.0.0 — Guide d'utilisation. Captures d'écran réalisées sur l'application réelle
+*EnMKit · v1.0.0 · Guide d'utilisation. Captures d'écran réalisées sur l'application réelle
 (version actuelle : onglet Lignes, double-tap, sélecteur de lignes, interrupteur Sécurité,
 historique des accusés de réception).*

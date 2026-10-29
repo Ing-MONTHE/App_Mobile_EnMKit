@@ -135,7 +135,7 @@ class _CurrentCard extends ConsumerWidget {
                         ),
                       )
                     else
-                      Text('—',
+                      Text('-',
                           style: GoogleFonts.chakraPetch(
                               color: Colors.white,
                               fontSize: 30,
@@ -303,7 +303,7 @@ class _HistoryRow extends StatelessWidget {
   }
 }
 
-/// Graphe d'évolution de la consommation — version « premium ».
+/// Graphe d'évolution de la consommation, version « premium ».
 ///
 /// • Ligne courbe en dégradé tri-tons (indigo → violet → cyan).
 /// • Aire dégradée en couches sous la courbe.

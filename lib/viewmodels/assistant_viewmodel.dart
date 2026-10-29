@@ -34,6 +34,14 @@ class AssistantViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// TP en cours (TP1…TP7) : l'assistant en ligne reçoit son contenu et
+  /// joue le rôle de tuteur. Null = conversation générale.
+  String? moduleCode;
+
+  /// Questions restantes aujourd'hui, d'après la dernière réponse en ligne.
+  int? _quotaRemaining;
+  int? get quotaRemaining => _quotaRemaining;
+
   bool _sending = false;
   bool get sending => _sending;
 
@@ -70,8 +78,10 @@ class AssistantViewModel extends ChangeNotifier {
           audience: _audience.name,
           lang: lang,
           messages: history,
+          moduleCode: moduleCode,
         );
         reply = r.reply;
+        _quotaRemaining = r.quotaRemaining;
         _lastFailure = null;
       } on ApiException catch (e) {
         _lastFailure = e.failure;

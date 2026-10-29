@@ -1,4 +1,4 @@
-// Contenu pédagogique « Smart Home Learning Lab » — banc EnMKit à 4 lignes
+// Contenu pédagogique « Smart Home Learning Lab » : banc EnMKit à 4 lignes
 // (L1–L2 : ampoules, L3–L4 : prises). Sept travaux pratiques TP1…TP7, quiz,
 // éco-gestes et glossaire, contextualisés au Cameroun (ENEO, FCFA, 220 V).
 //
@@ -981,9 +981,9 @@ class EducationContent {
     EcoTip('water', TipCategory.habits,
         Bi('Chauffe-eau programmé', 'Scheduled water heater'),
         Bi(
-          'Coupez le chauffe-eau la nuit et en votre absence — le kit EnMKit peut '
+          'Coupez le chauffe-eau la nuit et en votre absence : le kit EnMKit peut '
               'le faire par SMS.',
-          'Switch the water heater off at night and when away — the EnMKit kit '
+          'Switch the water heater off at night and when away: the EnMKit kit '
               'can do it by SMS.',
         )),
     EcoTip('watch', TipCategory.habits,

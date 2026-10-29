@@ -54,7 +54,7 @@ class SoftCard extends StatelessWidget {
   }
 }
 
-/// Pastille d'icône colorée (accent pastel) — donne du peps aux listes/cartes.
+/// Pastille d'icône colorée (accent pastel) : donne du peps aux listes/cartes.
 class IconPill extends StatelessWidget {
   const IconPill({
     super.key,

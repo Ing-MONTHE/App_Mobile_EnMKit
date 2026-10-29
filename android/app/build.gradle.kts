@@ -9,7 +9,7 @@ plugins {
 }
 
 // Chargement des identifiants de signature release depuis android/key.properties
-// (fichier non versionné — voir android/.gitignore). Absent → fallback debug.
+// (fichier non versionné, voir android/.gitignore). Absent → fallback debug.
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {

@@ -111,7 +111,7 @@ class _MeterCard extends ConsumerWidget {
           _Row(
             t.t('edu.meter.pulse'),
             ip == null || ip <= 0
-                ? '—'
+                ? '-'
                 : t.tf('edu.meter.pulseVal',
                     [ip, (1000 / ip).toStringAsFixed(ip >= 1000 ? 0 : 2)]),
           ),
@@ -120,13 +120,13 @@ class _MeterCard extends ConsumerWidget {
           _Row(
             t.t('edu.meter.lastIndex'),
             lastIndex == null
-                ? '—'
+                ? '-'
                 : '${lastIndex.kwh} kWh · ${_dh(lastIndex.timestamp)}',
           ),
           _Row(
             t.t('edu.meter.lastFrame'),
             f == null
-                ? '—'
+                ? '-'
                 : t.tf('edu.meter.lastFrameVal', [
                     f.kwh.toStringAsFixed(2),
                     _two(f.hourStart.hour),
@@ -370,7 +370,7 @@ class _ScoreMiniCard extends ConsumerWidget {
           _Row(
               t.t('ai.peakHour'),
               ins.peakHour == null
-                  ? '—'
+                  ? '-'
                   : '${_two(ins.peakHour!)}h · ${(ins.peakShare * 100).round()} %'),
           const SizedBox(height: 6),
           SizedBox(

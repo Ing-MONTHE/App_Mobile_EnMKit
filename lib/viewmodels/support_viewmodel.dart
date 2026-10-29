@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 /// Fil d'assistance : conversation SMS avec le support.
 ///
-/// La base fait foi — les réponses peuvent arriver application fermée (elles
+/// La base fait foi : les réponses peuvent arriver application fermée (elles
 /// sont alors enregistrées par le drain), et l'écran se contente de refléter
 /// ce que contient la base.
 class SupportViewModel extends ChangeNotifier {

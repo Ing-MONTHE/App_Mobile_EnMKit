@@ -129,7 +129,7 @@ class SmsServiceHybrid {
   }
 
   /// Envoie la commande pour une LIGNE par son NUMÉRO dans le kit (1..N, tel que
-  /// câblé/configuré DANS le kit) — et NON l'id base de données. Le kit n'accepte
+  /// câblé/configuré DANS le kit) et NON l'id base de données. Le kit n'accepte
   /// que des lignes 1 à 7 (« r1on »…« r7on ») : on ne doit jamais envoyer un
   /// « r10on » bâti sur un id base. C'est la couche appelante qui fournit le bon
   /// numéro de ligne (position de la ligne dans le kit).
@@ -161,12 +161,12 @@ class SmsServiceHybrid {
   }
 
   /// Construit le message de configuration concaténé (n1/n2/en/ip) tel qu'il
-  /// sera envoyé au kit — SANS l'envoyer. Sert à l'aperçu avant validation.
+  /// sera envoyé au kit, SANS l'envoyer. Sert à l'aperçu avant validation.
   ///
   /// IMPORTANT : les paires sont séparées par « : » (PAS « ; »), conformément à
   /// la syntaxe attendue par le kit :
   ///   n1:+237…:n2:+237…:en:10.8:ip:1000
-  /// (Un mauvais séparateur empêchait le kit de parser la config — et donc de
+  /// (Un mauvais séparateur empêchait le kit de parser la config, et donc de
   /// renvoyer son accusé.)
   String buildConcatenatedConfig({
     String? firstPhone,
@@ -177,7 +177,7 @@ class SmsServiceHybrid {
     // TRAME FIXE : les quatre marqueurs sont TOUJOURS émis, dans cet ordre.
     // Un champ non renseigné part avec une valeur VIDE (« n2:: ») et n'est
     // JAMAIS omis : le kit repère ses champs par marqueur et ne parse pas une
-    // trame amputée — il n'appliquerait alors pas la config et n'accuserait
+    // trame amputée : il n'appliquerait alors pas la config et n'accuserait
     // pas réception.
     //   n1:+237695864083:n2::en:110.0:ip:1000
     String pair(String key, String? phone) =>
@@ -321,7 +321,7 @@ class SmsServiceHybrid {
     final Map<String, String> expectedMessages = {};
     
     // Un champ VIDE part bien dans la trame (« n2:: ») mais n'est PAS attendu en
-    // accusé : on n'exige pas du kit qu'il ré-écho une valeur vide — l'attente
+    // accusé : on n'exige pas du kit qu'il ré-écho une valeur vide : l'attente
     // tomberait en timeout (120 s) pour un champ que l'utilisateur n'a pas
     // renseigné.
     if (firstPhone != null && firstPhone.isNotEmpty) {

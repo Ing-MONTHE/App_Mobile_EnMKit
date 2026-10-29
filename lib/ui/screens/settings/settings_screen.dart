@@ -756,6 +756,7 @@ class _ServerSection extends ConsumerWidget {
           ApiFailure.offline => 'asst.fail.offline',
           ApiFailure.unauthorized => 'asst.fail.unauthorized',
           ApiFailure.unavailable => 'asst.fail.unavailable',
+          ApiFailure.quotaExceeded => 'asst.fail.quota',
           _ => 'asst.fail.error',
         },
       );
@@ -822,7 +823,7 @@ class _ServerSection extends ConsumerWidget {
       case ServerTestStatus.ok:
         status = StatusBadge(
           label: t.tf('settings.server.ok',
-              [vm.me?.clientName ?? '—', vm.me?.kitNumbers.length ?? 0]),
+              [vm.me?.clientName ?? '-', vm.me?.kitNumbers.length ?? 0]),
           color: AppTheme.emerald,
         );
       case ServerTestStatus.failed:

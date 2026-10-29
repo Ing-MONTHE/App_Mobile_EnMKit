@@ -137,7 +137,7 @@ final smsServiceProvider = Provider<SmsServiceHybrid>((ref) {
 });
 
 /// ============================================================================
-/// Providers SCOPÉS PAR KIT (multi-kits) — paramétrés par le numéro du kit.
+/// Providers SCOPÉS PAR KIT (multi-kits) : paramétrés par le numéro du kit.
 /// Les écrans de détail d'un kit consomment ces `.family` avec le numéro du
 /// kit sélectionné (`selectedKitProvider`), garantissant des données isolées
 /// par kit (relais, consommation, numéros autorisés, SMS).

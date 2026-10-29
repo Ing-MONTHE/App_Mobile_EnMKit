@@ -18,9 +18,9 @@ class QrService {
   });
 
   /// Génère le JSON du QR Code. Si [kitNumber] est fourni, n'exporte QUE ce kit
-  /// et ses entités rattachées (relais, numéros autorisés) — export multi-kits.
+  /// et ses entités rattachées (relais, numéros autorisés) : export multi-kits.
   Future<String> generateQrData({String? kitNumber}) async {
-    // 1️⃣ Récupérer le(s) kit(s) — filtré sur le kit ciblé si demandé
+    // 1️⃣ Récupérer le(s) kit(s), filtré sur le kit ciblé si demandé
     final allKits = await kitRepo.getKit();
     final kit = kitNumber == null
         ? allKits

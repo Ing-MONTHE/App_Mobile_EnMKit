@@ -249,7 +249,7 @@ class _AccessScreenState extends ConsumerState<AccessScreen> {
             // La colonne répartit l'espace avec des Spacer, ce qui suppose une
             // hauteur SUFFISANTE : sur petit écran, grande police système ou
             // clavier ouvert, le contenu débordait (mesuré : 105 px coupés en
-            // bas, soit les actions — dont « Passer pour l'instant »).
+            // bas, soit les actions, dont « Passer pour l'instant »).
             // On garde la répartition quand la place existe, et on bascule en
             // défilement quand elle manque.
             child: LayoutBuilder(

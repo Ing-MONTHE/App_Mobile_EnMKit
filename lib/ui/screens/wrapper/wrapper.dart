@@ -77,7 +77,7 @@ class _RootPageState extends ConsumerState<RootPage>
           .toList();
       // Le SUPPORT est ajouté à la liste d'autorisation : le récepteur natif
       // ne garde que les expéditeurs connus, ses réponses seraient sinon
-      // purement et simplement jetées — y compris application fermée.
+      // purement et simplement jetées, y compris application fermée.
       numbers.add(SupportService.supportNumber);
       await ref.read(backgroundSmsBridgeProvider).setKitNumbers(numbers);
     } catch (_) {
@@ -110,7 +110,7 @@ class _RootPageState extends ConsumerState<RootPage>
             affected.add(kitNumber);
             // Réinjecte le SMS brut dans le flux temps réel du kit : ainsi les
             // attentes d'accusé (confirmation de config, joignabilité) le voient
-            // même si readsms n'a rien émis — le natif étant la voie fiable.
+            // même si readsms n'a rien émis, le natif étant la voie fiable.
             ref.read(kitSmsListenerProvider(kitNumber)).injectTrustedSms(m.body);
           }
         } catch (_) {
@@ -131,7 +131,7 @@ class _RootPageState extends ConsumerState<RootPage>
       // …ET la liste des kits elle-même : le drain peut avoir reconnu l'écho de
       // configuration et basculé le kit en « à valider » EN BASE. Sans ce
       // rechargement, la copie mémoire reste périmée et le bouton de validation
-      // n'apparaît jamais — l'écho arrivant le plus souvent application fermée,
+      // n'apparaît jamais, l'écho arrivant le plus souvent application fermée,
       // c'est précisément le cas qu'il faut couvrir.
       if (affected.isNotEmpty) {
         await ref.read(kitProvider).fetchKits();

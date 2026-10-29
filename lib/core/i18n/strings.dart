@@ -1,4 +1,4 @@
-/// Internationalisation EnMKit — catalogue de traductions centralisé.
+/// Internationalisation EnMKit : catalogue de traductions centralisé.
 ///
 /// Une seule source de vérité pour tous les textes de l'interface. Ajouter une
 /// langue = ajouter une entrée dans [_catalog] pour chaque clé. La langue
@@ -310,8 +310,8 @@ class AppStrings {
       'en': 'Kit connected'
     },
     'relays.status.on.sub': {
-      'fr': 'Configuration reçue par le kit — pilotage des lignes actif.',
-      'en': 'Configuration received by the kit — line control active.'
+      'fr': 'Configuration reçue par le kit : pilotage des lignes actif.',
+      'en': 'Configuration received by the kit: line control active.'
     },
     'relays.status.off.title': {
       'fr': 'Kit non configuré',
@@ -488,9 +488,9 @@ class AppStrings {
     },
     'config.state.okBody': {
       'fr':
-          'Le kit a renvoyé exactement ce qui lui a été envoyé. Validez pour clore la configuration — elle sera alors verrouillée.',
+          'Le kit a renvoyé exactement ce qui lui a été envoyé. Validez pour clore la configuration. Elle sera alors verrouillée.',
       'en':
-          'The kit echoed back exactly what was sent. Confirm to close the configuration — it will then be locked.',
+          'The kit echoed back exactly what was sent. Confirm to close the configuration. It will then be locked.',
     },
     'config.state.badgeOk': {'fr': 'OK', 'en': 'OK'},
     'config.state.finalizeCta': {
@@ -509,8 +509,8 @@ class AppStrings {
     },
     'config.state.badgeLocked': {'fr': 'VERROUILLÉ', 'en': 'LOCKED'},
     'config.locked.hint': {
-      'fr': 'Verrouillé — configuration close',
-      'en': 'Locked — configuration closed',
+      'fr': 'Verrouillé · configuration close',
+      'en': 'Locked · configuration closed',
     },
     'kits.toConfirm': {'fr': '{0} à valider', 'en': '{0} to confirm'},
     'nav.help': {'fr': 'Aide', 'en': 'Help'},
@@ -768,12 +768,12 @@ class AppStrings {
       'fr': 'Le kit envoie sa consommation heure par heure par SMS, sous la forme '
           '« JJ/MM/AA;HH;KWH » (ex. 27/06/26;09;0.12 = 0,12 kWh entre 9 h et '
           '10 h). Dès les premières trames reçues, l\'analyse s\'affiche ici : '
-          'score, prévisions en FCFA, anomalies et conseils — calculés sur le '
+          'score, prévisions en FCFA, anomalies et conseils, calculés sur le '
           'téléphone, sans Internet.',
       'en': 'The kit sends its consumption hour by hour by SMS, as '
           '"DD/MM/YY;HH;KWH" lines (e.g. 27/06/26;09;0.12 = 0.12 kWh between '
           '9:00 and 10:00). As soon as the first frames arrive, the analysis '
-          'shows up here: score, FCFA forecasts, anomalies and advice — '
+          'shows up here: score, FCFA forecasts, anomalies and advice, '
           'computed on the phone, without Internet.',
     },
     'ai.offline': {
@@ -858,8 +858,8 @@ class AppStrings {
     'edu.objective': {'fr': 'Objectif', 'en': 'Objective'},
     'edu.keyIdea': {'fr': 'À retenir', 'en': 'Key idea'},
     'edu.steps': {
-      'fr': 'Déroulé — cochez au fur et à mesure',
-      'en': 'Procedure — tick as you go',
+      'fr': 'Déroulé : cochez au fur et à mesure',
+      'en': 'Procedure: tick as you go',
     },
     'edu.outcomes': {'fr': 'Compétences visées', 'en': 'Learning outcomes'},
     'edu.reset': {'fr': 'Décocher toutes les étapes', 'en': 'Untick all steps'},
@@ -998,12 +998,12 @@ class AppStrings {
     },
     'asst.localBadge': {'fr': 'Réponse hors-ligne', 'en': 'Offline answer'},
     'asst.status.online': {
-      'fr': 'En ligne — serveur EnMKit',
-      'en': 'Online — EnMKit server',
+      'fr': 'En ligne · serveur EnMKit',
+      'en': 'Online · EnMKit server',
     },
     'asst.status.offline': {
-      'fr': 'Mode hors-ligne — conseils locaux',
-      'en': 'Offline mode — local advice',
+      'fr': 'Mode hors-ligne · conseils locaux',
+      'en': 'Offline mode · local advice',
     },
     'asst.fail.notConfigured': {
       'fr': 'Serveur non configuré (Réglages → Serveur EnMKit).',
@@ -1020,6 +1020,19 @@ class AppStrings {
     'asst.fail.unavailable': {
       'fr': 'Assistant en ligne momentanément indisponible : réponse hors-ligne.',
       'en': 'Online assistant temporarily unavailable: offline answer.',
+    },
+    'asst.fail.quota': {
+      'fr': "Limite de questions du jour atteinte : réponse hors-ligne. L'assistant en ligne revient demain.",
+      'en': 'Daily question limit reached: offline answer. The online assistant is back tomorrow.',
+    },
+    'asst.quotaLeft': {
+      'fr': 'Questions en ligne restantes aujourd\'hui : {0}',
+      'en': 'Online questions left today: {0}',
+    },
+    'asst.lab': {'fr': 'Tuteur du {0}', 'en': '{0} tutor'},
+    'edu.askAssistant': {
+      'fr': "Demander à l'assistant sur ce TP",
+      'en': 'Ask the assistant about this lab',
     },
     'asst.fail.error': {
       'fr': 'Erreur du serveur : réponse hors-ligne.',

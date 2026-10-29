@@ -184,7 +184,7 @@ class DBService {
   /// Tables introduites en v17 (toutes en `IF NOT EXISTS` : exécutables aussi
   /// bien à la création qu'en migration, et idempotentes) :
   ///  • `hourly_consumptions` : trames horaires `JJ/MM/AA;HH;KWH` du kit, une
-  ///    ligne par (kit, heure) — contrainte UNIQUE, le dernier reçu gagne ;
+  ///    ligne par (kit, heure) : contrainte UNIQUE, le dernier reçu gagne ;
   ///  • `server_settings`     : serveur EnMKit optionnel (URL + clé client) ;
   ///  • `edu_progress`        : cases cochées des fiches TP ;
   ///  • `edu_quiz_scores`     : dernier / meilleur score de chaque quiz ;

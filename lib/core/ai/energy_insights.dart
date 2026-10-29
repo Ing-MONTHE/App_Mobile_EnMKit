@@ -1,4 +1,4 @@
-// Moteur d'analyse « IA hors-ligne » d'EnMKit — implémentation Dart PURE du
+// Moteur d'analyse « IA hors-ligne » d'EnMKit : implémentation Dart PURE du
 // contrat partagé (EnMKit_platform/docs/CONTRACT.md §6). Le backend Python
 // implémente le même algorithme : toute divergence de résultat est un bug.
 //
@@ -62,7 +62,7 @@ class EnergyTariff {
     return cost;
   }
 
-  /// Prix du kWh « marginal » (celui de la tranche atteinte) — sert à
+  /// Prix du kWh « marginal » (celui de la tranche atteinte) ; sert à
   /// chiffrer une économie : un kWh évité est un kWh de la tranche haute.
   static double marginalRate(
     double monthKwh, {

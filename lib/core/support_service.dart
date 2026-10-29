@@ -13,7 +13,7 @@ enum NumberAction { add, edit, remove }
 /// Assistance par SMS : envoi des demandes au support et relais WhatsApp.
 ///
 /// Le fil est un échange de SMS ordinaires avec [supportNumber]. Les réponses
-/// arrivent par le récepteur natif — à condition que ce numéro figure dans la
+/// arrivent par le récepteur natif, à condition que ce numéro figure dans la
 /// liste d'autorisation poussée au natif, au même titre que les kits.
 class SupportService {
   /// Numéro du support. Écrit au format international pour que l'envoi et la
@@ -46,7 +46,7 @@ class SupportService {
     String? kitNumber,
     String? kitName,
   }) {
-    final b = StringBuffer('EnMKit — Demande d\'assistance');
+    final b = StringBuffer('EnMKit · Demande d\'assistance');
 
     if (kitNumber != null && kitNumber.isNotEmpty) {
       final label = (kitName != null && kitName.trim().isNotEmpty)
@@ -57,7 +57,7 @@ class SupportService {
 
     b.write('\nObjet : ${topicLabel(topic)}');
     if (topic == SupportTopic.numberConfig && action != null) {
-      b.write(' — ${actionLabel(action)}');
+      b.write(' · ${actionLabel(action)}');
     }
     if (targetNumber != null && targetNumber.trim().isNotEmpty) {
       b.write('\nNuméro concerné : ${targetNumber.trim()}');
@@ -94,7 +94,7 @@ class SupportService {
     }
   }
 
-  /// Envoie [text] au support par SMS. Retourne false si l'envoi a échoué —
+  /// Envoie [text] au support par SMS. Retourne false si l'envoi a échoué :
   /// l'appelant doit alors NE PAS faire croire que le message est parti.
   Future<bool> send(String text) async {
     try {

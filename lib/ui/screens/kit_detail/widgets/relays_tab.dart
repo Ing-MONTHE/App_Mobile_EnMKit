@@ -26,7 +26,7 @@ class RelaysTab extends ConsumerStatefulWidget {
 
 class _RelaysTabState extends ConsumerState<RelaysTab> {
   /// Abonnement UNIQUE au flux des SMS de confiance du kit. On traite chaque
-  /// accusé EXACTEMENT une fois — contrairement à un `StreamBuilder`, qui
+  /// accusé EXACTEMENT une fois, contrairement à un `StreamBuilder`, qui
   /// re-déclenchait le traitement à chaque reconstruction du widget (le flux
   /// rejouant la même valeur). C'est ce traitement unique qui pilote
   /// l'ouverture automatique de la feuille « Confirmation de la commande ».
@@ -116,7 +116,7 @@ class _RelaysTabState extends ConsumerState<RelaysTab> {
     );
   }
 
-  /// Feuille d'ajout d'une ligne (nom uniquement — l'édition se fait en ligne
+  /// Feuille d'ajout d'une ligne (nom uniquement, l'édition se fait en ligne
   /// par double-appui sur la carte, voir [_RelayCard]).
   Future<void> _showRelaySheet(
     BuildContext context,
@@ -465,10 +465,10 @@ class _CircleAction extends StatelessWidget {
   }
 }
 
-/// Contrôle ON / OFF — DEUX BOUTONS D'ACTION NEUTRES et identiques.
+/// Contrôle ON / OFF : DEUX BOUTONS D'ACTION NEUTRES et identiques.
 ///
 /// Choix volontaire : aucun bouton n'affiche l'état (ON/OFF) « supposé » de la
-/// ligne. Montrer un état non confirmé pourrait induire en erreur — le seul
+/// ligne. Montrer un état non confirmé pourrait induire en erreur : le seul
 /// état fiable est celui confirmé par le kit, consultable dans l'historique des
 /// accusés. Presser ON/OFF ne fait qu'ENVOYER la commande ; pendant que l'écho
 /// du kit est attendu, le bouton pressé affiche un bref « envoi en cours » et
@@ -528,7 +528,7 @@ class _OnOffControl extends StatelessWidget {
   }
 }
 
-/// Un bouton d'action du contrôle (ON ou OFF) — TOUJOURS neutre.
+/// Un bouton d'action du contrôle (ON ou OFF) : TOUJOURS neutre.
 /// Il ne reflète jamais l'état de la ligne : c'est une simple commande.
 class _Seg extends StatelessWidget {
   const _Seg({
@@ -542,11 +542,11 @@ class _Seg extends StatelessWidget {
   final IconData icon;
 
   /// Ce bouton vient-il d'être pressé et attend-il l'écho du kit ? (Affiche un
-  /// bref « envoi en cours » — ce n'est PAS un indicateur d'état de la ligne.)
+  /// bref « envoi en cours » : ce n'est PAS un indicateur d'état de la ligne.)
   final bool pending;
 
   /// Le bouton est-il cliquable ? (Faux dès qu'une commande est en vol sur la
-  /// ligne, qu'elle vise ce bouton ou l'autre — pour éviter un double envoi.)
+  /// ligne, qu'elle vise ce bouton ou l'autre, pour éviter un double envoi.)
   final bool enabled;
   final VoidCallback onTap;
 

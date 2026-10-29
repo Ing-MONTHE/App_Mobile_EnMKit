@@ -16,7 +16,11 @@ class AssistantScreen extends ConsumerStatefulWidget {
     super.key,
     this.kitNumber,
     this.initialAudience = AssistantAudience.owner,
+    this.moduleCode,
   });
+
+  /// TP en cours (TP1…TP7) quand l'assistant est ouvert depuis une fiche TP.
+  final String? moduleCode;
 
   /// Kit dont l'analyse sert de contexte (null = question générale).
   final String? kitNumber;
@@ -35,8 +39,9 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ref.read(assistantProvider(widget.kitNumber)).audience =
-          widget.initialAudience;
+      ref.read(assistantProvider(widget.kitNumber))
+        ..audience = widget.initialAudience
+        ..moduleCode = widget.moduleCode;
     });
   }
 
@@ -74,6 +79,7 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
         ApiFailure.offline => 'asst.fail.offline',
         ApiFailure.unauthorized => 'asst.fail.unauthorized',
         ApiFailure.unavailable => 'asst.fail.unavailable',
+        ApiFailure.quotaExceeded => 'asst.fail.quota',
         ApiFailure.error => 'asst.fail.error',
       });
 
@@ -89,7 +95,9 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text(t.t('asst.title')),
+        title: Text(widget.moduleCode == null
+            ? t.t('asst.title')
+            : t.tf('asst.lab', [widget.moduleCode!])),
         actions: [
           if (vm.messages.isNotEmpty)
             IconButton(
@@ -120,6 +128,12 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
                         vm.lastFailure != ApiFailure.notConfigured) ...[
                       const SizedBox(height: 4),
                       Text(_failureText(vm.lastFailure!),
+                          style: TextStyle(
+                              fontSize: 12, color: scheme.onSurfaceVariant)),
+                    ],
+                    if (online && vm.quotaRemaining != null) ...[
+                      const SizedBox(height: 4),
+                      Text(t.tf('asst.quotaLeft', [vm.quotaRemaining!]),
                           style: TextStyle(
                               fontSize: 12, color: scheme.onSurfaceVariant)),
                     ],

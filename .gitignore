@@ -44,7 +44,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Signature release — NE JAMAIS versionner (secrets / keystore)
+# Signature release : NE JAMAIS versionner (secrets / keystore)
 /android/key.properties
 **/*.jks
 **/*.keystore

@@ -71,7 +71,7 @@ class LocalAssistant {
           .where((r) => cats.isEmpty || cats.contains(_recoCategory[r.code]))
           .take(2);
       for (final r in recos) {
-        parts.add('• ${r.title} — ${r.body}');
+        parts.add('• ${r.title}${en ? ':' : ' :'} ${r.body}');
       }
     }
 

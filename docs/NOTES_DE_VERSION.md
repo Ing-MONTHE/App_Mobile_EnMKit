@@ -1,4 +1,4 @@
-# Notes de version — EnMKit
+# Notes de version · EnMKit
 
 > Application Flutter de pilotage de kits électriques par SMS (multi-kits, sans Internet).
 > `applicationId` : `com.enmkit.app` · Version applicative : **1.0.0+1**.
@@ -23,10 +23,14 @@ existant n'a changé ; le kit envoie désormais en plus des **trames horaires**.
 - **Module « Apprendre »** (nouvel onglet de la barre du bas) : fiches TP1–TP7 guidées
   (objectif, durée, déroulé à cocher persistant, compétences), données en direct du kit
   (compteur, lignes, trame décodée), **Scénario A / B** pour TP4/TP5/TP7, quiz par TP
-  (score mémorisé, 70 % pour réussir), éco-gestes, glossaire — FR/EN, contexte Cameroun
+  (score mémorisé, 70 % pour réussir), éco-gestes, glossaire, FR/EN, contexte Cameroun
   (ENEO, FCFA, 220 V).
 - **Assistant énergie** : en ligne via le serveur EnMKit (optionnel), sinon réponse
   hors-ligne (recommandations locales + éco-gestes + glossaire).
+- **Tuteur de TP** : bouton « Demander à l'assistant sur ce TP » dans chaque fiche TP ; l'assistant
+  en ligne reçoit le contenu du TP et guide l'apprenant pas à pas (sans donner directement la réponse).
+- **Quota de questions** : le serveur limite les questions en ligne par client et par jour ; le
+  nombre restant s'affiche, et au-delà l'app répond hors-ligne jusqu'au lendemain.
 - **Réglages → Serveur EnMKit (optionnel)** : URL de l'API + clé client `ck_…` (masquée),
   test de connexion.
 
@@ -43,7 +47,7 @@ existant n'a changé ; le kit envoie désormais en plus des **trames horaires**.
 - Nouvelles tables v17 : `server_settings`, `edu_progress`, `edu_quiz_scores`,
   `edu_scenarios`. Suppression d'un kit ⇒ ses relevés horaires et scénarios aussi.
 - Client HTTP `EnmkitApiClient` (`GET /api/v1/app/me`, `POST /api/v1/app/assistant/chat`,
-  en-tête `X-Client-Key`, jamais journalisé) — dépendance `http` ;
+  en-tête `X-Client-Key`, jamais journalisé) ; dépendance `http` ;
   `sqflite_common_ffi` en dépendance de test.
 - Tests : trames, upsert/migration (SQLite réel via ffi), moteur §6, quiz, client API et
   repli hors-ligne.
@@ -58,7 +62,7 @@ existant n'a changé ; le kit envoie désormais en plus des **trames horaires**.
 
 ---
 
-## Lot précédent — Lot « Lignes, sécurité optionnelle & temps réel »
+## Lot précédent : Lot « Lignes, sécurité optionnelle & temps réel »
 
 Date du document : 02/06/2026.
 
@@ -112,12 +116,12 @@ l'écoute SMS en arrière-plan. Aucun mot-clé du protocole SMS matériel n'a ch
 ### 🛠️ Détails techniques
 
 - **Base de données** : version **7 → 9**.
-  - v8 — migration `UPDATE relays SET name = 'Ligne ' || substr(name, 8)
+  - v8 : migration `UPDATE relays SET name = 'Ligne ' || substr(name, 8)
     WHERE name LIKE 'Relais %'` (renommage des lignes).
-  - v9 — colonne `app_settings.securityPromptSeen` (proposition de code skippable),
+  - v9 : colonne `app_settings.securityPromptSeen` (proposition de code skippable),
     marquée *vue* (`= 1`) pour les installs existantes.
   - La version 7 avait ajouté la colonne `app_settings.securityCodeEnabled`.
-- **Flow d'accès** (`wrapper.dart`) : nouvelle branche `firstRunSetup` — au 1er
+- **Flow d'accès** (`wrapper.dart`) : nouvelle branche `firstRunSetup` : au 1er
   lancement, `AccessScreen(firstRunSetup: true)` avec bouton « Passer pour l'instant »
   (`settings.completeSecurityPrompt(enabled: …)`).
 - **Repository lignes** : `seedLines(kitNumber, count)` (borne 1..7) remplace
@@ -143,7 +147,7 @@ l'écoute SMS en arrière-plan. Aucun mot-clé du protocole SMS matériel n'a ch
 ## Format des prochaines entrées
 
 ```
-## Version X.Y.Z — Titre du lot
+## Version X.Y.Z : Titre du lot
 Date.
 ### ✨ Nouveautés
 ### 🛠️ Détails techniques
@@ -153,4 +157,4 @@ Date.
 
 ---
 
-*EnMKit — Notes de version.*
+*EnMKit · Notes de version.*

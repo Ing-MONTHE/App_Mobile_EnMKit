@@ -39,7 +39,7 @@ Color gradeColor(String grade) => switch (grade) {
     };
 
 /// Onglet « Analyse IA » : analyse HORS-LIGNE des trames horaires du kit
-/// (moteur `EnergyInsightsEngine`, contrat §6) — score, prévisions FCFA,
+/// (moteur `EnergyInsightsEngine`, contrat §6) : score, prévisions FCFA,
 /// courbe 48 h vs profil type, anomalies, qualité des données, conseils.
 class AnalysisTab extends ConsumerWidget {
   const AnalysisTab({super.key, required this.kitNumber});
@@ -415,7 +415,7 @@ class _KeyFigures extends ConsumerWidget {
         AppTheme.amber,
         t.t('ai.peakHour'),
         insights.peakHour == null
-            ? '—'
+            ? '-'
             : '${_two(insights.peakHour!)}h · ${(insights.peakShare * 100).round()} % 18–23h'
       ),
       (
@@ -424,7 +424,7 @@ class _KeyFigures extends ConsumerWidget {
             : Icons.trending_down_rounded,
         trend != null && trend > 15 ? AppTheme.coral : AppTheme.indigo,
         t.t('ai.trend'),
-        trend == null ? '—' : '${trend > 0 ? '+' : ''}${trend.toStringAsFixed(0)} %'
+        trend == null ? '-' : '${trend > 0 ? '+' : ''}${trend.toStringAsFixed(0)} %'
       ),
     ];
     return SoftCard(

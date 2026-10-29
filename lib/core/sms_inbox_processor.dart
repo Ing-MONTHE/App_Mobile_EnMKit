@@ -47,7 +47,7 @@ class SmsInboxProcessor {
 
   /// Traite un SMS. Retourne le numéro du kit concerné dès que l'expéditeur
   /// correspond à un kit connu (afin que le SMS brut puisse être réinjecté dans
-  /// le flux temps réel — ex. confirmation de config), ou null si l'expéditeur
+  /// le flux temps réel, ex. confirmation de config), ou null si l'expéditeur
   /// n'est pas un kit. La consommation et les accusés de ligne sont persistés
   /// au passage.
   Future<String?> process(IncomingSms sms) async {
@@ -64,7 +64,7 @@ class SmsInboxProcessor {
 
     // 0) Trames HORAIRES « JJ/MM/AA;HH;KWH » (contrat §2) : upsert idempotent
     //    (dernier reçu gagne). Le même SMS revu par le chemin temps réel
-    //    aboutit au même état — aucun doublon possible.
+    //    aboutit au même état : aucun doublon possible.
     if (hourlyRepo != null && kitNumber != null && kitNumber.isNotEmpty) {
       final parsed = SmsParser.parseHourlyFrames(sms.body);
       if (parsed.frames.isNotEmpty) {
@@ -73,7 +73,7 @@ class SmsInboxProcessor {
       }
     }
 
-    // 1) Consommation : reconnaît les deux formats du kit — « <nombre> kWh »
+    // 1) Consommation : reconnaît les deux formats du kit : « <nombre> kWh »
     //    ET « cons:<nombre> » / « consommation <nombre> » (parseur central
     //    partagé avec le flux temps réel, pour éviter toute divergence).
     //    N.B. : renvoie null sur un SMS de trames horaires (pas un index).

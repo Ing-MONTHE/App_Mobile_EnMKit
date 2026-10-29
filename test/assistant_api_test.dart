@@ -65,6 +65,7 @@ void main() {
 
       expect(await fail(401), ApiFailure.unauthorized);
       expect(await fail(503), ApiFailure.unavailable);
+      expect(await fail(429), ApiFailure.quotaExceeded);
       expect(await fail(500), ApiFailure.error);
     });
 
@@ -133,6 +134,44 @@ void main() {
       expect(called, isFalse);
       expect(vm.lastFailure, ApiFailure.notConfigured);
       expect(vm.messages.last.content, contains('Offline answer'));
+    });
+
+    test('TP en cours : module_code envoyé, quota restant exposé', () async {
+      Map<String, dynamic>? body;
+      final vm = AssistantViewModel(
+        kitNumber: null,
+        config: () => _cfg,
+        clientFactory: (c) => EnmkitApiClient(c,
+            client: MockClient((req) async {
+              body = jsonDecode(req.body) as Map<String, dynamic>;
+              return http.Response(
+                  jsonEncode({
+                    'reply': 'Quelle puissance as-tu relevée ?',
+                    'model': 'm',
+                    'used_insights': false,
+                    'used_module': 'TP1',
+                    'quota_remaining': 29,
+                  }),
+                  200);
+            })),
+      )..moduleCode = 'TP1';
+      await vm.send('Comment calculer l\'énergie ?', lang: 'fr');
+      expect(body!['module_code'], 'TP1');
+      expect(vm.quotaRemaining, 29);
+      expect(vm.messages.last.local, isFalse);
+    });
+
+    test('429 quota atteint => repli hors-ligne', () async {
+      final vm = AssistantViewModel(
+        kitNumber: null,
+        config: () => _cfg,
+        clientFactory: (c) => EnmkitApiClient(c,
+            client: MockClient((_) async => http.Response(
+                jsonEncode({'detail': 'assistant_quota_exceeded'}), 429))),
+      );
+      await vm.send('Comment réduire la veille ?', lang: 'fr');
+      expect(vm.lastFailure, ApiFailure.quotaExceeded);
+      expect(vm.messages.last.local, isTrue);
     });
   });
 }
