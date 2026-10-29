@@ -24,7 +24,7 @@ class DBService {
 
     return await openDatabase(
       path,
-      version: 16,
+      version: 17,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -147,6 +147,9 @@ class DBService {
   // TABLE fil d'assistance (voir createSupportTable).
   await db.execute(createSupportTable);
 
+  // Relevés horaires, IA, éducation, serveur (v17, voir createV17Tables).
+  await createV17Tables(db);
+
   // insertion admin par défaut
   await db.insert('users', {
     'phoneNumber': DefaultData.adminPhoneNumber,
@@ -177,6 +180,67 @@ class DBService {
       kitNumber TEXT
     )
   ''';
+
+  /// Tables introduites en v17 (toutes en `IF NOT EXISTS` : exécutables aussi
+  /// bien à la création qu'en migration, et idempotentes) :
+  ///  • `hourly_consumptions` : trames horaires `JJ/MM/AA;HH;KWH` du kit, une
+  ///    ligne par (kit, heure) — contrainte UNIQUE, le dernier reçu gagne ;
+  ///  • `server_settings`     : serveur EnMKit optionnel (URL + clé client) ;
+  ///  • `edu_progress`        : cases cochées des fiches TP ;
+  ///  • `edu_quiz_scores`     : dernier / meilleur score de chaque quiz ;
+  ///  • `edu_scenarios`       : fenêtres « Scénario A / B » des TP comparatifs.
+  static Future<void> createV17Tables(DatabaseExecutor db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS hourly_consumptions(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        kitNumber TEXT NOT NULL,
+        hourStart TEXT NOT NULL,
+        kWh REAL NOT NULL,
+        receivedAt TEXT NOT NULL,
+        UNIQUE(kitNumber, hourStart)
+      )
+    ''');
+    await db.execute('''
+      CREATE INDEX IF NOT EXISTS idx_hourly_kit_hour
+        ON hourly_consumptions(kitNumber, hourStart)
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS server_settings(
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        apiUrl TEXT,
+        clientKey TEXT,
+        updatedAt TEXT
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS edu_progress(
+        tpCode TEXT NOT NULL,
+        stepIndex INTEGER NOT NULL,
+        done INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (tpCode, stepIndex)
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS edu_quiz_scores(
+        tpCode TEXT PRIMARY KEY,
+        lastScore INTEGER NOT NULL,
+        bestScore INTEGER NOT NULL,
+        total INTEGER NOT NULL,
+        at TEXT NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS edu_scenarios(
+        tpCode TEXT NOT NULL,
+        label TEXT NOT NULL,
+        kitNumber TEXT,
+        startAt TEXT NOT NULL,
+        endAt TEXT,
+        note TEXT,
+        PRIMARY KEY (tpCode, label)
+      )
+    ''');
+  }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
@@ -302,6 +366,11 @@ class DBService {
       await db.execute('ALTER TABLE kits ADD COLUMN pendingConfigMsg TEXT');
       await db.execute(
           'ALTER TABLE kits ADD COLUMN configAckPending INTEGER NOT NULL DEFAULT 0');
+    }
+    if (oldVersion < 17) {
+      // Trames horaires + analyse IA + éducation énergétique + serveur
+      // optionnel. Aucune table existante n'est modifiée.
+      await createV17Tables(db);
     }
   }
 }

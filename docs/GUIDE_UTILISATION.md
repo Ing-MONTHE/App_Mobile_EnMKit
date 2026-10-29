@@ -2,7 +2,11 @@
 
 **Pilotez vos kits électriques par SMS, où que vous soyez, même sans Internet.**
 
-Version de l'application : **1.0.0** · Document mis à jour le 13/06/2026
+Version de l'application : **1.0.0** (lot « IA & éducation énergétique ») · Document mis à jour le 29/10/2026
+
+> 🆕 **Nouveautés de ce lot :** onglet **Analyse IA** hors-ligne (trames horaires, score,
+> prévisions FCFA, anomalies — §8.1), module **Apprendre** (TP1–TP7, quiz, glossaire —
+> §13 bis) et **assistant énergie** en ligne optionnel (§11.1).
 
 > ℹ️ **Note de version.** Cette édition du guide intègre les évolutions récentes :
 > on parle désormais de **lignes** (et non plus de « relais »), le pilotage se fait par
@@ -271,6 +275,24 @@ Au départ, aucune mesure n'est disponible. Appuyez sur **« Actualiser la conso
 pour interroger le kit : l'application envoie un SMS (`cons`) au kit, qui répond avec le
 relevé. Les mesures s'accumulent ensuite dans l'**Historique**.
 
+### 8.1 🆕 L'onglet « Analyse IA » (hors-ligne)
+
+Le kit envoie aussi, **chaque heure**, un SMS de **trames horaires** :
+`27/06/26;09;0.12` = **0,12 kWh consommés entre 9 h et 10 h** le 27/06/2026. L'application
+les enregistre automatiquement (même fermée) et l'onglet **Analyse IA** les exploite,
+**sur le téléphone, sans Internet** :
+
+- **Score d'efficacité** (0–100) et **note A à E** — pénalités : veille, pointe du soir,
+  hausse de consommation, anomalies ;
+- **Prévisions** de la journée et du mois, en **kWh et en FCFA** (barème par tranches) ;
+- **Courbe des 48 dernières heures** comparée au **profil type** (pointillés) ;
+- **Anomalies** des 7 derniers jours (pics, dérive de la consommation nocturne) ;
+- **Qualité des données** : part des heures reçues, trous de données ;
+- **Recommandations** chiffrées (ex. économie possible sur la veille).
+
+Tant qu'aucune trame n'est reçue, l'onglet explique ce qu'il attend. Le bouton
+**« Poser une question à l'assistant »** ouvre l'assistant énergie (§11.1).
+
 ---
 
 ## 9. Configurer le kit
@@ -370,6 +392,18 @@ L'onglet **Réglages** (en bas) regroupe la personnalisation et la sécurité.
 | ![Réglages (haut)](screenshots/25-reglages-haut.png) | ![Réglages (bas)](screenshots/26-reglages-bas.png) |
 | **Apparence** (Clair / Sombre / Auto), **Couleur d'accent**, **Langue** (Français / English). | **Sécurité** (code, **empreinte**, **récupération**), **Aide (FAQ)** et **À propos** (version 1.0.0). |
 
+### 11.1 🆕 Serveur EnMKit (optionnel) et assistant énergie
+
+**Réglages → Serveur EnMKit** : saisissez l'**URL de l'API** (adresse `https://…`) et la
+**clé client** `ck_…` remise lors de l'activation de votre établissement, puis
+**« Tester la connexion »** (affiche le nom du client et son nombre de kits). La clé est
+masquée à l'écran et reste sur le téléphone.
+
+L'**assistant énergie** (depuis l'onglet Analyse IA ou le module Apprendre) répond **en
+ligne** quand ce serveur est configuré et joignable ; sinon il donne une **réponse
+hors-ligne** (badge « Réponse hors-ligne ») construite à partir de l'analyse du kit, des
+éco-gestes et du glossaire. **Sans serveur, toute l'application reste utilisable.**
+
 ---
 
 ## 12. Sécurité — code, empreinte et récupération
@@ -433,6 +467,27 @@ La rubrique **QR & Configuration** détaille justement le partage vu au §10 :
 
 ---
 
+## 13 bis. 🆕 Apprendre — Éducation énergétique (Smart Home Learning Lab)
+
+L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc EnMKit**
+(L1–L2 ampoules, L3–L4 prises) :
+
+- **7 fiches de travaux pratiques** : TP1 Comprendre et mesurer l'énergie · TP2 Comprendre
+  les circuits · TP3 Commander à distance par SMS · TP4 Comparer les usages · TP5
+  Efficacité énergétique · TP6 Internet des objets et données · TP7 Mini-projet
+  d'apprenants. Chaque fiche : objectif, durée, notion à retenir, **déroulé à cocher**
+  (progression mémorisée), compétences visées ;
+- des **données en direct** du kit choisi (« Kit du banc ») : constante d'impulsions et
+  dernière trame (TP1), état des lignes et calcul I = P/U (TP2), trame décodée et
+  complétude (TP6), score et veille (TP5) ;
+- **Scénario A / Scénario B** (TP4, TP5, TP7) : appuyez sur **Démarrer** puis
+  **Terminer** (arrondis à l'heure pleine, car les trames sont horaires) ou **Ajuster**
+  les horaires ; l'application calcule l'énergie de chaque scénario à partir des trames
+  et compare (kWh/h, %, extrapolation mensuelle en FCFA) ;
+- un **quiz** par TP (score enregistré, 70 % pour réussir), des **éco-gestes** et un
+  **glossaire** (kWh, puissance, veille, pointe, imp/kWh, disjoncteur…), en français et
+  en anglais.
+
 ## 14. Annexe — Les messages SMS échangés avec le kit
 
 > 🔧 **Pour les utilisateurs avancés.** Vous n'avez normalement **rien à taper à la
@@ -464,6 +519,9 @@ La rubrique **QR & Configuration** détaille justement le partage vu au §10 :
   outre **horodaté et conservé** dans l'**historique des accusés** de la ligne (§6.3),
   avec le **texte brut du message** reçu.
 - Un message contenant **« … kWh »** est enregistré comme un relevé de consommation.
+- 🆕 Les lignes **`JJ/MM/AA;HH;KWH`** (une par heure, plusieurs par SMS) sont
+  enregistrées comme **consommation horaire** ; recevoir deux fois la même heure ne la
+  compte pas en double (la dernière valeur reçue l'emporte).
 
 > ⚠️ **À ne pas modifier.** Ces mots-clés (`r…on/off`, `cons`, `n1:`, `n2:`, `en:`,
 > `ip:`, `Fin_config`) correspondent au **langage du boîtier** : ils ne se changent pas
@@ -478,11 +536,13 @@ La rubrique **QR & Configuration** détaille justement le partage vu au §10 :
    lignes** (§4–5).
 3. **Nommer et piloter les lignes** de chaque logement par **double-tap**, avec **test de
    joignabilité** et **actions groupées** (§6–7).
-4. **Suivre la consommation** (§8).
+4. **Suivre la consommation** et son **analyse IA** hors-ligne (§8, §8.1).
 5. **Configurer** le kit : infos, compteur, numéros autorisés (§9).
 6. **Partager / dupliquer** la configuration par **QR Code** entre téléphones — l'état des
    lignes se **synchronise** entre appareils autorisés (§10).
 7. **Personnaliser et sécuriser** l'application (§11–12), avec une **FAQ** intégrée (§13).
+8. **Former** avec le module **Apprendre** (TP1–TP7, quiz) et, si un serveur est
+   configuré, l'**assistant en ligne** (§11.1, §13 bis).
 
 ---
 

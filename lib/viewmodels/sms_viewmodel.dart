@@ -6,6 +6,7 @@ import 'package:enmkit/models/consumption_model.dart';
 import 'package:enmkit/repositories/consumption_repository.dart';
 import 'package:enmkit/repositories/kit_repository.dart';
 import 'package:enmkit/viewmodels/consumption_viewmodel.dart';
+import 'package:enmkit/viewmodels/hourly_consumption_viewmodel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:readsms/readsms.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -23,8 +24,15 @@ class SmsListenerViewModel extends ChangeNotifier {
   final _kitRepo = KitRepository(DBService());
   final String? kitNumber;
   final ConsumptionViewModel? consumptionVM; // Injecté pour mise à jour immédiate UI
+  /// Relevés horaires du kit (trames `JJ/MM/AA;HH;KWH`) : persistés et
+  /// affichés dès réception temps réel. Optionnel (compat. mono-kit legacy).
+  final HourlyConsumptionViewModel? hourlyVM;
   late String? trustedSender; // 🔧 Numéro autorisé 
-  SmsListenerViewModel({required this.kitNumber, this.consumptionVM}) {
+  SmsListenerViewModel({
+    required this.kitNumber,
+    this.consumptionVM,
+    this.hourlyVM,
+  }) {
     trustedSender = _normalizeNumber(kitNumber);
     _initSmsListener();
   }
@@ -222,6 +230,17 @@ class SmsListenerViewModel extends ChangeNotifier {
     // Écho de configuration : indépendant de la consommation, donc traité AVANT
     // le retour anticipé ci-dessous (un écho n'est pas un relevé).
     _detectConfigEcho(message);
+    // Trames HORAIRES : upsert idempotent (dernier reçu gagne) — le même SMS
+    // revu par le drain natif ne crée donc aucun doublon. Un SMS de trames
+    // n'est jamais un relevé d'index : extractConsumption renvoie alors null.
+    try {
+      final frames = SmsParser.parseHourlyFrames(message).frames;
+      if (frames.isNotEmpty) {
+        hourlyVM?.ingestFrames(frames, at: DateTime.now());
+      }
+    } catch (_) {
+      // Ne jamais planter la réception sur une trame illisible.
+    }
     try {
       // Parseur central partagé avec le chemin natif (cohérence garantie).
       final kwh = SmsParser.extractConsumption(message);

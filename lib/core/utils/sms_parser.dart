@@ -1,7 +1,109 @@
 // lib/core/utils/sms_parser.dart
 
+/// Une trame horaire du kit (`JJ/MM/AA;HH;KWH`, contrat §2) : énergie consommée
+/// PENDANT l'heure qui commence à [hourStart] (delta, pas un index cumulé).
+/// [hourStart] est une heure locale « naïve » de Douala (UTC+1, sans heure
+/// d'été) : aucune conversion de fuseau n'est appliquée.
+class HourlyFrame {
+  const HourlyFrame({required this.hourStart, required this.kwh});
+  final DateTime hourStart;
+  final double kwh;
+
+  /// Clé de stockage `YYYY-MM-DDTHH:00:00` (ISO 8601 sans offset).
+  String get hourKey => hourKeyOf(hourStart);
+
+  static String hourKeyOf(DateTime d) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${d.year.toString().padLeft(4, '0')}-${two(d.month)}-${two(d.day)}'
+        'T${two(d.hour)}:00:00';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is HourlyFrame && other.hourStart == hourStart && other.kwh == kwh;
+
+  @override
+  int get hashCode => Object.hash(hourStart, kwh);
+
+  @override
+  String toString() => 'HourlyFrame($hourKey, $kwh)';
+}
+
+/// Résultat de l'analyse d'un SMS de trames horaires : lignes conformes
+/// extraites + nombre de lignes « ressemblant » à une trame mais rejetées
+/// (date impossible, heure > 23…), cf. `rejected_lines` du contrat.
+class HourlyParseResult {
+  const HourlyParseResult(this.frames, this.rejectedLines);
+  final List<HourlyFrame> frames;
+  final int rejectedLines;
+  bool get isEmpty => frames.isEmpty;
+}
+
 /// Utilitaire pour parser les messages SMS
 class SmsParser {
+  /// Regex de ligne du contrat §2 (appliquée après `trim`).
+  static final RegExp _frameLine =
+      RegExp(r'^(\d{2})/(\d{2})/(\d{2});(\d{1,2});(\d+(?:[.,]\d+)?)$');
+
+  /// Forme « candidate » : commence comme une trame (JJ/MM/AA;) sans forcément
+  /// être valide — sert uniquement à compter les lignes rejetées.
+  static final RegExp _frameLike = RegExp(r'^\d{1,2}/\d{1,2}/\d{2,4};');
+
+  /// Extrait toutes les trames horaires `JJ/MM/AA;HH;KWH` d'un SMS (contrat §2).
+  ///
+  /// • Un SMS peut contenir plusieurs lignes, et mêler du texte : seules les
+  ///   lignes conformes sont retenues (les autres sont ignorées).
+  /// • Année = 2000 + AA ; HH = heure de DÉBUT du créneau (00–23).
+  /// • Séparateur décimal `.` ou `,`.
+  /// • Date impossible (31/02…), heure > 23 : ligne rejetée et comptée.
+  /// • Une même heure présente deux fois dans le SMS : la dernière l'emporte.
+  static HourlyParseResult parseHourlyFrames(String body) {
+    final byKey = <String, HourlyFrame>{};
+    var rejected = 0;
+    // Séparateurs de lignes tolérés : \n, \r\n, et « | » ou espace multiple
+    // que certains modems insèrent à la place du retour à la ligne.
+    for (final raw in body.split(RegExp(r'[\r\n|]+'))) {
+      final line = raw.trim();
+      if (line.isEmpty) continue;
+      final m = _frameLine.firstMatch(line);
+      if (m == null) {
+        if (_frameLike.hasMatch(line)) rejected++;
+        continue;
+      }
+      final day = int.parse(m.group(1)!);
+      final month = int.parse(m.group(2)!);
+      final year = 2000 + int.parse(m.group(3)!);
+      final hour = int.parse(m.group(4)!);
+      final kwh = double.tryParse(m.group(5)!.replaceAll(',', '.'));
+      if (hour > 23 || kwh == null || kwh < 0 || !kwh.isFinite) {
+        rejected++;
+        continue;
+      }
+      final d = DateTime(year, month, day, hour);
+      // DateTime « déborde » silencieusement (31/02 → 03/03) : on vérifie que
+      // la date construite correspond exactement aux champs lus.
+      if (month < 1 ||
+          month > 12 ||
+          day < 1 ||
+          d.year != year ||
+          d.month != month ||
+          d.day != day ||
+          d.hour != hour) {
+        rejected++;
+        continue;
+      }
+      final f = HourlyFrame(hourStart: d, kwh: kwh);
+      byKey[f.hourKey] = f;
+    }
+    final frames = byKey.values.toList()
+      ..sort((a, b) => a.hourStart.compareTo(b.hourStart));
+    return HourlyParseResult(frames, rejected);
+  }
+
+  /// Vrai si le SMS contient au moins une trame horaire valide.
+  static bool containsHourlyFrames(String body) =>
+      parseHourlyFrames(body).frames.isNotEmpty;
+
   static Map<String, String> parseAckMessage(String ackMessage) {
     final Map<String, String> configData = {};
     final normalizedMessage = ackMessage.replaceAll(RegExp(r'\s+'), '').toLowerCase();
@@ -43,7 +145,13 @@ class SmsParser {
   
   /// Extrait une valeur de consommation (kWh) d'un SMS, ou null si absente.
   /// Gère « 12.5 kWh », « cons: 12,5 », « consommation = 12.5 ».
+  ///
+  /// Un SMS de TRAMES HORAIRES (`27/06/26;09;0.00`) n'est JAMAIS un relevé
+  /// d'index : on renvoie null pour qu'il n'alimente pas l'historique legacy
+  /// (sinon un en-tête « …;KWH » ou une valeur suivie de « kWh » ferait
+  /// apparaître une fausse mesure).
   static double? extractConsumption(String message) {
+    if (containsHourlyFrames(message)) return null;
     final kwh = RegExp(r'(\d+(?:[\.,]\d+)?)\s*kwh', caseSensitive: false)
         .firstMatch(message);
     final match = kwh ??

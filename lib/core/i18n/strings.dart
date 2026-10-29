@@ -758,5 +758,313 @@ class AppStrings {
       'fr': 'Un code d\'accès protège l\'application. Gérez tout votre parc depuis un seul endroit.',
       'en': 'An access code protects the application. Manage your whole fleet from one place.',
     },
+    // --- Analyse IA (trames horaires, moteur hors-ligne) ---------------------
+    'tab.analysis': {'fr': 'Analyse IA', 'en': 'AI analysis'},
+    'ai.empty.title': {
+      'fr': 'Pas encore de trames horaires',
+      'en': 'No hourly frames yet',
+    },
+    'ai.empty.msg': {
+      'fr': 'Le kit envoie sa consommation heure par heure par SMS, sous la forme '
+          '« JJ/MM/AA;HH;KWH » (ex. 27/06/26;09;0.12 = 0,12 kWh entre 9 h et '
+          '10 h). Dès les premières trames reçues, l\'analyse s\'affiche ici : '
+          'score, prévisions en FCFA, anomalies et conseils — calculés sur le '
+          'téléphone, sans Internet.',
+      'en': 'The kit sends its consumption hour by hour by SMS, as '
+          '"DD/MM/YY;HH;KWH" lines (e.g. 27/06/26;09;0.12 = 0.12 kWh between '
+          '9:00 and 10:00). As soon as the first frames arrive, the analysis '
+          'shows up here: score, FCFA forecasts, anomalies and advice — '
+          'computed on the phone, without Internet.',
+    },
+    'ai.offline': {
+      'fr': 'Calculé sur le téléphone, sans Internet',
+      'en': 'Computed on the phone, no Internet needed',
+    },
+    'ai.score': {'fr': 'Score d\'efficacité', 'en': 'Efficiency score'},
+    'ai.grade': {'fr': 'Note {0}', 'en': 'Grade {0}'},
+    'ai.lastFrame': {'fr': 'Dernière trame : {0}', 'en': 'Latest frame: {0}'},
+    'ai.limited': {
+      'fr': 'Peu de données : l\'analyse s\'affinera après quelques jours de trames.',
+      'en': 'Little data so far: the analysis will sharpen after a few days of frames.',
+    },
+    'ai.today': {'fr': 'Aujourd\'hui (prévu)', 'en': 'Today (forecast)'},
+    'ai.month': {'fr': 'Ce mois (prévu)', 'en': 'This month (forecast)'},
+    'ai.avgDaily': {'fr': 'Moyenne / jour', 'en': 'Average / day'},
+    'ai.baseLoad': {'fr': 'Veille (nuit)', 'en': 'Standby (night)'},
+    'ai.peakHour': {'fr': 'Heure de pointe', 'en': 'Peak hour'},
+    'ai.trend': {'fr': 'Tendance 7 j', 'en': '7-day trend'},
+    'ai.penalties': {
+      'fr': 'Pénalités : veille {0} · pointe {1} · tendance {2} · anomalies {3}',
+      'en': 'Penalties: standby {0} · peak {1} · trend {2} · anomalies {3}',
+    },
+    'ai.chart.title': {'fr': 'Dernières 48 h', 'en': 'Last 48 h'},
+    'ai.chart.actual': {'fr': 'Mesuré', 'en': 'Measured'},
+    'ai.chart.typical': {'fr': 'Profil type', 'en': 'Typical profile'},
+    'ai.anomalies': {'fr': 'Anomalies (7 jours)', 'en': 'Anomalies (7 days)'},
+    'ai.anomalies.none': {
+      'fr': 'Aucune anomalie détectée sur les 7 derniers jours.',
+      'en': 'No anomaly detected over the last 7 days.',
+    },
+    'ai.anomaly.spike': {
+      'fr': 'Pic : {0} kWh (habituel {1} kWh)',
+      'en': 'Spike: {0} kWh (usual {1} kWh)',
+    },
+    'ai.anomaly.drift': {
+      'fr': 'Dérive nocturne : {0} kWh/h (veille {1} kWh/h)',
+      'en': 'Night drift: {0} kWh/h (standby {1} kWh/h)',
+    },
+    'ai.quality': {'fr': 'Qualité des données', 'en': 'Data quality'},
+    'ai.quality.received': {
+      'fr': '{0} / {1} heures reçues',
+      'en': '{0} / {1} hours received',
+    },
+    'ai.quality.zero': {'fr': 'Heures à 0 kWh : {0} %', 'en': 'Hours at 0 kWh: {0}%'},
+    'ai.quality.noGaps': {'fr': 'Aucun trou de données.', 'en': 'No data gap.'},
+    'ai.quality.gap': {'fr': '{0} → {1} ({2} h)', 'en': '{0} → {1} ({2} h)'},
+    'ai.recos': {'fr': 'Recommandations', 'en': 'Recommendations'},
+    'ai.saving': {
+      'fr': 'Économie estimée : {0} kWh/mois ≈ {1} FCFA',
+      'en': 'Estimated saving: {0} kWh/month ≈ {1} FCFA',
+    },
+    'ai.assistant': {
+      'fr': 'Poser une question à l\'assistant',
+      'en': 'Ask the assistant',
+    },
+
+    // --- Navigation : module Éducation ---------------------------------------
+    'nav.learn': {'fr': 'Apprendre', 'en': 'Learn'},
+
+    // --- Éducation énergétique -----------------------------------------------
+    'edu.title': {'fr': 'Éducation énergétique', 'en': 'Energy education'},
+    'edu.subtitle': {
+      'fr': 'Smart Home Learning Lab : 7 travaux pratiques sur le banc EnMKit '
+          '(L1–L2 ampoules, L3–L4 prises).',
+      'en': 'Smart Home Learning Lab: 7 practical labs on the EnMKit bench '
+          '(L1–L2 bulbs, L3–L4 sockets).',
+    },
+    'edu.stats': {
+      'fr': '{0}/7 quiz réussis · {1} étapes cochées',
+      'en': '{0}/7 quizzes passed · {1} steps done',
+    },
+    'edu.labs': {'fr': 'Travaux pratiques', 'en': 'Practical labs'},
+    'edu.tips': {'fr': 'Éco-gestes', 'en': 'Eco-tips'},
+    'edu.glossary': {'fr': 'Glossaire', 'en': 'Glossary'},
+    'edu.assistant': {'fr': 'Assistant énergie', 'en': 'Energy assistant'},
+    'edu.assistant.sub': {
+      'fr': 'En ligne si un serveur est configuré, sinon conseils hors-ligne.',
+      'en': 'Online when a server is configured, offline advice otherwise.',
+    },
+    'edu.minutes': {'fr': '{0} min', 'en': '{0} min'},
+    'edu.objective': {'fr': 'Objectif', 'en': 'Objective'},
+    'edu.keyIdea': {'fr': 'À retenir', 'en': 'Key idea'},
+    'edu.steps': {
+      'fr': 'Déroulé — cochez au fur et à mesure',
+      'en': 'Procedure — tick as you go',
+    },
+    'edu.outcomes': {'fr': 'Compétences visées', 'en': 'Learning outcomes'},
+    'edu.reset': {'fr': 'Décocher toutes les étapes', 'en': 'Untick all steps'},
+    'edu.quiz': {'fr': 'Quiz', 'en': 'Quiz'},
+    'edu.quiz.start': {
+      'fr': 'Faire le quiz ({0} questions)',
+      'en': 'Take the quiz ({0} questions)',
+    },
+    'edu.quiz.best': {'fr': 'Meilleur score : {0}/{1}', 'en': 'Best score: {0}/{1}'},
+    'edu.quiz.validate': {'fr': 'Valider mes réponses', 'en': 'Check my answers'},
+    'edu.quiz.answerAll': {
+      'fr': 'Répondez à toutes les questions.',
+      'en': 'Answer every question.',
+    },
+    'edu.quiz.result': {'fr': 'Score : {0}/{1} ({2} %)', 'en': 'Score: {0}/{1} ({2}%)'},
+    'edu.quiz.passed': {
+      'fr': 'Réussi ! Score enregistré.',
+      'en': 'Passed! Score saved.',
+    },
+    'edu.quiz.failed': {
+      'fr': 'Pas encore : relisez la fiche et réessayez (70 % requis).',
+      'en': 'Not yet: reread the sheet and try again (70% required).',
+    },
+    'edu.quiz.retry': {'fr': 'Recommencer', 'en': 'Try again'},
+    'edu.live': {'fr': 'Données en direct', 'en': 'Live data'},
+    'edu.live.kit': {'fr': 'Kit du banc', 'en': 'Bench kit'},
+    'edu.live.noKit': {
+      'fr': 'Ajoutez un kit (onglet Accueil) pour relier cette fiche à des mesures réelles.',
+      'en': 'Add a kit (Home tab) to link this sheet to real measurements.',
+    },
+    'edu.meter.pulse': {'fr': 'Constante (ip)', 'en': 'Constant (ip)'},
+    'edu.meter.pulseVal': {
+      'fr': '{0} imp/kWh → 1 impulsion = {1} Wh',
+      'en': '{0} imp/kWh → 1 pulse = {1} Wh',
+    },
+    'edu.meter.initial': {'fr': 'Index initial (en)', 'en': 'Initial index (en)'},
+    'edu.meter.lastIndex': {'fr': 'Dernier relevé d\'index', 'en': 'Latest index reading'},
+    'edu.meter.lastFrame': {'fr': 'Dernière trame horaire', 'en': 'Latest hourly frame'},
+    'edu.meter.lastFrameVal': {
+      'fr': '{0} kWh entre {1} h et {2} h → puissance moyenne ≈ {3} W',
+      'en': '{0} kWh between {1}:00 and {2}:00 → average power ≈ {3} W',
+    },
+    'edu.calc.title': {'fr': 'Calculatrice E = P × t', 'en': 'Calculator E = P × t'},
+    'edu.calc.power': {'fr': 'Puissance (W)', 'en': 'Power (W)'},
+    'edu.calc.hours': {'fr': 'Durée (h / jour)', 'en': 'Duration (h / day)'},
+    'edu.calc.result': {
+      'fr': '{0} kWh/jour · {1} kWh/mois ≈ {2} FCFA/mois',
+      'en': '{0} kWh/day · {1} kWh/month ≈ {2} FCFA/month',
+    },
+    'edu.calc.current': {
+      'fr': 'Courant sous 220 V : I = P / U ≈ {0} A',
+      'en': 'Current at 220 V: I = P / U ≈ {0} A',
+    },
+    'edu.circuits.lines': {
+      'fr': 'État des lignes du banc',
+      'en': 'Bench line status',
+    },
+    'edu.circuits.hint': {
+      'fr': 'L1–L2 : ampoules · L3–L4 : prises. Toutes en parallèle sous 220 V.',
+      'en': 'L1–L2: bulbs · L3–L4: sockets. All in parallel at 220 V.',
+    },
+    'edu.open.kit': {'fr': 'Ouvrir le kit (piloter les lignes)', 'en': 'Open the kit (control lines)'},
+    'edu.open.analysis': {'fr': 'Ouvrir l\'analyse IA du kit', 'en': 'Open the kit AI analysis'},
+    'edu.on': {'fr': 'ON', 'en': 'ON'},
+    'edu.off': {'fr': 'OFF', 'en': 'OFF'},
+    'edu.cmp.title': {'fr': 'Comparer Scénario A / B', 'en': 'Compare Scenario A / B'},
+    'edu.cmp.scenario': {'fr': 'Scénario {0}', 'en': 'Scenario {0}'},
+    'edu.cmp.start': {'fr': 'Démarrer', 'en': 'Start'},
+    'edu.cmp.stop': {'fr': 'Terminer', 'en': 'Stop'},
+    'edu.cmp.edit': {'fr': 'Ajuster', 'en': 'Adjust'},
+    'edu.cmp.clear': {'fr': 'Effacer', 'en': 'Clear'},
+    'edu.cmp.notStarted': {'fr': 'Non démarré', 'en': 'Not started'},
+    'edu.cmp.running': {'fr': 'En cours depuis {0}', 'en': 'Running since {0}'},
+    'edu.cmp.window': {'fr': '{0} → {1}', 'en': '{0} → {1}'},
+    'edu.cmp.energy': {
+      'fr': '{0} kWh · {1}/{2} h reçues',
+      'en': '{0} kWh · {1}/{2} h received',
+    },
+    'edu.cmp.waiting': {
+      'fr': 'En attente des trames horaires de ce créneau…',
+      'en': 'Waiting for this slot\'s hourly frames…',
+    },
+    'edu.cmp.result.less': {
+      'fr': 'B consomme {0} kWh/h de moins que A ({1} %).',
+      'en': 'B uses {0} kWh/h less than A ({1}%).',
+    },
+    'edu.cmp.result.more': {
+      'fr': 'B consomme {0} kWh/h de plus que A (+{1} %).',
+      'en': 'B uses {0} kWh/h more than A (+{1}%).',
+    },
+    'edu.cmp.result.equal': {
+      'fr': 'A et B consomment autant.',
+      'en': 'A and B use the same.',
+    },
+    'edu.cmp.month': {
+      'fr': 'Sur un mois (5 h/jour × 30 j) : {0} kWh ≈ {1} FCFA (à 79 FCFA/kWh).',
+      'en': 'Over a month (5 h/day × 30 days): {0} kWh ≈ {1} FCFA (at 79 FCFA/kWh).',
+    },
+    'edu.cmp.incomplete': {
+      'fr': 'Attention : des heures manquent, la comparaison est provisoire.',
+      'en': 'Warning: some hours are missing, the comparison is provisional.',
+    },
+    'edu.cmp.pickStart': {'fr': 'Début du scénario', 'en': 'Scenario start'},
+    'edu.cmp.pickEnd': {'fr': 'Fin du scénario', 'en': 'Scenario end'},
+    'edu.iot.title': {'fr': 'Trame décodée', 'en': 'Decoded frame'},
+    'edu.iot.raw': {'fr': 'Trame brute', 'en': 'Raw frame'},
+    'edu.iot.date': {'fr': 'Date (JJ/MM/AA)', 'en': 'Date (DD/MM/YY)'},
+    'edu.iot.slot': {'fr': 'Créneau (HH)', 'en': 'Slot (HH)'},
+    'edu.iot.energy': {'fr': 'Énergie de l\'heure', 'en': 'Energy of the hour'},
+    'edu.iot.count': {'fr': 'Trames stockées', 'en': 'Stored frames'},
+    'edu.iot.completeness': {'fr': 'Complétude (28 j)', 'en': 'Completeness (28 d)'},
+    'edu.iot.none': {
+      'fr': 'Aucune trame reçue pour l\'instant. Exemple : « 27/06/26;09;0.12 ».',
+      'en': 'No frame received yet. Example: "27/06/26;09;0.12".',
+    },
+    'edu.tip.cat.standby': {'fr': 'Veille', 'en': 'Standby'},
+    'edu.tip.cat.lighting': {'fr': 'Éclairage', 'en': 'Lighting'},
+    'edu.tip.cat.peak': {'fr': 'Pointe', 'en': 'Peak'},
+    'edu.tip.cat.cooling': {'fr': 'Froid', 'en': 'Cooling'},
+    'edu.tip.cat.habits': {'fr': 'Habitudes', 'en': 'Habits'},
+    'edu.tip.cat.cost': {'fr': 'Coût', 'en': 'Cost'},
+
+    // --- Assistant énergie ----------------------------------------------------
+    'asst.title': {'fr': 'Assistant énergie', 'en': 'Energy assistant'},
+    'asst.audience.learner': {'fr': 'Apprenant', 'en': 'Learner'},
+    'asst.audience.owner': {'fr': 'Propriétaire', 'en': 'Owner'},
+    'asst.audience.trainer': {'fr': 'Formateur', 'en': 'Trainer'},
+    'asst.hint': {'fr': 'Posez votre question…', 'en': 'Ask your question…'},
+    'asst.welcome': {
+      'fr': 'Posez une question sur votre consommation, la facture ENEO, les '
+          'économies d\'énergie ou les TP. Sans Internet, je réponds avec les '
+          'conseils hors-ligne de l\'application.',
+      'en': 'Ask a question about your consumption, the ENEO bill, energy '
+          'savings or the labs. Without Internet, I answer with the app\'s '
+          'offline advice.',
+    },
+    'asst.localBadge': {'fr': 'Réponse hors-ligne', 'en': 'Offline answer'},
+    'asst.status.online': {
+      'fr': 'En ligne — serveur EnMKit',
+      'en': 'Online — EnMKit server',
+    },
+    'asst.status.offline': {
+      'fr': 'Mode hors-ligne — conseils locaux',
+      'en': 'Offline mode — local advice',
+    },
+    'asst.fail.notConfigured': {
+      'fr': 'Serveur non configuré (Réglages → Serveur EnMKit).',
+      'en': 'Server not configured (Settings → EnMKit server).',
+    },
+    'asst.fail.offline': {
+      'fr': 'Pas de connexion au serveur : réponse hors-ligne.',
+      'en': 'No connection to the server: offline answer.',
+    },
+    'asst.fail.unauthorized': {
+      'fr': 'Clé client refusée : vérifiez-la dans les Réglages.',
+      'en': 'Client key rejected: check it in Settings.',
+    },
+    'asst.fail.unavailable': {
+      'fr': 'Assistant en ligne momentanément indisponible : réponse hors-ligne.',
+      'en': 'Online assistant temporarily unavailable: offline answer.',
+    },
+    'asst.fail.error': {
+      'fr': 'Erreur du serveur : réponse hors-ligne.',
+      'en': 'Server error: offline answer.',
+    },
+    'asst.clear': {'fr': 'Effacer la conversation', 'en': 'Clear conversation'},
+    'asst.s1': {
+      'fr': 'Comment réduire ma facture ?',
+      'en': 'How can I reduce my bill?',
+    },
+    'asst.s2': {
+      'fr': 'Qu\'est-ce que la veille ?',
+      'en': 'What is standby consumption?',
+    },
+    'asst.s3': {
+      'fr': 'Combien vais-je payer ce mois ?',
+      'en': 'How much will I pay this month?',
+    },
+
+    // --- Réglages : serveur EnMKit (optionnel) --------------------------------
+    'settings.server': {'fr': 'Serveur EnMKit (optionnel)', 'en': 'EnMKit server (optional)'},
+    'settings.server.sub': {
+      'fr': 'Active l\'assistant en ligne. L\'application reste 100 % utilisable sans Internet.',
+      'en': 'Enables the online assistant. The app stays fully usable without Internet.',
+    },
+    'settings.server.url': {'fr': 'URL de l\'API', 'en': 'API URL'},
+    'settings.server.key': {'fr': 'Clé client (ck_…)', 'en': 'Client key (ck_…)'},
+    'settings.server.keyHint': {
+      'fr': 'Fournie à l\'activation de votre établissement',
+      'en': 'Given when your organisation is activated',
+    },
+    'settings.server.notSet': {'fr': 'Non configuré', 'en': 'Not configured'},
+    'settings.server.configured': {'fr': 'Configuré · clé {0}', 'en': 'Configured · key {0}'},
+    'settings.server.edit': {'fr': 'Configurer le serveur', 'en': 'Configure the server'},
+    'settings.server.test': {'fr': 'Tester la connexion', 'en': 'Test the connection'},
+    'settings.server.testing': {'fr': 'Test en cours…', 'en': 'Testing…'},
+    'settings.server.ok': {
+      'fr': 'Connecté : {0} · {1} kit(s)',
+      'en': 'Connected: {0} · {1} kit(s)',
+    },
+    'settings.server.remove': {'fr': 'Supprimer la configuration', 'en': 'Remove configuration'},
+    'settings.server.saved': {'fr': 'Serveur enregistré', 'en': 'Server saved'},
+    'settings.server.https': {
+      'fr': 'Utilisez une adresse https:// (exigée par Android).',
+      'en': 'Use an https:// address (required by Android).',
+    },
   };
 }

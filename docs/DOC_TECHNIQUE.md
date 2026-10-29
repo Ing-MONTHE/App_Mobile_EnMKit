@@ -41,12 +41,16 @@ lib/
 ├── repositories/                  # accès données (SQLite via DBService)
 │   ├── kit_repository.dart, relay_repository.dart, consumption_repository.dart
 │   ├── allowed_number_repository.dart, settings_repository.dart, access_repository.dart
+│   ├── hourly_consumption_repository.dart, education_repository.dart, server_config_repository.dart
 ├── viewmodels/                    # ChangeNotifier (logique d'écran)
 │   ├── kitViewModel.dart, relayViewmodel.dart, consumption_viewmodel.dart
 │   ├── allowedNumberViewmodel.dart, smsViewmodel.dart, settings_viewmodel.dart
 │   ├── access_viewmodel.dart, onboarding_vm.dart
 ├── core/
 │   ├── db_service.dart            # ouverture DB + onCreate/onUpgrade
+│   ├── ai/                        # energy_insights.dart (moteur §6), local_assistant.dart
+│   ├── education/                 # contenu TP1–TP7, quiz_scoring.dart
+│   ├── api/                       # enmkit_api_client.dart (serveur optionnel)
 │   ├── sms_service_hybrid.dart    # construction & envoi des commandes SMS
 │   ├── sms_inbox_processor.dart   # traitement des SMS entrants (écho/relevé)
 │   ├── background_sms_bridge.dart # pont MethodChannel vers le natif
@@ -165,7 +169,7 @@ Valeurs par défaut (`settings_model.dart`) : `onboardingSeen = false`,
 
 ## 3. Base de données (SQLite via `sqflite`)
 
-Fichier : `kit_control.db`. **Version courante : 9.** Ouverture dans
+Fichier : `kit_control.db`. **Version courante : 17.** Ouverture dans
 `core/db_service.dart` (`onCreate` + `onUpgrade`).
 
 ### 3.1 Schéma des tables
@@ -180,6 +184,11 @@ Fichier : `kit_control.db`. **Version courante : 9.** Ouverture dans
 | `configurations` | `id`, `language`, `themeMode`, `notificationsEnabled` |
 | `app_security` | `id=1`, `pinHash`, `salt` |
 | `app_settings` | `id=1`, `themeMode`, `locale`, `accent`, `onboardingSeen`, `securityCodeEnabled`, `securityPromptSeen` |
+| `hourly_consumptions` (v17) | `kitNumber`, `hourStart` (`YYYY-MM-DDTHH:00:00`, heure locale Douala naïve), `kWh` (énergie DE l'heure), `receivedAt` — `UNIQUE(kitNumber, hourStart)` |
+| `server_settings` (v17) | `id=1`, `apiUrl`, `clientKey` (secret, jamais journalisé), `updatedAt` |
+| `edu_progress` (v17) | `tpCode`, `stepIndex`, `done` — PK (tpCode, stepIndex) |
+| `edu_quiz_scores` (v17) | `tpCode` (PK), `lastScore`, `bestScore`, `total`, `at` |
+| `edu_scenarios` (v17) | `tpCode`, `label` (A/B), `kitNumber`, `startAt`, `endAt` (NULL = en cours) |
 
 > La table `relays` conserve son nom technique ; côté métier/UI on parle de **lignes**.
 
@@ -195,6 +204,8 @@ Fichier : `kit_control.db`. **Version courante : 9.** Ouverture dans
 | 7 | `app_settings.securityCodeEnabled` + activation auto si un PIN existait déjà |
 | **8** | **Renommage `Relais N` → `Ligne N`** des noms par défaut déjà stockés |
 | **9** | `app_settings.securityPromptSeen` (proposition de code skippable) + marquée *vue* pour les installs existantes |
+| 10–16 | Récupération du PIN / biométrie, `relay_acks`, `kits.configured`, `app_meta`, écho de config, `support_messages` (voir `db_service.dart`) |
+| **17** | `DBService.createV17Tables` : `hourly_consumptions` (+ index), `server_settings`, `edu_progress`, `edu_quiz_scores`, `edu_scenarios` — tout en `IF NOT EXISTS`, aucune table existante modifiée |
 
 Migration v8 (extrait) :
 
@@ -239,7 +250,8 @@ La configuration groupée concatène plusieurs champs séparés par `;`
 | Réponse du kit | Motif | Traitement |
 |---|---|---|
 | Écho de ligne | `r(\d+)\s*(on\|off)` (toutes occurrences) | `applyKitAck` → `isActive` + `ackReceived` |
-| Relevé conso | `(\d+(?:[.,]\d+)?)\s*kwh` | ajout `consumptions` (dédup ≤ 3 min) |
+| Relevé conso | `(\d+(?:[.,]\d+)?)\s*kwh` | ajout `consumptions` (dédup ≤ 45 s) — **ignoré si le SMS contient des trames horaires** |
+| Trames horaires | `^(\d{2})/(\d{2})/(\d{2});(\d{1,2});(\d+(?:[.,]\d+)?)$` par ligne | upsert `hourly_consumptions` (dernier reçu gagne) |
 | Écho config | `n1:` / `n2:` / `en:` / `ip:` | `parseAckMessage` |
 
 ### 4.1 Synchronisation d'état (écho)
@@ -338,7 +350,55 @@ i18n **maison** (pas de `.arb`) dans `core/i18n/strings.dart` :
 `flutter_riverpod`, `provider`, `sqflite`, `sms_sender_background`,
 `readsms` (paquet local `local_packages/readsms`), `fl_chart`, `pretty_qr_code`,
 `mobile_scanner`, `image_picker`, `permission_handler`, `url_launcher`, `crypto`,
-`google_fonts`, `flutter_animate`, `share_plus`, `curved_navigation_bar`, `screenshot`.
+`google_fonts`, `flutter_animate`, `share_plus`, `curved_navigation_bar`, `screenshot`,
+`http` (assistant en ligne). Test : `sqflite_common_ffi` (SQLite réel en test).
+
+---
+
+## 10. Trames horaires & analyse IA hors-ligne
+
+Contrat partagé : `EnMKit_platform/docs/CONTRACT.md` §2 (trames) et §6 (moteur).
+
+- **Parsing** : `SmsParser.parseHourlyFrames(body)` → `HourlyParseResult(frames,
+  rejectedLines)` ; plusieurs lignes par SMS, texte parasite ignoré, date impossible /
+  heure > 23 / valeur négative rejetées et comptées, virgule décimale acceptée.
+- **Ingestion (deux chemins, idempotents)** : `SmsInboxProcessor.process` (drain natif,
+  `hourlyRepo`) et `SmsListenerViewModel._processTrustedSms` (temps réel, via
+  `HourlyConsumptionViewModel.ingestFrames`). Le drain rafraîchit ensuite
+  `kitHourlyProvider(k)`.
+- **Données** : `HourlyConsumptionRepository` (`upsertFrames` en `INSERT OR REPLACE`,
+  `getHourly(kit, from, to)`), `HourlyConsumptionViewModel` (charge 62 jours, `insights(lang)`
+  mis en cache, `energyBetween(from, to)` pour les scénarios A/B).
+- **Moteur** `lib/core/ai/energy_insights.dart` (`EnergyInsightsEngine.compute`, Dart pur) :
+  qualité/trous, profil médiane/MAD ouvrés/week-end, anomalies z > 3,5 + dérive nocturne,
+  veille, pointe 18–22 h, tendance, prévisions 24 h/jour/mois, coût FCFA par tranches
+  (`EnergyTariff`), score/notes, recommandations FR/EN. Interprétations alignées **à
+  l'identique** sur `EnMKit_platform/api/app/services/analytics.py` (voir l'en-tête de la
+  classe) ; `toJson()` produit la forme `Insights` du contrat avec les mêmes arrondis.
+  Heures traitées comme heure locale de Douala sans conversion (calcul interne en UTC
+  « porteur de champs » pour neutraliser l'heure d'été d'une machine de test).
+- **UI** : `kit_detail/widgets/analysis_tab.dart` (4ᵉ onglet du détail, index
+  `KitDetailScreen.analysisTab`).
+
+## 11. Éducation énergétique & assistant
+
+- **Contenu** : `lib/core/education/education_content.dart` — 7 `EduModule` (TP1–TP7,
+  forme de `GET /education/modules`), `EcoTip`, `GlossaryEntry`, textes bilingues `Bi`
+  (le catalogue `strings.dart` garde les libellés d'interface). Notation :
+  `quiz_scoring.dart` (70 % pour réussir, meilleur score conservé).
+- **État** : `EducationRepository` / `EducationViewModel` (`educationProvider`) ;
+  kit du banc : `educationKitProvider`.
+- **UI** : onglet **Apprendre** de `MainShell` (index 1 ; Aide passe à l'index 2) →
+  `ui/screens/education/` (hub, fiche TP, quiz, cartes « en direct », glossaire,
+  éco-gestes).
+- **Serveur optionnel** : `ServerConfigRepository` / `ServerConfigViewModel`
+  (`serverConfigProvider`), section Réglages. `EnmkitApiClient` : `GET /api/v1/app/me`,
+  `POST /api/v1/app/assistant/chat` (`kit_number`, `audience`, `lang`, `messages`),
+  erreurs typées `ApiFailure` (notConfigured, offline, unauthorized, unavailable/503,
+  error).
+- **Assistant** : `AssistantViewModel` (`assistantProvider` autoDispose par kit) ; tout
+  échec ⇒ `LocalAssistant.answer` (recommandations du moteur + éco-gestes + glossaire).
+  L'application reste entièrement fonctionnelle hors-ligne.
 
 ---
 

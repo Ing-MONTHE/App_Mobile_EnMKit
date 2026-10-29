@@ -4,6 +4,7 @@ import 'package:enmkit/models/consumption_model.dart';
 import 'package:enmkit/models/kit_model.dart';
 import 'package:enmkit/models/relay_ack_model.dart';
 import 'package:enmkit/repositories/consumption_repository.dart';
+import 'package:enmkit/repositories/hourly_consumption_repository.dart';
 import 'package:enmkit/repositories/kit_repository.dart';
 import 'package:enmkit/repositories/relay_repository.dart';
 
@@ -15,10 +16,15 @@ class SmsInboxProcessor {
   final ConsumptionRepository consumptionRepo;
   final RelayRepository relayRepo;
 
+  /// Relevés horaires (trames `JJ/MM/AA;HH;KWH`). Optionnel pour rester
+  /// compatible avec les usages existants : sans lui, les trames sont ignorées.
+  final HourlyConsumptionRepository? hourlyRepo;
+
   SmsInboxProcessor({
     required this.kitRepo,
     required this.consumptionRepo,
     required this.relayRepo,
+    this.hourlyRepo,
   });
 
   /// Fenêtre de dédup conso : ne sert qu'à fusionner le doublon « même SMS vu
@@ -56,9 +62,21 @@ class SmsInboxProcessor {
     if (kit == null) return null;
     final kitNumber = kit.kitNumber;
 
+    // 0) Trames HORAIRES « JJ/MM/AA;HH;KWH » (contrat §2) : upsert idempotent
+    //    (dernier reçu gagne). Le même SMS revu par le chemin temps réel
+    //    aboutit au même état — aucun doublon possible.
+    if (hourlyRepo != null && kitNumber != null && kitNumber.isNotEmpty) {
+      final parsed = SmsParser.parseHourlyFrames(sms.body);
+      if (parsed.frames.isNotEmpty) {
+        await hourlyRepo!
+            .upsertFrames(kitNumber, parsed.frames, receivedAt: sms.ts);
+      }
+    }
+
     // 1) Consommation : reconnaît les deux formats du kit — « <nombre> kWh »
     //    ET « cons:<nombre> » / « consommation <nombre> » (parseur central
     //    partagé avec le flux temps réel, pour éviter toute divergence).
+    //    N.B. : renvoie null sur un SMS de trames horaires (pas un index).
     final kwh = SmsParser.extractConsumption(sms.body);
     if (kwh != null) {
       final existing = await consumptionRepo.getAllConsumptions(kitNumber: kitNumber);

@@ -121,12 +121,15 @@ class StatusBadge extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              color: filled ? Colors.white : color,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
+          // Flexible : un libellé long passe à la ligne au lieu de déborder.
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: filled ? Colors.white : color,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],

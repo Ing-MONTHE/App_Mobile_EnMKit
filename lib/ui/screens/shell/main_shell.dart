@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:enmkit/providers.dart';
+import 'package:enmkit/ui/screens/education/education_screen.dart';
 import 'package:enmkit/ui/screens/kits/kits_list_screen.dart';
 import 'package:enmkit/ui/screens/settings/settings_screen.dart';
 import 'package:enmkit/ui/screens/support/support_screen.dart';
@@ -10,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Coquille principale après déverrouillage : fond doodle commun + barre de
-/// navigation basse (Accueil / Aide / Réglages).
+/// navigation basse (Accueil / Apprendre / Aide / Réglages).
 class MainShell extends ConsumerStatefulWidget {
   const MainShell({super.key});
 
@@ -20,11 +21,12 @@ class MainShell extends ConsumerStatefulWidget {
 
 class _MainShellState extends ConsumerState<MainShell> {
   /// Index de l'onglet Aide : ouvrir cet onglet vaut consultation du fil.
-  static const int _helpIndex = 1;
+  static const int _helpIndex = 2;
   int _index = 0;
 
   static const _pages = [
     _PageHost(child: KitsListScreen()),
+    _PageHost(child: EducationScreen()),
     _PageHost(child: SupportScreen()),
     _PageHost(child: SettingsScreen()),
   ];
@@ -42,6 +44,7 @@ class _MainShellState extends ConsumerState<MainShell> {
       ),
       bottomNavigationBar: _BottomBar(
         index: _index,
+        helpIndex: _helpIndex,
         unread: ref.watch(supportProvider).unread,
         onTap: (i) {
           setState(() => _index = i);
@@ -71,9 +74,13 @@ class _BottomBar extends ConsumerWidget {
   const _BottomBar({
     required this.index,
     required this.onTap,
+    required this.helpIndex,
     this.unread = 0,
   });
   final int index;
+
+  /// Position de l'onglet Aide (porteur de la pastille de non-lu).
+  final int helpIndex;
   final ValueChanged<int> onTap;
 
   /// Réponses du support non lues : pastille discrète sur l'onglet Aide.
@@ -84,6 +91,7 @@ class _BottomBar extends ConsumerWidget {
     final t = ref.watch(tProvider);
     final items = <(IconData, IconData, String)>[
       (Icons.home_rounded, Icons.home_outlined, t.t('nav.home')),
+      (Icons.school_rounded, Icons.school_outlined, t.t('nav.learn')),
       (
         Icons.support_agent_rounded,
         Icons.support_agent_outlined,
@@ -171,7 +179,7 @@ class _BottomBar extends ConsumerWidget {
                                 // Pastille de non-lu : une réponse du support
                                 // arrivée en arrière-plan serait sinon
                                 // totalement invisible.
-                                if (i == 1 && unread > 0 && !sel)
+                                if (i == helpIndex && unread > 0 && !sel)
                                   Positioned(
                                     right: -3,
                                     top: -2,

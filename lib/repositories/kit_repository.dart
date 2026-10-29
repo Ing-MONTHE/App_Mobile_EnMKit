@@ -109,7 +109,8 @@ class KitRepository {
   }
 
   /// Supprime UN kit (par son numéro GSM, clé) ET toutes ses données rattachées
-  /// — lignes, consommations, numéros autorisés, accusés — dans une transaction,
+  /// — lignes, consommations (index et horaires), numéros autorisés, accusés,
+  /// scénarios pédagogiques — dans une transaction,
   /// pour ne laisser aucun orphelin en base.
   Future<void> deleteKit(String kitNumber) async {
     final db = await _dbService.database;
@@ -119,6 +120,8 @@ class KitRepository {
         'consumptions',
         'allowed_numbers',
         'relay_acks',
+        'hourly_consumptions',
+        'edu_scenarios',
       ]) {
         await txn.delete(table, where: 'kitNumber = ?', whereArgs: [kitNumber]);
       }

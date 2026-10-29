@@ -125,6 +125,8 @@ class _RootPageState extends ConsumerState<RootPage>
       for (final k in affected) {
         ref.read(kitConsumptionProvider(k)).fetchConsumptions();
         ref.read(kitRelaysProvider(k)).refreshFromDb();
+        // Trames horaires éventuellement reçues application fermée.
+        ref.read(kitHourlyProvider(k)).load();
       }
       // …ET la liste des kits elle-même : le drain peut avoir reconnu l'écho de
       // configuration et basculé le kit en « à valider » EN BASE. Sans ce

@@ -11,6 +11,13 @@ import 'package:enmkit/repositories/settings_repository.dart';
 import 'package:enmkit/viewmodels/settings_viewmodel.dart';
 import 'package:enmkit/repositories/allowed_number_repository.dart';
 import 'package:enmkit/repositories/consumption_repository.dart';
+import 'package:enmkit/repositories/hourly_consumption_repository.dart';
+import 'package:enmkit/viewmodels/hourly_consumption_viewmodel.dart';
+import 'package:enmkit/repositories/education_repository.dart';
+import 'package:enmkit/repositories/server_config_repository.dart';
+import 'package:enmkit/viewmodels/assistant_viewmodel.dart';
+import 'package:enmkit/viewmodels/education_viewmodel.dart';
+import 'package:enmkit/viewmodels/server_config_viewmodel.dart';
 import 'package:enmkit/repositories/kit_repository.dart';
 import 'package:enmkit/repositories/relay_repository.dart';
 import 'package:enmkit/viewmodels/access_viewmodel.dart';
@@ -174,6 +181,7 @@ final smsInboxProcessorProvider = Provider<SmsInboxProcessor>((ref) {
     kitRepo: KitRepository(db),
     consumptionRepo: ConsumptionRepository(db),
     relayRepo: RelayRepository(db),
+    hourlyRepo: HourlyConsumptionRepository(db),
   );
 });
 
@@ -204,11 +212,34 @@ final kitAllowedNumbersProvider =
   return AllowedNumberViewModel(repo, kitNumber: kitNumber);
 });
 
-/// Écoute SMS filtrée sur le numéro d'un kit donné, alimentant sa consommation.
+/// Dépôt des relevés horaires (trames `JJ/MM/AA;HH;KWH`).
+final hourlyConsumptionRepositoryProvider =
+    Provider<HourlyConsumptionRepository>(
+  (ref) => HourlyConsumptionRepository(ref.read(dbServiceProvider)),
+);
+
+/// Relevés horaires + analyse IA hors-ligne d'un kit donné.
+final kitHourlyProvider = ChangeNotifierProvider.family<
+    HourlyConsumptionViewModel, String?>((ref, kitNumber) {
+  final vm = HourlyConsumptionViewModel(
+    ref.read(hourlyConsumptionRepositoryProvider),
+    kitNumber: kitNumber,
+  );
+  vm.load();
+  return vm;
+});
+
+/// Écoute SMS filtrée sur le numéro d'un kit donné, alimentant sa consommation
+/// (relevés d'index legacy ET trames horaires).
 final kitSmsListenerProvider =
     ChangeNotifierProvider.family<SmsListenerViewModel, String?>((ref, kitNumber) {
   final consumptionVm = ref.read(kitConsumptionProvider(kitNumber));
-  return SmsListenerViewModel(kitNumber: kitNumber, consumptionVM: consumptionVm);
+  final hourlyVm = ref.read(kitHourlyProvider(kitNumber));
+  return SmsListenerViewModel(
+    kitNumber: kitNumber,
+    consumptionVM: consumptionVm,
+    hourlyVM: hourlyVm,
+  );
 });
 
 /// Service d'assistance : envoi des demandes au support et relais WhatsApp.
@@ -224,5 +255,37 @@ final supportProvider = ChangeNotifierProvider<SupportViewModel>((ref) {
   return SupportViewModel(
     ref.watch(supportRepositoryProvider),
     ref.watch(supportServiceProvider),
+  );
+});
+
+/// ============================================================================
+/// Éducation énergétique, serveur EnMKit optionnel, assistant.
+/// ============================================================================
+
+/// Module Éducation : progression des fiches, scores des quiz, scénarios A/B.
+final educationProvider = ChangeNotifierProvider<EducationViewModel>((ref) {
+  final vm = EducationViewModel(EducationRepository(ref.read(dbServiceProvider)));
+  vm.load();
+  return vm;
+});
+
+/// Kit utilisé pour les données « en direct » des fiches TP (banc du formateur).
+/// null = premier kit de la liste.
+final educationKitProvider = StateProvider<String?>((ref) => null);
+
+/// Serveur EnMKit OPTIONNEL (URL + clé client `ck_…`).
+final serverConfigProvider = ChangeNotifierProvider<ServerConfigViewModel>((ref) {
+  final vm = ServerConfigViewModel(ServerConfigRepository(ref.read(dbServiceProvider)));
+  vm.load();
+  return vm;
+});
+
+/// Conversation avec l'assistant, par kit (null = sans kit, ex. module
+/// Éducation). Libérée à la fermeture de l'écran.
+final assistantProvider = ChangeNotifierProvider.autoDispose
+    .family<AssistantViewModel, String?>((ref, kitNumber) {
+  return AssistantViewModel(
+    kitNumber: kitNumber,
+    config: () => ref.read(serverConfigProvider).config,
   );
 });

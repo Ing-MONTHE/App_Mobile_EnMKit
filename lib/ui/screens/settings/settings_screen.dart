@@ -1,4 +1,6 @@
+import 'package:enmkit/core/api/enmkit_api_client.dart';
 import 'package:enmkit/providers.dart';
+import 'package:enmkit/viewmodels/server_config_viewmodel.dart';
 import 'package:enmkit/ui/screens/access/security_questions_screen.dart';
 import 'package:enmkit/ui/screens/faq_screen.dart';
 import 'package:enmkit/ui/theme/app_theme.dart';
@@ -120,6 +122,16 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ],
           ),
+        ),
+        const SizedBox(height: 16),
+
+        // --- Serveur EnMKit (optionnel) --------------------------------------
+        _Section(
+          icon: Icons.cloud_sync_rounded,
+          accent: AppTheme.cyan,
+          title: t.t('settings.server'),
+          subtitle: t.t('settings.server.sub'),
+          child: const _ServerSection(),
         ),
         const SizedBox(height: 16),
 
@@ -727,6 +739,190 @@ class _InfoLine extends StatelessWidget {
           Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
         ],
       ),
+    );
+  }
+}
+
+
+/// Réglage OPTIONNEL du serveur EnMKit : URL + clé client `ck_…` (masquée),
+/// test de connexion `GET /api/v1/app/me`. La clé n'est jamais affichée en
+/// clair ni journalisée.
+class _ServerSection extends ConsumerWidget {
+  const _ServerSection();
+
+  String _failure(WidgetRef ref, ApiFailure? f) => ref.read(tProvider).t(
+        switch (f) {
+          ApiFailure.notConfigured => 'asst.fail.notConfigured',
+          ApiFailure.offline => 'asst.fail.offline',
+          ApiFailure.unauthorized => 'asst.fail.unauthorized',
+          ApiFailure.unavailable => 'asst.fail.unavailable',
+          _ => 'asst.fail.error',
+        },
+      );
+
+  Future<void> _edit(BuildContext context, WidgetRef ref) async {
+    final t = ref.read(tProvider);
+    final vm = ref.read(serverConfigProvider);
+    final url = TextEditingController(text: vm.config.apiUrl);
+    final key = TextEditingController(text: vm.config.clientKey);
+    final saved = await showAppSheet<bool>(
+      context: context,
+      icon: Icons.cloud_sync_rounded,
+      accent: AppTheme.cyan,
+      title: t.t('settings.server'),
+      subtitle: t.t('settings.server.https'),
+      builder: (ctx) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SheetField(
+            controller: url,
+            label: t.t('settings.server.url'),
+            hint: 'https://api.enmkit.cm',
+            icon: Icons.link_rounded,
+            keyboardType: TextInputType.url,
+          ),
+          const SizedBox(height: 14),
+          _SecretField(
+            controller: key,
+            label: t.t('settings.server.key'),
+            hint: t.t('settings.server.keyHint'),
+          ),
+          const SizedBox(height: 20),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(t.t('common.save')),
+          ),
+        ],
+      ),
+    );
+    if (saved == true) {
+      await vm.save(url.text, key.text);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(t.t('settings.server.saved'))));
+      }
+      if (vm.config.isConfigured) await vm.test();
+    }
+    url.dispose();
+    key.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
+    final vm = ref.watch(serverConfigProvider);
+    final scheme = Theme.of(context).colorScheme;
+    final c = vm.config;
+
+    Widget? status;
+    switch (vm.status) {
+      case ServerTestStatus.testing:
+        status = Text(t.t('settings.server.testing'),
+            style: TextStyle(color: scheme.onSurfaceVariant));
+      case ServerTestStatus.ok:
+        status = StatusBadge(
+          label: t.tf('settings.server.ok',
+              [vm.me?.clientName ?? '—', vm.me?.kitNumbers.length ?? 0]),
+          color: AppTheme.emerald,
+        );
+      case ServerTestStatus.failed:
+        status = Text(_failure(ref, vm.failure),
+            style: const TextStyle(color: AppTheme.coral));
+      case ServerTestStatus.idle:
+        status = null;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _InfoLine(
+          label: t.t('settings.server.url'),
+          value: c.apiUrl.isEmpty
+              ? t.t('settings.server.notSet')
+              // Une URL longue déborderait de la ligne : on l'abrège.
+              : (c.baseUrl.length > 30
+                  ? '${c.baseUrl.substring(0, 29)}…'
+                  : c.baseUrl),
+        ),
+        if (c.isConfigured)
+          _InfoLine(
+            label: t.t('settings.server.key'),
+            value: c.maskedKey,
+          ),
+        const Divider(height: 18),
+        _TileButton(
+          icon: Icons.edit_rounded,
+          label: t.t('settings.server.edit'),
+          onTap: () => _edit(context, ref),
+        ),
+        if (c.isConfigured) ...[
+          const Divider(height: 18),
+          _TileButton(
+            icon: Icons.network_check_rounded,
+            label: t.t('settings.server.test'),
+            onTap: vm.status == ServerTestStatus.testing ? () {} : vm.test,
+          ),
+          const Divider(height: 18),
+          _TileButton(
+            icon: Icons.delete_outline_rounded,
+            label: t.t('settings.server.remove'),
+            onTap: vm.clear,
+          ),
+        ],
+        if (status != null) ...[
+          const SizedBox(height: 8),
+          status,
+        ],
+      ],
+    );
+  }
+}
+
+/// Champ de saisie masqué (clé client), avec bouton afficher/masquer.
+class _SecretField extends StatefulWidget {
+  const _SecretField(
+      {required this.controller, required this.label, this.hint});
+  final TextEditingController controller;
+  final String label;
+  final String? hint;
+
+  @override
+  State<_SecretField> createState() => _SecretFieldState();
+}
+
+class _SecretFieldState extends State<_SecretField> {
+  bool _obscure = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 7),
+          child: Text(widget.label,
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600)),
+        ),
+        TextField(
+          controller: widget.controller,
+          obscureText: _obscure,
+          autocorrect: false,
+          enableSuggestions: false,
+          decoration: InputDecoration(
+            hintText: widget.hint,
+            prefixIcon: const Icon(Icons.key_rounded),
+            suffixIcon: IconButton(
+              icon: Icon(_obscure
+                  ? Icons.visibility_rounded
+                  : Icons.visibility_off_rounded),
+              onPressed: () => setState(() => _obscure = !_obscure),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

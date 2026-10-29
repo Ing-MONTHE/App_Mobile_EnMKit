@@ -1,5 +1,6 @@
 import 'package:enmkit/models/kit_model.dart';
 import 'package:enmkit/providers.dart';
+import 'package:enmkit/ui/screens/kit_detail/widgets/analysis_tab.dart';
 import 'package:enmkit/ui/screens/kit_detail/widgets/config_tab.dart';
 import 'package:enmkit/ui/screens/kit_detail/widgets/consumption_tab.dart';
 import 'package:enmkit/ui/screens/kit_detail/widgets/relays_tab.dart';
@@ -8,11 +9,18 @@ import 'package:enmkit/ui/widgets/common/doodle_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Détail d'un kit : pilotage isolé via 3 onglets (Relais / Conso / Config).
+/// Détail d'un kit : pilotage isolé via 4 onglets (Lignes / Conso / Analyse IA
+/// / Config).
 /// Données issues des providers `.family` scopés sur [kit.kitNumber].
 class KitDetailScreen extends ConsumerStatefulWidget {
-  const KitDetailScreen({super.key, required this.kit});
+  const KitDetailScreen({super.key, required this.kit, this.initialTab = 0});
   final KitModel kit;
+
+  /// Onglet ouvert à l'arrivée (ex. 2 = Analyse IA depuis le module Éducation).
+  final int initialTab;
+
+  /// Index de l'onglet « Analyse IA ».
+  static const int analysisTab = 2;
 
   @override
   ConsumerState<KitDetailScreen> createState() => _KitDetailScreenState();
@@ -27,7 +35,8 @@ class _KitDetailScreenState extends ConsumerState<KitDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+        length: 4, vsync: this, initialIndex: widget.initialTab.clamp(0, 3));
   }
 
   @override
@@ -56,6 +65,7 @@ class _KitDetailScreenState extends ConsumerState<KitDetailScreen>
                   children: [
                     RelaysTab(kitNumber: _kitNumber),
                     ConsumptionTab(kitNumber: _kitNumber),
+                    AnalysisTab(kitNumber: _kitNumber),
                     ConfigTab(kit: widget.kit),
                   ],
                 ),
@@ -155,12 +165,14 @@ class _SoftTabBar extends ConsumerWidget {
         ),
         labelColor: Colors.white,
         unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-        labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+        labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
         unselectedLabelStyle:
-            const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+            const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
         tabs: [
           Tab(height: 40, text: t.t('tab.relays')),
           Tab(height: 40, text: t.t('tab.consumption')),
+          Tab(height: 40, text: t.t('tab.analysis')),
           Tab(height: 40, text: t.t('tab.config')),
         ],
       ),

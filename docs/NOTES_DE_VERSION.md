@@ -5,7 +5,60 @@
 
 ---
 
-## Version en cours — Lot « Lignes, sécurité optionnelle & temps réel »
+## Lot « IA & éducation énergétique » (Smart Home Learning Lab)
+
+Date du document : 29/10/2026. Base de données **v16 → v17**. Aucun mot-clé SMS
+existant n'a changé ; le kit envoie désormais en plus des **trames horaires**.
+
+### ✨ Nouveautés
+
+- **Trames horaires** `JJ/MM/AA;HH;KWH` (ex. `27/06/26;09;0.12` = 0,12 kWh entre 9 h et
+  10 h) reconnues sur les **deux chemins de réception** (temps réel + drain natif,
+  application fermée). Stockage idempotent : même heure reçue deux fois ⇒ une seule
+  valeur, la dernière reçue.
+- **Onglet « Analyse IA »** dans le détail d'un kit (4ᵉ onglet), calculé **hors-ligne** :
+  score d'efficacité 0–100 + note A–E, prévisions jour / mois en kWh et FCFA, courbe
+  48 h vs profil type, anomalies (pics, dérive nocturne), qualité des données (complétude,
+  trous), recommandations bilingues chiffrées. État vide explicatif.
+- **Module « Apprendre »** (nouvel onglet de la barre du bas) : fiches TP1–TP7 guidées
+  (objectif, durée, déroulé à cocher persistant, compétences), données en direct du kit
+  (compteur, lignes, trame décodée), **Scénario A / B** pour TP4/TP5/TP7, quiz par TP
+  (score mémorisé, 70 % pour réussir), éco-gestes, glossaire — FR/EN, contexte Cameroun
+  (ENEO, FCFA, 220 V).
+- **Assistant énergie** : en ligne via le serveur EnMKit (optionnel), sinon réponse
+  hors-ligne (recommandations locales + éco-gestes + glossaire).
+- **Réglages → Serveur EnMKit (optionnel)** : URL de l'API + clé client `ck_…` (masquée),
+  test de connexion.
+
+### 🛠️ Détails techniques
+
+- `SmsParser.parseHourlyFrames(body)` (contrat §2) ; `extractConsumption` renvoie
+  désormais `null` pour un SMS de trames (pas de faux relevé d'index).
+- Table `hourly_consumptions(kitNumber, hourStart 'YYYY-MM-DDTHH:00:00', kWh,
+  receivedAt, UNIQUE(kitNumber, hourStart))`, upsert `INSERT OR REPLACE` (compatible
+  SQLite des Android anciens). `HourlyConsumptionRepository`, `kitHourlyProvider`.
+- Moteur `lib/core/ai/energy_insights.dart` (Dart pur, contrat §6), **parité stricte**
+  avec le backend Python (`analytics.py`) : vecteur de référence + jeux aléatoires
+  identiques. Barème FCFA progressif 50/79/94/99.
+- Nouvelles tables v17 : `server_settings`, `edu_progress`, `edu_quiz_scores`,
+  `edu_scenarios`. Suppression d'un kit ⇒ ses relevés horaires et scénarios aussi.
+- Client HTTP `EnmkitApiClient` (`GET /api/v1/app/me`, `POST /api/v1/app/assistant/chat`,
+  en-tête `X-Client-Key`, jamais journalisé) — dépendance `http` ;
+  `sqflite_common_ffi` en dépendance de test.
+- Tests : trames, upsert/migration (SQLite réel via ffi), moteur §6, quiz, client API et
+  repli hors-ligne.
+
+### ⚠️ Notes de migration
+
+- Migration automatique au premier lancement (création des tables v17, aucune table
+  existante modifiée).
+- L'URL du serveur doit être en **https://** (Android bloque le HTTP en clair).
+- `pubspec.yaml` n'a pas été incrémenté (incrémenter le build réinitialise le code
+  secret à la mise à jour, cf. `security_reset`) : à décider au moment de la release.
+
+---
+
+## Lot précédent — Lot « Lignes, sécurité optionnelle & temps réel »
 
 Date du document : 02/06/2026.
 
