@@ -2,8 +2,11 @@
 ///
 /// La clé client `ck_…` est un secret : elle n'est jamais journalisée ni
 /// affichée en clair (voir [maskedKey]).
+/// Serveur EnMKit de production (pré-rempli : il ne reste qu'à saisir la clé client).
+const kDefaultApiUrl = 'https://api.enmkit.horus-lab.com';
+
 class ServerConfig {
-  const ServerConfig({this.apiUrl = '', this.clientKey = ''});
+  const ServerConfig({this.apiUrl = kDefaultApiUrl, this.clientKey = ''});
 
   final String apiUrl;
   final String clientKey;

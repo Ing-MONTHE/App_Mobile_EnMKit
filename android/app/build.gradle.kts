@@ -31,7 +31,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.enmkit.app"
+        // Distinct de l'app client (com.enmkit.app) : les deux apps doivent pouvoir être installées côte à côte.
+        applicationId = "com.enmkit.banc"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
