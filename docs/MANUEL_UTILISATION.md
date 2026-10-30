@@ -197,7 +197,7 @@ Touchez la carte d'un kit pour l'ouvrir. L'écran comporte 3 onglets :
 > Le kit n'accepte que **deux** numéros autorisés. Il n'obéit qu'à ces numéros.
 
 <p align="center"><img src="captures/07-config.png" width="230" alt="Onglet Config"></p>
-<p align="center"><em>Onglet Config rempli, avant l'envoi au kit</em></p>
+<p align="center"><em>Onglet Config d'un kit dont la configuration est validée : elle est verrouillée</em></p>
 
 ### 4.2 Envoyer la configuration
 
@@ -206,9 +206,6 @@ Touchez la carte d'un kit pour l'ouvrir. L'écran comporte 3 onglets :
 3. Relisez, puis appuyez sur **Envoyer au kit** (ou **Annuler** pour corriger).
 
 Si l'**Impulsion par kWh** vaut 0 ou n'est pas renseignée, l'envoi est refusé : corrigez la carte **Compteur** d'abord.
-
-<p align="center"><img src="captures/08-verifier-config.png" width="230" alt="Vérifier la configuration"></p>
-<p align="center"><em>Fenêtre « Vérifier la configuration »</em></p>
 
 ### 4.3 Suivre et valider la configuration
 
@@ -229,9 +226,6 @@ Sur l'accueil, la puce **À valider** sur la carte d'un kit indique qu'il ne res
 Une fois verrouillée, la configuration affiche des cadenas et le bouton d'envoi disparaît. Le pilotage des lignes et la consommation restent disponibles.
 
 > Les commandes de l'onglet **Lignes** ne s'activent qu'une fois la configuration reçue par le kit (section 5.1).
-
-<p align="center"><img src="captures/09-config-a-valider.png" width="230" alt="Configuration à valider"></p>
-<p align="center"><em>Volet « Le retour du kit correspond » avec le bouton « Valider et verrouiller »</em></p>
 
 ---
 
@@ -276,9 +270,6 @@ Chaque entrée indique :
 - l'heure : « Aujourd'hui 09:12 », « Hier 20:00 », ou la date pour les plus anciennes.
 
 Les confirmations sont enregistrées **même application fermée**. Si un autre téléphone autorisé commande le kit, ses confirmations apparaissent aussi chez vous.
-
-<p align="center"><img src="captures/11-confirmations.png" width="230" alt="Confirmations"></p>
-<p align="center"><em>Fenêtre « Confirmation de la commande » d'une ligne</em></p>
 
 ### 5.4 Renommer ou supprimer une ligne
 
@@ -422,9 +413,6 @@ Sur l'ancien téléphone, générez le QR Code de chaque kit (section 7) et scan
 4. Appuyez sur **Réinitialiser le code**.
 
 Si le message **Aucune question de récupération n'est configurée sur cet appareil.** s'affiche, contactez le support (contact@2metechsarl.org).
-
-<p align="center"><img src="captures/16-code-oublie.png" width="230" alt="Code oublié"></p>
-<p align="center"><em>Écran « Code oublié »</em></p>
 
 ### L'empreinte ne fonctionne pas
 
