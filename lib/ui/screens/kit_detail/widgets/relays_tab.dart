@@ -884,6 +884,12 @@ class _KitConnectionCard extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
           FilledButton.tonal(
+            // Le thème impose une largeur infinie aux FilledButton (pleine
+            // largeur) : dans une Row, il faut une taille minimale bornée.
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(0, 44),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+            ),
             onPressed:
                 checking
                     ? null

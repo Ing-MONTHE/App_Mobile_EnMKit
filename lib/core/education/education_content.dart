@@ -1,5 +1,5 @@
 // Contenu pédagogique « Smart Home Learning Lab » : banc EnMKit à 4 lignes
-// (L1–L2 : ampoules, L3–L4 : prises). Sept travaux pratiques TP1…TP7, quiz,
+// (L1-L2 : ampoules, L3-L4 : prises). Sept travaux pratiques TP1…TP7, quiz,
 // éco-gestes et glossaire, contextualisés au Cameroun (ENEO, FCFA, 220 V).
 //
 // Bilingue FR/EN : chaque texte est un [Bi] résolu selon la langue courante
@@ -132,10 +132,10 @@ class EducationContent {
       steps: [
         Bi(
           'Observer le banc : repérer le disjoncteur, le compteur, le kit EnMKit '
-              'et les 4 lignes (L1–L2 ampoules, L3–L4 prises). Le réseau délivre '
+              'et les 4 lignes (L1-L2 ampoules, L3-L4 prises). Le réseau délivre '
               '220 V / 50 Hz.',
           'Look at the bench: find the circuit breaker, the meter, the EnMKit '
-              'kit and the 4 lines (L1–L2 bulbs, L3–L4 sockets). The grid '
+              'kit and the 4 lines (L1-L2 bulbs, L3-L4 sockets). The grid '
               'supplies 220 V / 50 Hz.',
         ),
         Bi(
@@ -276,9 +276,9 @@ class EducationContent {
               '(green-yellow).',
         ),
         Bi(
-          'Suivre chaque ligne du disjoncteur jusqu\'à sa charge (L1–L2 ampoules, '
-              'L3–L4 prises) et dessiner le schéma du banc.',
-          'Follow each line from the breaker to its load (L1–L2 bulbs, L3–L4 '
+          'Suivre chaque ligne du disjoncteur jusqu\'à sa charge (L1-L2 ampoules, '
+              'L3-L4 prises) et dessiner le schéma du banc.',
+          'Follow each line from the breaker to its load (L1-L2 bulbs, L3-L4 '
               'sockets) and draw the bench diagram.',
         ),
         Bi(
@@ -520,9 +520,9 @@ class EducationContent {
             'At the next full hour (10:00), switch off and record the end of A.'),
         Bi(
           'Scénario B : remplacer par des LED (hors tension !) et refaire la même '
-              'durée (10:00–11:00).',
+              'durée (10:00-11:00).',
           'Scenario B: swap for LEDs (power off!) and repeat the same duration '
-              '(10:00–11:00).',
+              '(10:00-11:00).',
         ),
         Bi(
           'Attendre les trames horaires (elles arrivent après la fin de chaque '
@@ -603,9 +603,9 @@ class EducationContent {
       durationMin: 90,
       live: EduLive.efficiency,
       scenarioHint: Bi(
-        'Scénario A : appareils en veille branchés sur L3–L4 (décodeur, '
+        'Scénario A : appareils en veille branchés sur L3-L4 (décodeur, '
             'chargeurs, TV), lumières éteintes. Scénario B : tout débranché.',
-        'Scenario A: appliances on standby plugged into L3–L4 (decoder, '
+        'Scenario A: appliances on standby plugged into L3-L4 (decoder, '
             'chargers, TV), lights off. Scenario B: everything unplugged.',
       ),
       keyIdea: Bi(
@@ -616,9 +616,9 @@ class EducationContent {
       ),
       steps: [
         Bi(
-          'Scénario A : brancher les appareils en veille sur L3–L4 pendant une '
+          'Scénario A : brancher les appareils en veille sur L3-L4 pendant une '
               'heure pleine, lumières éteintes ; enregistrer la fenêtre.',
-          'Scenario A: plug the standby appliances into L3–L4 for one full '
+          'Scenario A: plug the standby appliances into L3-L4 for one full '
               'hour, lights off; record the window.',
         ),
         Bi('Scénario B : tout débrancher pendant l\'heure suivante ; enregistrer.',
@@ -630,16 +630,16 @@ class EducationContent {
               'month and a year, in kWh and FCFA.',
         ),
         Bi(
-          'Ouvrir l\'onglet « Analyse IA » : lire la charge de veille (00–05 h), '
-              'l\'heure de pointe et le score A–E.',
-          'Open the "AI analysis" tab: read the base load (00–05 h), the peak '
-              'hour and the A–E score.',
+          'Ouvrir l\'onglet « Analyse IA » : lire la charge de veille (00-05 h), '
+              'l\'heure de pointe et le score A-E.',
+          'Open the "AI analysis" tab: read the base load (00-05 h), the peak '
+              'hour and the A-E score.',
         ),
         Bi(
           'Proposer trois actions pour améliorer le score (multiprise à '
-              'interrupteur, décalage hors pointe 18–23 h, LED).',
+              'interrupteur, décalage hors pointe 18-23 h, LED).',
           'Suggest three actions to improve the score (switchable power strip, '
-              'shifting out of the 18–23 h peak, LEDs).',
+              'shifting out of the 18-23 h peak, LEDs).',
         ),
       ],
       outcomes: [
@@ -947,7 +947,7 @@ class EducationContent {
           'A charger plugged in without a phone gets warm: it is wasting energy.',
         )),
     EcoTip('peak', TipCategory.peak,
-        Bi('Évitez la pointe 18 h – 23 h', 'Avoid the 18:00–23:00 peak'),
+        Bi('Évitez la pointe 18 h à 23 h', 'Avoid the 18:00-23:00 peak'),
         Bi(
           'Repassage, pompage et lessive en journée soulagent le réseau ENEO et '
               'limitent les baisses de tension qui abîment les appareils.',
@@ -1037,9 +1037,9 @@ class EducationContent {
     GlossaryEntry(
         Bi('Tension (V)', 'Voltage (V)'),
         Bi(
-          '« Pression » électrique du réseau : 220 V – 50 Hz au Cameroun. Une '
+          '« Pression » électrique du réseau : 220 V, 50 Hz au Cameroun. Une '
               'baisse de tension peut endommager les moteurs et compresseurs.',
-          'Electrical "pressure" of the grid: 220 V – 50 Hz in Cameroon. A '
+          'Electrical "pressure" of the grid: 220 V, 50 Hz in Cameroon. A '
               'voltage drop can damage motors and compressors.',
         )),
     GlossaryEntry(
@@ -1057,17 +1057,17 @@ class EducationContent {
     GlossaryEntry(
         Bi('Charge de base', 'Base load'),
         Bi(
-          'Consommation permanente mesurée la nuit (00–05 h) : réfrigérateur, '
+          'Consommation permanente mesurée la nuit (00-05 h) : réfrigérateur, '
               'veilles, éclairage de sécurité.',
-          'Permanent consumption measured at night (00–05 h): fridge, standby, '
+          'Permanent consumption measured at night (00-05 h): fridge, standby, '
               'security lighting.',
         )),
     GlossaryEntry(
         Bi('Pointe', 'Peak'),
         Bi(
-          'Période de forte demande sur le réseau, en général 18 h – 23 h. '
+          'Période de forte demande sur le réseau, en général 18 h à 23 h. '
               'Consommer hors pointe soulage le réseau ENEO.',
-          'Period of high demand on the grid, usually 18:00–23:00. Using '
+          'Period of high demand on the grid, usually 18:00-23:00. Using '
               'energy off-peak relieves the ENEO grid.',
         )),
     GlossaryEntry(

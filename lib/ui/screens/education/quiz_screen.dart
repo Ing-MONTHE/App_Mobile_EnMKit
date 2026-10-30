@@ -51,8 +51,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: Text('${t.t('edu.quiz')} · ${_m.code}')),
       body: DoodleBackground(
+        underAppBar: true,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
           children: [

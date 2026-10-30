@@ -19,8 +19,10 @@ class GlossaryScreen extends ConsumerWidget {
       ..sort((a, b) => a.term.of(t.locale).compareTo(b.term.of(t.locale)));
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: Text(t.t('edu.glossary'))),
       body: DoodleBackground(
+        underAppBar: true,
         child: ListView.separated(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
           itemCount: entries.length,
@@ -61,8 +63,10 @@ class TipsScreen extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: Text(t.t('edu.tips'))),
       body: DoodleBackground(
+        underAppBar: true,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
           children: [

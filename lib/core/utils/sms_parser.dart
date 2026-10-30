@@ -53,7 +53,7 @@ class SmsParser {
   ///
   /// • Un SMS peut contenir plusieurs lignes, et mêler du texte : seules les
   ///   lignes conformes sont retenues (les autres sont ignorées).
-  /// • Année = 2000 + AA ; HH = heure de DÉBUT du créneau (00–23).
+  /// • Année = 2000 + AA ; HH = heure de DÉBUT du créneau (00-23).
   /// • Séparateur décimal `.` ou `,`.
   /// • Date impossible (31/02…), heure > 23 : ligne rejetée et comptée.
   /// • Une même heure présente deux fois dans le SMS : la dernière l'emporte.

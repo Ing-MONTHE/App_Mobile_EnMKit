@@ -416,7 +416,7 @@ class _KeyFigures extends ConsumerWidget {
         t.t('ai.peakHour'),
         insights.peakHour == null
             ? '-'
-            : '${_two(insights.peakHour!)}h · ${(insights.peakShare * 100).round()} % 18–23h'
+            : '${_two(insights.peakHour!)}h · ${(insights.peakShare * 100).round()} % 18-23h'
       ),
       (
         trend != null && trend > 0

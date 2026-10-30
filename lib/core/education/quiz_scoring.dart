@@ -16,7 +16,7 @@ class QuizResult {
   /// sans réponse).
   final List<bool> perQuestion;
 
-  /// Pourcentage entier 0–100.
+  /// Pourcentage entier 0-100.
   int get percent => total == 0 ? 0 : ((correct * 100) / total).round();
 
   /// Réussite : au moins 70 % de bonnes réponses.

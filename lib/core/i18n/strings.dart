@@ -838,9 +838,9 @@ class AppStrings {
     'edu.title': {'fr': 'Éducation énergétique', 'en': 'Energy education'},
     'edu.subtitle': {
       'fr': 'Smart Home Learning Lab : 7 travaux pratiques sur le banc EnMKit '
-          '(L1–L2 ampoules, L3–L4 prises).',
+          '(L1-L2 ampoules, L3-L4 prises).',
       'en': 'Smart Home Learning Lab: 7 practical labs on the EnMKit bench '
-          '(L1–L2 bulbs, L3–L4 sockets).',
+          '(L1-L2 bulbs, L3-L4 sockets).',
     },
     'edu.stats': {
       'fr': '{0}/7 quiz réussis · {1} étapes cochées',
@@ -918,8 +918,8 @@ class AppStrings {
       'en': 'Bench line status',
     },
     'edu.circuits.hint': {
-      'fr': 'L1–L2 : ampoules · L3–L4 : prises. Toutes en parallèle sous 220 V.',
-      'en': 'L1–L2: bulbs · L3–L4: sockets. All in parallel at 220 V.',
+      'fr': 'L1-L2 : ampoules · L3-L4 : prises. Toutes en parallèle sous 220 V.',
+      'en': 'L1-L2: bulbs · L3-L4: sockets. All in parallel at 220 V.',
     },
     'edu.open.kit': {'fr': 'Ouvrir le kit (piloter les lignes)', 'en': 'Open the kit (control lines)'},
     'edu.open.analysis': {'fr': 'Ouvrir l\'analyse IA du kit', 'en': 'Open the kit AI analysis'},

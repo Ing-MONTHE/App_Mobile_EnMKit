@@ -94,6 +94,7 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(widget.moduleCode == null
             ? t.t('asst.title')
@@ -108,6 +109,7 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
         ],
       ),
       body: DoodleBackground(
+        underAppBar: true,
         child: SafeArea(
           top: false,
           child: Column(

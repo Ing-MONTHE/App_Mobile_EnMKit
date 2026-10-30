@@ -29,6 +29,7 @@ class TpDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text('${m.code} · ${m.title.of(lang)}',
             maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -41,6 +42,7 @@ class TpDetailScreen extends ConsumerWidget {
         ],
       ),
       body: DoodleBackground(
+        underAppBar: true,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
           children: [

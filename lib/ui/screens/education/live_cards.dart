@@ -237,7 +237,7 @@ class _EnergyCalculatorCardState extends ConsumerState<EnergyCalculatorCard> {
   }
 }
 
-/// TP2 : état des lignes du banc (L1–L2 ampoules, L3–L4 prises).
+/// TP2 : état des lignes du banc (L1-L2 ampoules, L3-L4 prises).
 class _CircuitsCard extends ConsumerWidget {
   const _CircuitsCard({required this.kit});
   final KitModel kit;

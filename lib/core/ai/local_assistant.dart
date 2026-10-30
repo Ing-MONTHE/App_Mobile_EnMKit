@@ -87,8 +87,8 @@ class LocalAssistant {
         ? 'Offline answer (built from your kit data and the EnMKit guides):'
         : 'Réponse hors-ligne (issue des données de votre kit et des fiches EnMKit) :';
     final outro = en
-        ? 'Tip: the "Energy education" module (TP1–TP7) details these notions.'
-        : 'Astuce : le module « Éducation énergétique » (TP1–TP7) détaille ces notions.';
+        ? 'Tip: the "Energy education" module (TP1-TP7) details these notions.'
+        : 'Astuce : le module « Éducation énergétique » (TP1-TP7) détaille ces notions.';
     return [intro, ...parts, outro].join('\n\n');
   }
 }

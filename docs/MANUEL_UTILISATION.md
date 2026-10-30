@@ -2,8 +2,8 @@
 
 **Application mobile du banc de formation « Smart Home Learning Lab »**
 
-Éditeur : 2ME Technologies SARL · contact@2metechsarl.org · https://www.2metechsarl.org
-Application : EnMKit Banc (Android), version 1.1.0
+Éditeur : 2ME Technologies SARL · contact@2metechsarl.org · https://www.2metechsarl.org  
+Application : EnMKit Banc (Android), version 1.1.0  
 Public : formateurs et apprenants des établissements de formation.
 
 ---
@@ -79,6 +79,9 @@ Trois écrans présentent l'application :
 
 Appuyez sur **Suivant** pour avancer, **Commencer** sur le dernier écran, ou **Passer** pour aller directement à la suite. Cette présentation n'apparaît qu'une fois.
 
+<p align="center"><img src="captures/01-onboarding-1.png" width="230" alt="Présentation 1"> <img src="captures/02-onboarding-3.png" width="230" alt="Présentation 3"></p>
+<p align="center"><em>Écrans de présentation au premier lancement</em></p>
+
 ### 2.2 Code de sécurité (optionnel)
 
 Juste après la présentation, l'application propose de créer un code d'accès. Ce code est **facultatif**.
@@ -93,6 +96,9 @@ Juste après la présentation, l'application propose de créer un code d'accès.
 Cette proposition n'apparaît qu'une seule fois. Vous pourrez activer ou désactiver le code plus tard dans **Réglages > Sécurité** (voir section 8).
 
 Code oublié : sur l'écran de saisie du code, appuyez sur **Code oublié ?**, répondez à vos deux questions, puis définissez un nouveau code avec **Réinitialiser le code**.
+
+<p align="center"><img src="captures/03-code-optionnel.png" width="230" alt="Code optionnel"></p>
+<p align="center"><em>Création du code, avec « Passer pour l'instant »</em></p>
 
 ### 2.3 Se déplacer dans l'application
 
@@ -109,6 +115,9 @@ La barre de navigation du bas est **flottante** et n'affiche que des **icônes**
 - **Point rouge sur l'icône Aide** : le support vous a répondu et vous n'avez pas encore lu la réponse. Il disparaît dès que vous ouvrez l'onglet Aide.
 
 ---
+
+<p align="center"><img src="captures/04-accueil.png" width="230" alt="Accueil"></p>
+<p align="center"><em>Accueil : le parc de kits et la barre de navigation en icônes</em></p>
 
 ## 3. Ajouter et piloter un kit
 
@@ -165,6 +174,9 @@ Sur l'accueil, une puce **À valider** sur la carte d'un kit indique qu'il ne re
 
 **Partager un kit** : dans **Config**, appuyez sur **Générer le QR Code**, puis **Partager le QR Code**. Un autre téléphone pourra l'importer (section 3.1).
 
+<p align="center"><img src="captures/12-config.png" width="230" alt="Onglet Config"></p>
+<p align="center"><em>Onglet Config d'un kit configuré (verrouillé)</em></p>
+
 ### 3.4 Piloter les lignes (onglet Lignes)
 
 Chaque ligne a deux boutons : **ON** et **OFF**.
@@ -182,6 +194,9 @@ En haut de l'onglet :
 - **Connexion du kit** : appuyez sur **Tester**. Le téléphone envoie une demande de consommation au kit. Le statut passe à « Vérification du kit… », puis à **Kit joignable** si le kit répond dans les 45 secondes, sinon à « Kit injoignable » (vérifiez alors la carte SIM du kit : réseau et crédit SMS).
 - **Actions rapides** : **Tout allumer** ou **Tout éteindre**. Seules les lignes qui changent d'état reçoivent une commande, avec un court délai entre chaque SMS.
 
+<p align="center"><img src="captures/05-lignes.png" width="230" alt="Onglet Lignes"></p>
+<p align="center"><em>Onglet Lignes : connexion du kit, actions rapides et commande des lignes</em></p>
+
 ### 3.5 Consommation (onglet Conso)
 
 1. Ouvrez l'onglet **Conso**.
@@ -196,6 +211,9 @@ Sans réponse dans le délai prévu : **Aucune réponse du kit. Vérifiez le ré
 Ce relevé d'index (à la demande) est différent des **trames horaires**, que le kit envoie de lui-même et qui alimentent l'Analyse IA.
 
 ---
+
+<p align="center"><img src="captures/07-conso.png" width="230" alt="Onglet Conso"></p>
+<p align="center"><em>Onglet Conso : dernière mesure, évolution et historique</em></p>
 
 ## 4. Analyse IA
 
@@ -247,6 +265,9 @@ En bas de l'onglet, **Poser une question à l'assistant** ouvre l'Assistant éne
 
 ---
 
+<p align="center"><img src="captures/08-analyse-1.png" width="230" alt="Score"> <img src="captures/09-analyse-2.png" width="230" alt="Courbe 48 h"> <img src="captures/10-analyse-3.png" width="230" alt="Recommandations"> <img src="captures/11-analyse-4.png" width="230" alt="Anomalies et qualité"></p>
+<p align="center"><em>Analyse IA : score et prévisions, courbe des dernières 48 h, recommandations, anomalies et qualité des données</em></p>
+
 ## 5. Module Apprendre
 
 ### 5.1 L'écran Apprendre
@@ -261,6 +282,9 @@ L'onglet **Apprendre** (titre **Éducation énergétique**) contient :
 - l'accès à l'**Assistant énergie**.
 
 Sans kit enregistré, les fiches restent consultables, mais sans données en direct (« Ajoutez un kit (onglet Accueil) pour relier cette fiche à des mesures réelles. »).
+
+<p align="center"><img src="captures/13-apprendre.png" width="230" alt="Apprendre"> <img src="captures/14-apprendre-2.png" width="230" alt="Liste des TP"></p>
+<p align="center"><em>Module Apprendre : progression et liste des 7 TP</em></p>
 
 ### 5.2 Les 7 TP
 
@@ -320,6 +344,9 @@ Données en direct proposées selon le TP :
 
 ---
 
+<p align="center"><img src="captures/15-tp4-1.png" width="230" alt="Fiche TP4"> <img src="captures/16-tp4-2.png" width="230" alt="Déroulé"> <img src="captures/18-tp4-4.png" width="230" alt="Compétences et quiz"> <img src="captures/19-quiz.png" width="230" alt="Quiz"></p>
+<p align="center"><em>Fiche TP4 : objectif, données en direct, déroulé à cocher, compétences, puis quiz</em></p>
+
 ## 6. Assistant énergie et tuteur de TP
 
 ### 6.1 Fonctionnement
@@ -361,6 +388,9 @@ Depuis une fiche TP, **Demander à l'assistant sur ce TP** ouvre l'assistant int
 - En ligne, l'assistant connaît le contenu du TP et **guide l'apprenant pas à pas, sans donner directement la réponse**. C'est voulu : il aide à raisonner.
 - Hors-ligne, il répond avec les conseils locaux (pas de guidage spécifique au TP).
 
+<p align="center"><img src="captures/20-tuteur.png" width="230" alt="Tuteur du TP"></p>
+<p align="center"><em>Tuteur du TP4 (ici en mode hors-ligne)</em></p>
+
 ### 6.5 Messages de repli
 
 | Message | Cause | Que faire |
@@ -398,6 +428,9 @@ Contact écrit : contact@2metechsarl.org.
 
 ---
 
+<p align="center"><img src="captures/21-aide.png" width="230" alt="Aide"> <img src="captures/22-aide-2.png" width="230" alt="Conversation"></p>
+<p align="center"><em>Aide et assistance : demande au support et conversation</em></p>
+
 ## 8. Réglages
 
 | Section | Réglage | Détail |
@@ -414,6 +447,9 @@ Contact écrit : contact@2metechsarl.org.
 | **À propos** | Application, Version | Informations sur l'application. |
 
 ---
+
+<p align="center"><img src="captures/30-reglages-1.png" width="230" alt="Apparence"> <img src="captures/31-reglages-2.png" width="230" alt="Serveur et sécurité"> <img src="captures/32-reglages-3.png" width="230" alt="À propos"></p>
+<p align="center"><em>Réglages</em></p>
 
 ## 9. Dépannage
 

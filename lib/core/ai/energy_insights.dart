@@ -32,8 +32,8 @@ class TariffTier {
 /// Calcul du coût en FCFA (contrat §6.8).
 class EnergyTariff {
   /// Barème résidentiel par tranches mensuelles PAR DÉFAUT (valeurs du
-  /// contrat, « à faire valider » avec ENEO) : 0–110 kWh : 50 ; 111–400 : 79 ;
-  /// 401–800 : 94 ; > 800 : 99 FCFA/kWh. Facturation progressive : chaque
+  /// contrat, « à faire valider » avec ENEO) : 0-110 kWh : 50 ; 111-400 : 79 ;
+  /// 401-800 : 94 ; > 800 : 99 FCFA/kWh. Facturation progressive : chaque
   /// tranche est payée à son propre prix.
   static const List<TariffTier> defaultTiers = [
     TariffTier(110, 50),
@@ -223,7 +223,7 @@ class EnergyScore {
     required this.anomalies,
   });
 
-  /// Score 0–100 (100 = sobre et régulier).
+  /// Score 0-100 (100 = sobre et régulier).
   final double value;
 
   /// Note A (≥ 85) … E (< 40).
@@ -357,7 +357,7 @@ class EnergyInsights {
 ///  • `peak_share` = Σ moyennes horaires 18..22 / Σ moyennes horaires 0..23 ;
 ///  • tendance : jours civils complets (< aujourd'hui) avec ≥ 18 h reçues,
 ///    ramenés à 24 h ; ≥ 4 jours valides par semaine, sinon null ;
-///  • `night_drift` : moyenne nocturne (00–05 h, ≥ 3 relevés) > 2 × veille ET
+///  • `night_drift` : moyenne nocturne (00-05 h, ≥ 3 relevés) > 2 × veille ET
 ///    ≥ veille + 0,05 sur ≥ 3 nuits consécutives ; une anomalie par série,
 ///    datée de la dernière nuit, qui doit tomber dans les 7 derniers jours ;
 ///  • `next_24h` : les 24 créneaux SUIVANT le créneau courant ;
@@ -375,11 +375,11 @@ class EnergyInsightsEngine {
   static const int maxAnomalies = 50;
   static const int minProfilePoints = 3;
 
-  /// Heures du créneau de pointe « 18–22 h » (heures de DÉBUT 18 à 22 incluses).
+  /// Heures du créneau de pointe « 18-22 h » (heures de DÉBUT 18 à 22 incluses).
   static const int peakFromHour = 18;
   static const int peakToHour = 22;
 
-  /// Heures nocturnes « 00–05 h » (heures de début 0 à 5 incluses).
+  /// Heures nocturnes « 00-05 h » (heures de début 0 à 5 incluses).
   static const int nightToHour = 5;
 
   /// Une journée compte pour la tendance si ≥ 18 h sur 24 ont été reçues.
@@ -766,12 +766,12 @@ class EnergyInsightsEngine {
         severity: baseShare > 0.5 ? RecoSeverity.critical : RecoSeverity.warning,
         title: en ? 'High standby consumption' : 'Consommation de veille élevée',
         body: en
-            ? 'At night (00–05 h) about $watts W stay on permanently, i.e. '
+            ? 'At night (00-05 h) about $watts W stay on permanently, i.e. '
                 '${pct(baseShare)} of your daily energy. Unplug chargers, TV '
                 'decoders and appliances on standby, use a switchable power strip. '
                 'Halving this base load would save about ${kwh(saving)} kWh/month '
                 '(≈ ${fcfa(saving * marginalRate)}).'
-            : 'La nuit (00–05 h), environ $watts W restent consommés en '
+            : 'La nuit (00-05 h), environ $watts W restent consommés en '
                 'permanence, soit ${pct(baseShare)} de l\'énergie du jour. '
                 'Débranchez chargeurs, décodeurs TV et appareils en veille, '
                 'utilisez une multiprise à interrupteur. Diviser cette veille par '
