@@ -10,6 +10,7 @@ import 'package:enmkit/ui/widgets/common/brand_loader.dart';
 import 'package:enmkit/ui/widgets/common/soft_card.dart';
 import 'package:enmkit/ui/widgets/common/state_views.dart';
 import 'package:enmkit/viewmodels/relay_viewmodel.dart';
+import 'package:enmkit/viewmodels/sms_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,6 +88,10 @@ class _RelaysTabState extends ConsumerState<RelaysTab> {
               onAction: () => _showRelaySheet(context, ref, vm),
             )
           else ...[
+            _KitConnectionCard(kitNumber: kitNumber),
+            const SizedBox(height: 14),
+            _QuickActions(vm: vm),
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.only(left: 4, bottom: 12),
               child: Text(
@@ -95,18 +100,18 @@ class _RelaysTabState extends ConsumerState<RelaysTab> {
               ),
             ),
             ...vm.relays.asMap().entries.map(
-                  (e) => Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
-                    child: _RelayCard(
+              (e) => Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: _RelayCard(
                       relay: e.value,
                       vm: vm,
                       onDelete: () => _confirmDelete(context, ref, vm, e.value),
                     )
-                        .animate()
-                        .fadeIn(delay: (180 + 70 * e.key).ms, duration: 350.ms)
-                        .slideX(begin: 0.12, end: 0, curve: Curves.easeOut),
-                  ),
-                ),
+                    .animate()
+                    .fadeIn(delay: (180 + 70 * e.key).ms, duration: 350.ms)
+                    .slideX(begin: 0.12, end: 0, curve: Curves.easeOut),
+              ),
+            ),
             // Le bouton « Ajouter une ligne » a été retiré : le nombre de
             // lignes (4 ou 7) est fixé une fois pour toutes à l'enregistrement
             // du kit ; on n'en ajoute plus ensuite.
@@ -128,7 +133,9 @@ class _RelaysTabState extends ConsumerState<RelaysTab> {
     // Garde-fou : pas plus de 7 lignes.
     if (vm.relays.length >= DefaultData.maxRelaysPerKit) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t.tf('relays.max', [DefaultData.maxRelaysPerKit]))),
+        SnackBar(
+          content: Text(t.tf('relays.max', [DefaultData.maxRelaysPerKit])),
+        ),
       );
       return;
     }
@@ -141,36 +148,39 @@ class _RelaysTabState extends ConsumerState<RelaysTab> {
       title: t.t('relays.add'),
       subtitle: t.t('relays.add.sub'),
       accent: AppTheme.emerald,
-      builder: (ctx) => Column(
-        children: [
-          SheetField(
-            controller: nameController,
-            label: t.t('relays.name'),
-            hint: t.t('relays.name.hint'),
-            icon: Icons.lightbulb_outline_rounded,
-            textCapitalization: TextCapitalization.words,
-            autofocus: true,
+      builder:
+          (ctx) => Column(
+            children: [
+              SheetField(
+                controller: nameController,
+                label: t.t('relays.name'),
+                hint: t.t('relays.name.hint'),
+                icon: Icons.lightbulb_outline_rounded,
+                textCapitalization: TextCapitalization.words,
+                autofocus: true,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () async {
+                    final name = nameController.text.trim();
+                    await vm.addRelay(
+                      RelayModel(
+                        name: name.isEmpty ? null : name,
+                        amperage: DefaultData.defaultAmperage,
+                        kitNumber: widget.kitNumber,
+                      ),
+                    );
+                    await vm.fetchRelays();
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                  icon: const Icon(Icons.check_rounded),
+                  label: Text(t.t('relays.add.cta')),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: () async {
-                final name = nameController.text.trim();
-                await vm.addRelay(RelayModel(
-                  name: name.isEmpty ? null : name,
-                  amperage: DefaultData.defaultAmperage,
-                  kitNumber: widget.kitNumber,
-                ));
-                await vm.fetchRelays();
-                if (ctx.mounted) Navigator.pop(ctx);
-              },
-              icon: const Icon(Icons.check_rounded),
-              label: Text(t.t('relays.add.cta')),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -232,23 +242,25 @@ Future<bool?> _confirmDialog(
 }) {
   return showDialog<bool>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: Text(t.t('common.cancel')),
+    builder:
+        (ctx) => AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(t.t('common.cancel')),
+            ),
+            FilledButton(
+              style:
+                  danger
+                      ? FilledButton.styleFrom(backgroundColor: AppTheme.danger)
+                      : null,
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(cta),
+            ),
+          ],
         ),
-        FilledButton(
-          style: danger
-              ? FilledButton.styleFrom(backgroundColor: AppTheme.danger)
-              : null,
-          onPressed: () => Navigator.pop(ctx, true),
-          child: Text(cta),
-        ),
-      ],
-    ),
   );
 }
 
@@ -268,8 +280,9 @@ class _RelayCard extends ConsumerStatefulWidget {
 
 class _RelayCardState extends ConsumerState<_RelayCard> {
   bool _editing = false;
-  late final TextEditingController _nameC =
-      TextEditingController(text: widget.relay.name ?? '');
+  late final TextEditingController _nameC = TextEditingController(
+    text: widget.relay.name ?? '',
+  );
 
   @override
   void dispose() {
@@ -318,109 +331,114 @@ class _RelayCardState extends ConsumerState<_RelayCard> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
-            IconPill(
-              icon: Icons.bolt_rounded,
-              color: accent,
-              size: 44,
-            ),
+            IconPill(icon: Icons.bolt_rounded, color: accent, size: 44),
             const SizedBox(width: 13),
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 240),
                 switchInCurve: Curves.easeOut,
-                child: _editing
-                    ? TextField(
-                        key: const ValueKey('edit'),
-                        controller: _nameC,
-                        autofocus: true,
-                        textCapitalization: TextCapitalization.words,
-                        style: const TextStyle(
-                            fontSize: 15.5, fontWeight: FontWeight.w700),
-                        decoration: InputDecoration(
-                          isDense: true,
-                          hintText: t.t('relays.name.hint'),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 10),
-                          filled: true,
-                          fillColor: scheme.surfaceContainerHighest
-                              .withValues(alpha: 0.5),
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppTheme.radiusControl),
-                            borderSide: BorderSide.none,
+                child:
+                    _editing
+                        ? TextField(
+                          key: const ValueKey('edit'),
+                          controller: _nameC,
+                          autofocus: true,
+                          textCapitalization: TextCapitalization.words,
+                          style: const TextStyle(
+                            fontSize: 15.5,
+                            fontWeight: FontWeight.w700,
                           ),
-                        ),
-                        onSubmitted: (_) => _save(),
-                      )
-                    : Column(
-                        key: const ValueKey('view'),
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  relay.name ?? 'Ligne ${relay.id ?? ''}',
-                                  style: const TextStyle(
-                                      fontSize: 15.5,
-                                      fontWeight: FontWeight.w700),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: t.t('relays.name.hint'),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            filled: true,
+                            fillColor: scheme.surfaceContainerHighest
+                                .withValues(alpha: 0.5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radiusControl,
                               ),
-                              // Historique des confirmations de commande
-                              // (n'apparaît que s'il existe au moins une
-                              // confirmation renvoyée par le kit).
-                              if (hasHistory)
-                                _HistoryButton(
-                                  onTap: () => _openHistory(context),
-                                ),
-                            ],
+                              borderSide: BorderSide.none,
+                            ),
                           ),
-                        ],
-                      ),
+                          onSubmitted: (_) => _save(),
+                        )
+                        : Column(
+                          key: const ValueKey('view'),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    relay.name ?? 'Ligne ${relay.id ?? ''}',
+                                    style: const TextStyle(
+                                      fontSize: 15.5,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                // Historique des confirmations de commande
+                                // (n'apparaît que s'il existe au moins une
+                                // confirmation renvoyée par le kit).
+                                if (hasHistory)
+                                  _HistoryButton(
+                                    onTap: () => _openHistory(context),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
               ),
             ),
             const SizedBox(width: 8),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 240),
               switchInCurve: Curves.easeOutBack,
-              transitionBuilder: (child, anim) =>
-                  ScaleTransition(scale: anim, child: child),
-              child: _editing
-                  ? Row(
-                      key: const ValueKey('actions'),
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _CircleAction(
-                          icon: Icons.check_rounded,
-                          color: AppTheme.success,
-                          onTap: _save,
-                        ),
-                        const SizedBox(width: 10),
-                        _CircleAction(
-                          icon: Icons.close_rounded,
-                          color: AppTheme.danger,
-                          onTap: widget.onDelete,
-                        ),
-                      ],
-                    )
-                  : _OnOffControl(
-                      key: const ValueKey('onoff'),
-                      pendingOn: pendingOn,
-                      onSelect: (on) async {
-                        try {
-                          await widget.vm.setRelay(relay, on);
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(t.tf('relays.failed', [e]))),
-                            );
+              transitionBuilder:
+                  (child, anim) => ScaleTransition(scale: anim, child: child),
+              child:
+                  _editing
+                      ? Row(
+                        key: const ValueKey('actions'),
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _CircleAction(
+                            icon: Icons.check_rounded,
+                            color: AppTheme.success,
+                            onTap: _save,
+                          ),
+                          const SizedBox(width: 10),
+                          _CircleAction(
+                            icon: Icons.close_rounded,
+                            color: AppTheme.danger,
+                            onTap: widget.onDelete,
+                          ),
+                        ],
+                      )
+                      : _OnOffControl(
+                        key: const ValueKey('onoff'),
+                        pendingOn: pendingOn,
+                        onSelect: (on) async {
+                          try {
+                            await widget.vm.setRelay(relay, on);
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(t.tf('relays.failed', [e])),
+                                ),
+                              );
+                            }
                           }
-                        }
-                      },
-                    ),
+                        },
+                      ),
             ),
           ],
         ),
@@ -566,44 +584,45 @@ class _Seg extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         opacity: opacity,
         child: Container(
-        width: 56,
-        height: 38,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          // Apparence NEUTRE et identique quel que soit l'état de la ligne.
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(11.5),
-          border: Border.all(
-            color: scheme.outline.withValues(alpha: 0.16),
-            width: 1,
+          width: 56,
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            // Apparence NEUTRE et identique quel que soit l'état de la ligne.
+            color: scheme.surface,
+            borderRadius: BorderRadius.circular(11.5),
+            border: Border.all(
+              color: scheme.outline.withValues(alpha: 0.16),
+              width: 1,
+            ),
           ),
-        ),
-        child: pending
-            ? SizedBox(
-                width: 15,
-                height: 15,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(fg),
-                ),
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: 13, color: fg),
-                  const SizedBox(width: 4),
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 260),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.4,
-                      color: fg,
+          child:
+              pending
+                  ? SizedBox(
+                    width: 15,
+                    height: 15,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(fg),
                     ),
-                    child: Text(label),
+                  )
+                  : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(icon, size: 13, color: fg),
+                      const SizedBox(width: 4),
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 260),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.4,
+                          color: fg,
+                        ),
+                        child: Text(label),
+                      ),
+                    ],
                   ),
-                ],
-              ),
         ),
       ),
     );
@@ -653,14 +672,20 @@ class _AckHistoryList extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 18),
         child: Column(
           children: [
-            Icon(Icons.history_toggle_off_rounded,
-                size: 44, color: scheme.onSurfaceVariant),
+            Icon(
+              Icons.history_toggle_off_rounded,
+              size: 44,
+              color: scheme.onSurfaceVariant,
+            ),
             const SizedBox(height: 14),
             Text(
               t.t('relays.history.empty'),
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: scheme.onSurfaceVariant, fontSize: 13.5, height: 1.4),
+                color: scheme.onSurfaceVariant,
+                fontSize: 13.5,
+                height: 1.4,
+              ),
             ),
           ],
         ),
@@ -721,7 +746,9 @@ class _AckHistoryList extends ConsumerWidget {
                           [lineName],
                         ),
                         style: const TextStyle(
-                            fontSize: 14.5, fontWeight: FontWeight.w700),
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       // Accusé brut joint : la confirmation réellement reçue
                       // du kit (texte du SMS), pour lever toute ambiguïté.
@@ -733,8 +760,9 @@ class _AckHistoryList extends ConsumerWidget {
                             Icon(
                               Icons.sms_rounded,
                               size: 13,
-                              color: scheme.onSurfaceVariant
-                                  .withValues(alpha: 0.8),
+                              color: scheme.onSurfaceVariant.withValues(
+                                alpha: 0.8,
+                              ),
                             ),
                             const SizedBox(width: 4),
                             Expanded(
@@ -784,5 +812,148 @@ class _AckHistoryList extends ConsumerWidget {
     final d = at.day.toString().padLeft(2, '0');
     final mo = at.month.toString().padLeft(2, '0');
     return '$d/$mo $time';
+  }
+}
+
+/// Carte « Connexion du kit » : un test envoie la demande de consommation
+/// (`cons`) ; toute réponse du kit dans les 45 s le déclare joignable.
+class _KitConnectionCard extends ConsumerWidget {
+  const _KitConnectionCard({required this.kitNumber});
+  final String? kitNumber;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
+    final listener = ref.watch(kitSmsListenerProvider(kitNumber));
+    final state = listener.reachability;
+    final (IconData icon, Color color, String text) = switch (state) {
+      KitReachability.unknown => (
+        Icons.help_outline_rounded,
+        AppTheme.inkSoft,
+        t.t('kit.unknown'),
+      ),
+      KitReachability.checking => (
+        Icons.sync_rounded,
+        AppTheme.amber,
+        t.t('kit.checking'),
+      ),
+      KitReachability.reachable => (
+        Icons.check_circle_rounded,
+        AppTheme.emerald,
+        t.t('kit.reachable'),
+      ),
+      KitReachability.unreachable => (
+        Icons.error_outline_rounded,
+        AppTheme.coral,
+        t.t('kit.unreachable'),
+      ),
+    };
+    final checking = state == KitReachability.checking;
+
+    return SoftCard(
+      padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t.t('kit.connection'),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  text,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: AppTheme.inkSoft),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          FilledButton.tonal(
+            onPressed:
+                checking
+                    ? null
+                    : () {
+                      listener.armReachabilityCheck();
+                      ref
+                          .read(kitSmsServiceProvider(kitNumber))
+                          .requestConsumption();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(t.t('kit.helloSent'))),
+                      );
+                    },
+            child: Text(t.t('kit.test')),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Actions rapides : tout allumer / tout éteindre. Seules les lignes qui
+/// changent réellement d'état reçoivent une commande (voir [RelayViewModel.setAllRelays]).
+class _QuickActions extends ConsumerWidget {
+  const _QuickActions({required this.vm});
+  final RelayViewModel vm;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 10),
+          child: Text(
+            t.t('relays.quickActions'),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: () => vm.setAllRelays(true),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppTheme.emerald,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                icon: const Icon(Icons.power_settings_new_rounded, size: 20),
+                label: Text(t.t('relays.allOn')),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => vm.setAllRelays(false),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.coral,
+                  side: BorderSide(
+                    color: AppTheme.coral.withValues(alpha: 0.5),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                icon: const Icon(Icons.power_off_rounded, size: 20),
+                label: Text(t.t('relays.allOff')),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

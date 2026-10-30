@@ -33,6 +33,8 @@ existant n'a changé ; le kit envoie désormais en plus des **trames horaires**.
   nombre restant s'affiche, et au-delà l'app répond hors-ligne jusqu'au lendemain.
 - **Barre de navigation flottante, en icônes seules** : bulle colorée qui glisse vers l'onglet
   actif, nom de l'onglet en appui long, point rouge sur Aide pour une réponse non lue.
+- **Onglet Lignes** : carte « Connexion du kit » avec bouton **Tester** (joignable / injoignable)
+  et actions rapides **Tout allumer / Tout éteindre**.
 - **Réglages → Serveur EnMKit (optionnel)** : URL de l'API + clé client `ck_…` (masquée),
   test de connexion.
 

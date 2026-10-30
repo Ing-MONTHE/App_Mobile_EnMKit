@@ -177,7 +177,10 @@ Les boutons ne montrent pas l'état « supposé » de la ligne : ce sont de simp
 
 **Renommer ou supprimer une ligne** : double-appuyez sur la carte de la ligne. Modifiez le nom, puis appuyez sur le bouton vert pour valider, ou sur le bouton rouge pour supprimer la ligne.
 
-> Note : l'application ne propose pas, à ce jour, de boutons « Tout allumer / Tout éteindre » ni de bouton « Tester » la connexion du kit à l'écran. Pour vérifier que le kit répond, utilisez la demande de consommation (section 3.5) : une réponse prouve que le kit est joignable.
+En haut de l'onglet :
+
+- **Connexion du kit** : appuyez sur **Tester**. Le téléphone envoie une demande de consommation au kit. Le statut passe à « Vérification du kit… », puis à **Kit joignable** si le kit répond dans les 45 secondes, sinon à « Kit injoignable » (vérifiez alors la carte SIM du kit : réseau et crédit SMS).
+- **Actions rapides** : **Tout allumer** ou **Tout éteindre**. Seules les lignes qui changent d'état reçoivent une commande, avec un court délai entre chaque SMS.
 
 ### 3.5 Consommation (onglet Conso)
 
@@ -421,7 +424,7 @@ Contact écrit : contact@2metechsarl.org.
 3. Vérifiez le **Numéro du kit** dans l'onglet **Config** (bon numéro, sans faute de frappe).
 4. Vérifiez que votre téléphone fait partie des **Numéros autorisés** du kit : le kit n'obéit qu'à ces numéros.
 5. Patientez : une réponse peut prendre plusieurs minutes. Elle sera reconnue même si l'application est fermée.
-6. Faites une demande de consommation (onglet **Conso**) pour vérifier que le kit répond.
+6. Onglet **Lignes**, carte **Connexion du kit** : appuyez sur **Tester** pour vérifier que le kit répond.
 7. Si le problème persiste : onglet **Aide**, objet « Kit injoignable ».
 
 ### L'Analyse IA reste vide
