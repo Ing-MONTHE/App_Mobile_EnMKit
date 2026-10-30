@@ -267,8 +267,8 @@ class AppStrings {
     },
     'relays.add': {'fr': 'Ajouter une ligne', 'en': 'Add a line'},
     'relays.add.sub': {
-      'fr': 'Nommez-la et choisissez son ampérage.',
-      'en': 'Name it and choose its amperage.',
+      'fr': 'Donnez-lui un nom pour la reconnaître.',
+      'en': 'Give it a name to recognise it.',
     },
     'relays.name': {'fr': 'Nom de la ligne', 'en': 'Line name'},
     'relays.name.hint': {'fr': 'Ex : Salon, Pompe…', 'en': 'E.g. Living room, Pump…'},
@@ -276,8 +276,8 @@ class AppStrings {
     'relays.add.cta': {'fr': 'Ajouter la ligne', 'en': 'Add the line'},
     'relays.edit': {'fr': 'Modifier la ligne', 'en': 'Edit line'},
     'relays.edit.sub': {
-      'fr': 'Renommez-la ou changez son ampérage.',
-      'en': 'Rename it or change its amperage.',
+      'fr': 'Changez son nom.',
+      'en': 'Change its name.',
     },
     'relays.delete': {'fr': 'Supprimer', 'en': 'Delete'},
     'relays.delete.confirm': {
@@ -379,8 +379,8 @@ class AppStrings {
     'cons.trend': {'fr': 'Évolution', 'en': 'Trend'},
     'cons.empty.title': {'fr': 'Aucune donnée', 'en': 'No data'},
     'cons.empty.msg': {
-      'fr': 'Appuyez sur « Actualiser » pour interroger le kit.',
-      'en': 'Tap "Refresh" to query the kit.',
+      'fr': 'Appuyez sur « Vérifier votre consommation électrique » pour interroger le kit.',
+      'en': 'Tap "Check your electricity usage" to query the kit.',
     },
     'cons.requestSent': {'fr': 'Demande envoyée au kit…', 'en': 'Request sent to the kit…'},
     'cons.waiting': {
@@ -755,8 +755,8 @@ class AppStrings {
       'en': 'Secure and multi-kit',
     },
     'onb.3.desc': {
-      'fr': 'Un code d\'accès protège l\'application. Gérez tout votre parc depuis un seul endroit.',
-      'en': 'An access code protects the application. Manage your whole fleet from one place.',
+      'fr': 'Protégez l\'application par un code si vous le souhaitez. Gérez tout votre parc depuis un seul endroit.',
+      'en': 'Protect the application with a code if you wish. Manage your whole fleet from one place.',
     },
     // --- Analyse IA (trames horaires, moteur hors-ligne) ---------------------
     'tab.analysis': {'fr': 'Analyse IA', 'en': 'AI analysis'},

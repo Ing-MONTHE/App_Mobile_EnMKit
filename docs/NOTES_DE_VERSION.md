@@ -1,7 +1,7 @@
 # Notes de version · EnMKit
 
 > Application Flutter de pilotage de kits électriques par SMS (multi-kits, sans Internet).
-> `applicationId` : `com.enmkit.app` · Version applicative : **1.0.0+1**.
+> `applicationId` : `com.enmkit.banc` (app « EnMKit Banc ») · Version applicative : **1.1.0+4**.
 
 ---
 
@@ -17,10 +17,10 @@ existant n'a changé ; le kit envoie désormais en plus des **trames horaires**.
   application fermée). Stockage idempotent : même heure reçue deux fois ⇒ une seule
   valeur, la dernière reçue.
 - **Onglet « Analyse IA »** dans le détail d'un kit (4ᵉ onglet), calculé **hors-ligne** :
-  score d'efficacité 0–100 + note A–E, prévisions jour / mois en kWh et FCFA, courbe
+  score d'efficacité 0 à 100 + note A à E, prévisions jour / mois en kWh et FCFA, courbe
   48 h vs profil type, anomalies (pics, dérive nocturne), qualité des données (complétude,
   trous), recommandations bilingues chiffrées. État vide explicatif.
-- **Module « Apprendre »** (nouvel onglet de la barre du bas) : fiches TP1–TP7 guidées
+- **Module « Apprendre »** (nouvel onglet de la barre du bas) : fiches TP1 à TP7 guidées
   (objectif, durée, déroulé à cocher persistant, compétences), données en direct du kit
   (compteur, lignes, trame décodée), **Scénario A / B** pour TP4/TP5/TP7, quiz par TP
   (score mémorisé, 70 % pour réussir), éco-gestes, glossaire, FR/EN, contexte Cameroun
@@ -31,6 +31,8 @@ existant n'a changé ; le kit envoie désormais en plus des **trames horaires**.
   en ligne reçoit le contenu du TP et guide l'apprenant pas à pas (sans donner directement la réponse).
 - **Quota de questions** : le serveur limite les questions en ligne par client et par jour ; le
   nombre restant s'affiche, et au-delà l'app répond hors-ligne jusqu'au lendemain.
+- **Barre de navigation flottante, en icônes seules** : bulle colorée qui glisse vers l'onglet
+  actif, nom de l'onglet en appui long, point rouge sur Aide pour une réponse non lue.
 - **Réglages → Serveur EnMKit (optionnel)** : URL de l'API + clé client `ck_…` (masquée),
   test de connexion.
 
@@ -57,8 +59,8 @@ existant n'a changé ; le kit envoie désormais en plus des **trames horaires**.
 - Migration automatique au premier lancement (création des tables v17, aucune table
   existante modifiée).
 - L'URL du serveur doit être en **https://** (Android bloque le HTTP en clair).
-- `pubspec.yaml` n'a pas été incrémenté (incrémenter le build réinitialise le code
-  secret à la mise à jour, cf. `security_reset`) : à décider au moment de la release.
+- Version **1.1.0+4**, `applicationId` `com.enmkit.banc` : l'app Banc s'installe à côté de
+  l'app client (`com.enmkit.app`) sans la remplacer.
 
 ---
 

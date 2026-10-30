@@ -1,4 +1,5 @@
 import 'package:enmkit/core/api/enmkit_api_client.dart';
+import 'package:enmkit/models/server_config_model.dart';
 import 'package:enmkit/providers.dart';
 import 'package:enmkit/viewmodels/server_config_viewmodel.dart';
 import 'package:enmkit/ui/screens/access/security_questions_screen.dart';
@@ -7,6 +8,7 @@ import 'package:enmkit/ui/theme/app_theme.dart';
 import 'package:enmkit/ui/widgets/common/app_sheet.dart';
 import 'package:enmkit/ui/widgets/common/soft_card.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -159,7 +161,14 @@ class SettingsScreen extends ConsumerWidget {
           child: Column(
             children: [
               _InfoLine(label: t.t('settings.app'), value: 'EnMKit'),
-              _InfoLine(label: t.t('settings.version'), value: '1.0.0'),
+              // Version lue dans le paquet installé (pubspec), jamais codée en dur.
+              FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (context, snap) => _InfoLine(
+                  label: t.t('settings.version'),
+                  value: snap.data?.version ?? '…',
+                ),
+              ),
             ],
           ),
         ),
@@ -778,7 +787,7 @@ class _ServerSection extends ConsumerWidget {
           SheetField(
             controller: url,
             label: t.t('settings.server.url'),
-            hint: 'https://api.enmkit.cm',
+            hint: kDefaultApiUrl,
             icon: Icons.link_rounded,
             keyboardType: TextInputType.url,
           ),
