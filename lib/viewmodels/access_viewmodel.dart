@@ -39,6 +39,11 @@ class AccessViewModel extends ChangeNotifier {
   bool _busy = false;
   bool get busy => _busy;
 
+  /// Le clavier de déverrouillage saisit exactement 4 chiffres : un code plus long ne
+  /// pourrait plus être tapé et bloquerait l'accès. Toute création ou modification
+  /// applique donc la même règle.
+  static bool _isValidPin(String pin) => RegExp(r'^\d{4}$').hasMatch(pin);
+
   Future<void> _init() async {
     final has = await _repository.hasPin();
     _status = has ? AccessStatus.locked : AccessStatus.needsSetup;
@@ -50,8 +55,8 @@ class AccessViewModel extends ChangeNotifier {
   /// configurées juste après (récupération garantie dès la création).
   Future<void> createPin(String pin, String confirm) async {
     _error = null;
-    if (pin.length < 4) {
-      _error = 'Le code doit contenir au moins 4 chiffres';
+    if (!_isValidPin(pin)) {
+      _error = 'Le code doit contenir exactement 4 chiffres';
       notifyListeners();
       return;
     }
@@ -98,8 +103,8 @@ class AccessViewModel extends ChangeNotifier {
       notifyListeners();
       return false;
     }
-    if (newPin.length < 4) {
-      _error = 'Le nouveau code doit contenir au moins 4 chiffres';
+    if (!_isValidPin(newPin)) {
+      _error = 'Le nouveau code doit contenir exactement 4 chiffres';
       notifyListeners();
       return false;
     }
@@ -117,8 +122,8 @@ class AccessViewModel extends ChangeNotifier {
   /// sont ensuite proposées par l'écran appelant).
   Future<bool> setupSecurity(String pin, String confirm) async {
     _error = null;
-    if (pin.length < 4) {
-      _error = 'Le code doit contenir au moins 4 chiffres';
+    if (!_isValidPin(pin)) {
+      _error = 'Le code doit contenir exactement 4 chiffres';
       notifyListeners();
       return false;
     }
@@ -178,8 +183,8 @@ class AccessViewModel extends ChangeNotifier {
   Future<bool> resetPinWithAnswers(
       String a1, String a2, String newPin, String confirm) async {
     _error = null;
-    if (newPin.length < 4) {
-      _error = 'Le nouveau code doit contenir au moins 4 chiffres';
+    if (!_isValidPin(newPin)) {
+      _error = 'Le nouveau code doit contenir exactement 4 chiffres';
       notifyListeners();
       return false;
     }

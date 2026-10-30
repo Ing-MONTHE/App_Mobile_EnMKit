@@ -88,7 +88,7 @@ Juste après la présentation, l'application propose de créer un code d'accès.
 
 - Pour ne pas en créer : appuyez sur **Passer pour l'instant**. Vous arrivez directement sur l'accueil.
 - Pour en créer un :
-  1. Saisissez un code d'**au moins 4 chiffres** (**Créez votre code**).
+  1. Saisissez un code d'**exactement 4 chiffres** (**Créez votre code**).
   2. Saisissez-le à nouveau (**Confirmez le code**).
   3. Choisissez deux **Questions de récupération** différentes et répondez-y. Elles servent en cas d'oubli (la casse et les espaces sont ignorés).
   4. Si le téléphone a une empreinte enregistrée, l'application propose **Activer l'empreinte** ou **Plus tard**.
@@ -422,7 +422,7 @@ Alternative : **Continuer sur WhatsApp** ouvre WhatsApp avec le message prépar�
 
 Quand le support répond, un **point rouge** apparaît sur l'icône Aide de la barre du bas.
 
-La **FAQ** (Réglages > Aide > **Questions fréquentes (FAQ)**) couvre : Compte & Connexion, Appareil / Kit, QR & Configuration, Dépannage.
+La **FAQ** (Réglages > Aide > **Questions fréquentes (FAQ)**) couvre, en français et en anglais : Accès et sécurité, Kit et lignes, QR Code et partage, IA et apprentissage, Dépannage.
 
 Contact écrit : contact@2metechsarl.org.
 
@@ -438,7 +438,7 @@ Contact écrit : contact@2metechsarl.org.
 | **Apparence** | Clair, Sombre, Auto | Auto suit le thème du téléphone. |
 | **Couleur d'accent** | Palette de couleurs | Change la couleur principale de l'interface. |
 | **Langue** | Français, English | Change toute l'interface, y compris les fiches TP. |
-| **Sécurité** | **Code de sécurité** | Interrupteur. L'activer crée un code (4 chiffres minimum) et des questions de récupération. Le désactiver demande le code actuel. |
+| **Sécurité** | **Code de sécurité** | Interrupteur. L'activer crée un code (exactement 4 chiffres) et des questions de récupération. Le désactiver demande le code actuel. |
 | | **Déverrouillage par empreinte** | Visible si le code est activé. Le code reste le secours. |
 | | **Questions de récupération** | Définir ou modifier les deux questions. |
 | | **Modifier le code d'accès** | Code actuel, nouveau code, confirmation. |

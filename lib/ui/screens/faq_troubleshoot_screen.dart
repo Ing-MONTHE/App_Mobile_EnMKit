@@ -1,13 +1,29 @@
+import 'package:enmkit/core/i18n/strings.dart';
+import 'package:enmkit/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FaqTroubleshootScreen extends StatelessWidget {
+/// FAQ « Dépannage » : kit muet, conso sans réponse, ligne bloquée, analyse
+/// vide, comparaison A / B, assistant hors-ligne et contact du support.
+class FaqTroubleshootScreen extends ConsumerWidget {
   const FaqTroubleshootScreen({super.key});
 
+  static const _questions = <IconData>[
+    Icons.portable_wifi_off,
+    Icons.bolt,
+    Icons.power_settings_new,
+    Icons.insights_outlined,
+    Icons.compare_arrows,
+    Icons.cloud_off_outlined,
+    Icons.support_agent,
+  ];
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dépannage'),
+        title: Text(t.t('faq.home.trouble')),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
@@ -18,42 +34,20 @@ class FaqTroubleshootScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHero(context),
+              _buildHero(context, t),
               const SizedBox(height: 24),
-              _buildSection(
-                context,
-                'Le Kit n\'apparaît pas',
-                Icons.visibility_off_outlined,
-                const [
-                  'Vérifie le numéro du Kit dans Paramètres → « Numéro du Kit ».',
-                  'Confirme que le Kit est alimenté et câblé correctement.',
-                  'Synchronise via « État Système » → « Valider ».'
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                context,
-                'La consommation ne se met pas à jour',
-                Icons.bolt,
-                const [
-                  'Onglet Consommation → « Actualiser la consommation ».',
-                  'Assure-toi que les pulsations et la consommation initiale sont configurées.',
-                  'Si le problème persiste, réessaie plus tard et contacte le support.'
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                context,
-                'Ligne non réactive',
-                Icons.power_settings_new,
-                const [
-                  'Vérifie les connexions et l\'ampérage de la ligne.',
-                  'Contrôle que la ligne est bien créée et active dans « Lignes Configurées » (Admin).',
-                  'Redémarre l\'appareil puis réessaie.'
-                ],
-              ),
+              for (var i = 0; i < _questions.length; i++) ...[
+                if (i > 0) const SizedBox(height: 16),
+                _buildSection(
+                  context,
+                  t.t('faq.trouble.q${i + 1}'),
+                  _questions[i],
+                  t.t('faq.trouble.a${i + 1}').split('\n'),
+                ),
+              ],
               const SizedBox(height: 28),
-              _buildSupportCard(context),
+              _buildSupportCard(context, t),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -62,7 +56,7 @@ class FaqTroubleshootScreen extends StatelessWidget {
   }
 }
 
-Widget _buildHero(BuildContext context) {
+Widget _buildHero(BuildContext context, AppStrings t) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(20),
@@ -79,13 +73,13 @@ Widget _buildHero(BuildContext context) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Résoudre rapidement les incidents courants',
+              Text(t.t('faq.trouble.hero'),
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: scheme.onSurface)),
               const SizedBox(height: 6),
-              Text('Guides rapides pour le Kit, la consommation et les lignes.',
+              Text(t.t('faq.trouble.hero.sub'),
                   style: TextStyle(
                       fontSize: 12,
                       color: scheme.onSurfaceVariant,
@@ -156,7 +150,7 @@ Widget _buildSection(
   );
 }
 
-Widget _buildSupportCard(BuildContext context) {
+Widget _buildSupportCard(BuildContext context, AppStrings t) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(18),
@@ -171,7 +165,7 @@ Widget _buildSupportCard(BuildContext context) {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            'Si le problème persiste, contacte le support avec le numéro du Kit.',
+            t.t('faq.trouble.support'),
             style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
           ),
         )

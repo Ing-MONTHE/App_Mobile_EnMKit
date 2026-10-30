@@ -1,13 +1,26 @@
+import 'package:enmkit/core/i18n/strings.dart';
+import 'package:enmkit/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FaqQrScreen extends StatelessWidget {
+/// FAQ « QR Code et partage » : générer, partager et importer un kit.
+class FaqQrScreen extends ConsumerWidget {
   const FaqQrScreen({super.key});
 
+  static const _questions = <IconData>[
+    Icons.qr_code,
+    Icons.share_outlined,
+    Icons.qr_code_scanner,
+    Icons.sync,
+    Icons.error_outline,
+  ];
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR & Configuration'),
+        title: Text(t.t('faq.home.qr')),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
@@ -18,42 +31,20 @@ class FaqQrScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHero(context),
+              _buildHero(context, t),
               const SizedBox(height: 24),
-              _buildSection(
-                context,
-                'Générer le QR Code',
-                Icons.qr_code,
-                const [
-                  'Paramètres → « Générer QR Code » (non-admin).',
-                  'Le QR contient la configuration actuelle du Kit (numéro, relais, etc.).',
-                  'Partage utile pour sauvegarde ou duplication d\'installation.'
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                context,
-                'Importer un QR Code',
-                Icons.qr_code_scanner,
-                const [
-                  'Paramètres → « Importer QR Code ».',
-                  'Scanner avec la caméra ou importer depuis la galerie.',
-                  'Une confirmation s\'affiche avant d\'écraser les données actuelles.'
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                context,
-                'Après import',
-                Icons.cloud_done_outlined,
-                const [
-                  'Les données du Kit sont régénérées automatiquement.',
-                  'Utilise « État Système » → « Valider » pour renvoyer la config au Kit.',
-                  'Vérifie la consommation et les lignes dans leurs onglets respectifs.'
-                ],
-              ),
+              for (var i = 0; i < _questions.length; i++) ...[
+                if (i > 0) const SizedBox(height: 16),
+                _buildSection(
+                  context,
+                  t.t('faq.qr.q${i + 1}'),
+                  _questions[i],
+                  t.t('faq.qr.a${i + 1}').split('\n'),
+                ),
+              ],
               const SizedBox(height: 28),
-              _buildInfoCard(context),
+              _buildInfoCard(context, t),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -62,7 +53,7 @@ class FaqQrScreen extends StatelessWidget {
   }
 }
 
-Widget _buildHero(BuildContext context) {
+Widget _buildHero(BuildContext context, AppStrings t) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(20),
@@ -79,14 +70,13 @@ Widget _buildHero(BuildContext context) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Gérer vos QR Codes de configuration',
+              Text(t.t('faq.qr.hero'),
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: scheme.onSurface)),
               const SizedBox(height: 6),
-              Text(
-                  'Génération, import et synchronisation des données du Kit en toute sécurité.',
+              Text(t.t('faq.qr.hero.sub'),
                   style: TextStyle(
                       fontSize: 12,
                       color: scheme.onSurfaceVariant,
@@ -157,7 +147,7 @@ Widget _buildSection(
   );
 }
 
-Widget _buildInfoCard(BuildContext context) {
+Widget _buildInfoCard(BuildContext context, AppStrings t) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(18),
@@ -172,7 +162,7 @@ Widget _buildInfoCard(BuildContext context) {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            'Astuce: conserve une copie du QR Code de configuration pour restaurer rapidement le système.',
+            t.t('faq.qr.tip'),
             style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
           ),
         )

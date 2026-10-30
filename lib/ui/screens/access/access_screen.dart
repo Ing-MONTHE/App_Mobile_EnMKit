@@ -197,7 +197,7 @@ class _AccessScreenState extends ConsumerState<AccessScreen> {
           child: TextButton(
             onPressed: vm.busy ? null : _skip,
             child: Text(
-              'Passer pour l\'instant',
+              t.t('access.skipForNow'),
               style: TextStyle(
                 color: scheme.onSurfaceVariant,
                 fontSize: 14.5,
