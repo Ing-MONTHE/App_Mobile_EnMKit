@@ -41,6 +41,11 @@ class _ScanKitScreenState extends ConsumerState<ScanKitScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
+        // Le thème impose un titre foncé : on le force en blanc sur l'image de la caméra.
+        titleTextStyle: Theme.of(context)
+            .appBarTheme
+            .titleTextStyle
+            ?.copyWith(color: Colors.white),
         elevation: 0,
         title: Text(t.t('scan.title')),
       ),
