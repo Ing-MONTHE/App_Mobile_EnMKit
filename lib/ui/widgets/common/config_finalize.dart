@@ -4,7 +4,7 @@ import 'package:enmkit/ui/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Clôture de configuration — geste PARTAGÉ entre l'onglet Config et la carte
+/// Clôture de configuration : geste PARTAGÉ entre l'onglet Config et la carte
 /// du kit dans la liste, pour que la validation soit rigoureusement la même des
 /// deux côtés (même message envoyé, même état persisté, mêmes retours visuels).
 ///

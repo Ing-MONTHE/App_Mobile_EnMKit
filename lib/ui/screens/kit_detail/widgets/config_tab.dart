@@ -108,7 +108,7 @@ class ConfigTab extends ConsumerWidget {
         ),
         const SizedBox(height: 24),
         // Verrouillée : plus aucun envoi de configuration possible. Le bouton
-        // disparaît au lieu d'être grisé — il n'y a plus rien à tenter.
+        // disparaît au lieu d'être grisé : il n'y a plus rien à tenter.
         if (!current.configSent)
           FilledButton.icon(
             onPressed: () =>
@@ -413,7 +413,7 @@ class ConfigTab extends ConsumerWidget {
     // ENVOI SANS BLOCAGE. Le kit peut mettre plusieurs minutes à répondre
     // (mesuré : 3 min 47 s) : un dialogue d'attente modal emprisonnait
     // l'utilisateur, et l'écho arrivait après expiration. Désormais l'écho est
-    // reconnu par les chemins de réception — y compris application fermée — et
+    // reconnu par les chemins de réception, y compris application fermée, et
     // c'est le volet « État de la configuration » qui prend le relais.
     try {
       await sms.sendConcatenatedSystemConfig(
@@ -591,7 +591,7 @@ class _NumberRowState extends State<_NumberRow> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      empty ? '—' : widget.value,
+                      empty ? '-' : widget.value,
                       style: TextStyle(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w600,
@@ -820,12 +820,12 @@ class _InfoRow extends StatelessWidget {
 /// Volet « État de la configuration » : où en est-on face au kit.
 ///
 /// Trois états, mutuellement exclusifs :
-///  • **verrouillée**  — « Fin_config » est parti : la configuration est CLOSE.
+///  • **verrouillée** : « Fin_config » est parti : la configuration est CLOSE.
 ///    Plus aucun envoi de configuration n'est possible, il ne reste que le
 ///    pilotage des lignes et la consommation. Matérialisé par un cadenas.
-///  • **OK**           — le retour du kit correspond exactement à ce qui a été
+///  • **OK**          : le retour du kit correspond exactement à ce qui a été
 ///    envoyé : il ne manque que la validation, proposée ici.
-///  • **en cours**     — la configuration est partie, le kit n'a pas encore
+///  • **en cours**    : la configuration est partie, le kit n'a pas encore
 ///    répondu. Le kit peut mettre plusieurs minutes ; rien ne bloque l'app, et
 ///    l'écho sera reconnu même application fermée.
 class _ConfigStatusCard extends ConsumerWidget {

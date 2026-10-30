@@ -9,7 +9,7 @@ class AckLogic {
   AckLogic._();
 
   /// Fenêtre (en secondes) pendant laquelle deux accusés identiques (même ligne,
-  /// même état) sont considérés comme un doublon — alignée sur la déduplication
+  /// même état) sont considérés comme un doublon, alignée sur la déduplication
   /// faite en base par le chemin natif.
   static const int dedupWindowSeconds = 30;
 
@@ -30,7 +30,7 @@ class AckLogic {
   }
 
   /// Fenêtre (en secondes) en deçà de laquelle un même accusé (même ligne, même
-  /// état) qui ré-arrive est considéré comme une RE-LIVRAISON du même message —
+  /// état) qui ré-arrive est considéré comme une RE-LIVRAISON du même message,
   /// et non une nouvelle commande. Un accusé est livré par DEUX chemins (le flux
   /// `readsms` ET la réinjection du chemin natif), à quelques secondes d'écart :
   /// sans cette fenêtre, la feuille de confirmation s'ouvrirait deux fois.

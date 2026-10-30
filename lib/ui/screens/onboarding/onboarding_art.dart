@@ -137,7 +137,7 @@ Widget _chip(Widget child) => Container(
       child: child,
     );
 
-/// Page 1 — Pilotage à distance par SMS : téléphone + ondes + ampoule.
+/// Page 1 · Pilotage à distance par SMS : téléphone + ondes + ampoule.
 class ArtRemoteControl extends StatelessWidget {
   const ArtRemoteControl({super.key});
 
@@ -178,7 +178,7 @@ class ArtRemoteControl extends StatelessWidget {
               ],
             )),
           ),
-          // Bulle "confirmation" flottante (accusé reçu du kit) — la boucle
+          // Bulle "confirmation" flottante (accusé reçu du kit) : la boucle
           // complète envoi → confirmation.
           Positioned(
             bottom: 30,
@@ -202,7 +202,7 @@ class ArtRemoteControl extends StatelessWidget {
   }
 }
 
-/// Page 2 — Suivi de consommation : carte avec courbe + barres + éclair.
+/// Page 2 · Suivi de consommation : carte avec courbe + barres + éclair.
 class ArtConsumption extends StatelessWidget {
   const ArtConsumption({super.key});
 
@@ -314,7 +314,7 @@ class ArtConsumption extends StatelessWidget {
       );
 }
 
-/// Page 3 — Sécurité & multi-kits : bouclier devant une pile de cartes kit.
+/// Page 3 · Sécurité & multi-kits : bouclier devant une pile de cartes kit.
 class ArtSecurity extends StatelessWidget {
   const ArtSecurity({super.key});
 

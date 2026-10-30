@@ -53,7 +53,7 @@ class KitRepository {
 
 
   /// Marque (ou démarque) un kit comme ayant reçu une configuration AVEC SUCCÈS
-  /// — débloque le pilotage effectif des lignes.
+  /// débloque le pilotage effectif des lignes.
   Future<void> markConfigSent(String kitNumber, {bool sent = true}) async {
     final db = await _dbService.database;
     await db.update(
@@ -78,7 +78,7 @@ class KitRepository {
   }
 
   /// L'écho du kit concorde : la configuration attend la validation de
-  /// l'utilisateur. Idempotent — deux livraisons du même écho (flux `readsms`
+  /// l'utilisateur. Idempotent, deux livraisons du même écho (flux `readsms`
   /// ET chemin natif) laissent le même état.
   Future<void> markConfigAckPending(String kitNumber) async {
     final db = await _dbService.database;
@@ -109,7 +109,7 @@ class KitRepository {
   }
 
   /// Supprime UN kit (par son numéro GSM, clé) ET toutes ses données rattachées
-  /// — lignes, consommations, numéros autorisés, accusés — dans une transaction,
+  /// lignes, consommations, numéros autorisés, accusés, dans une transaction,
   /// pour ne laisser aucun orphelin en base.
   Future<void> deleteKit(String kitNumber) async {
     final db = await _dbService.database;

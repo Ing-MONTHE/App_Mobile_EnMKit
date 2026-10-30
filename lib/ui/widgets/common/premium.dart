@@ -33,7 +33,7 @@ class AnimatedCount extends StatelessWidget {
   }
 }
 
-/// Grande carte "héro" à dégradé, avec halo lumineux interne — le bloc phare
+/// Grande carte "héro" à dégradé, avec halo lumineux interne : le bloc phare
 /// fintech (solde, total, mesure clé).
 class GradientHeroCard extends StatelessWidget {
   const GradientHeroCard({

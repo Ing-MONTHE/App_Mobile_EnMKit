@@ -4,9 +4,18 @@ import 'package:flutter/material.dart';
 /// EnMKit en filigrane, pour une immersion de marque. Un voile dégradé garde
 /// le contenu lisible par-dessus.
 class DoodleBackground extends StatelessWidget {
-  const DoodleBackground({super.key, required this.child});
+  const DoodleBackground({
+    super.key,
+    required this.child,
+    this.underAppBar = false,
+  });
 
   final Widget child;
+
+  /// À utiliser avec `Scaffold(extendBodyBehindAppBar: true)` : le motif passe
+  /// derrière la barre de titre transparente (sinon on voit du noir dessous),
+  /// et le contenu est décalé sous cette barre.
+  final bool underAppBar;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +78,17 @@ class DoodleBackground extends StatelessWidget {
           ),
         ),
 
-        child,
+        if (underAppBar)
+          Padding(
+            padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: child,
+            ),
+          )
+        else
+          child,
       ],
     );
   }

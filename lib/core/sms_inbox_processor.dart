@@ -41,7 +41,7 @@ class SmsInboxProcessor {
 
   /// Traite un SMS. Retourne le numéro du kit concerné dès que l'expéditeur
   /// correspond à un kit connu (afin que le SMS brut puisse être réinjecté dans
-  /// le flux temps réel — ex. confirmation de config), ou null si l'expéditeur
+  /// le flux temps réel, ex. confirmation de config), ou null si l'expéditeur
   /// n'est pas un kit. La consommation et les accusés de ligne sont persistés
   /// au passage.
   Future<String?> process(IncomingSms sms) async {
@@ -56,7 +56,7 @@ class SmsInboxProcessor {
     if (kit == null) return null;
     final kitNumber = kit.kitNumber;
 
-    // 1) Consommation : reconnaît les deux formats du kit — « <nombre> kWh »
+    // 1) Consommation : reconnaît les deux formats du kit, « <nombre> kWh »
     //    ET « cons:<nombre> » / « consommation <nombre> » (parseur central
     //    partagé avec le flux temps réel, pour éviter toute divergence).
     final kwh = SmsParser.extractConsumption(sms.body);

@@ -35,7 +35,7 @@ class AllowedNumberViewModel extends ChangeNotifier {
 
   /// Définit les (au plus) DEUX numéros autorisés du kit en une fois : remplace
   /// l'ensemble par [first] et [second] (les valeurs vides sont ignorées).
-  /// Le kit ne gère que deux numéros — d'où ces deux champs fixes côté UI.
+  /// Le kit ne gère que deux numéros, d'où ces deux champs fixes côté UI.
   Future<void> setTwoNumbers(String? first, String? second) async {
     await _repository.clearAllowedNumbers(kitNumber: kitNumber);
     final values = [first, second]

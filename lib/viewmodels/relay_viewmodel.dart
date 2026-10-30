@@ -100,7 +100,7 @@ class RelayViewModel extends ChangeNotifier {
     _relays = await _repository.getAllRelays(kitNumber: kitNumber);
     // Trié par id = ordre de création = ordre des lignes dans le kit (Ligne 1..N).
     // La POSITION dans cette liste (1-based) est le NUMÉRO DE LIGNE attendu par
-    // le kit (r1..r7) — indépendant de l'id base (qui peut valoir 10, 11, …).
+    // le kit (r1..r7), indépendant de l'id base (qui peut valoir 10, 11, …).
     _relays.sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
     await _loadAckHistory();
 
@@ -113,7 +113,7 @@ class RelayViewModel extends ChangeNotifier {
   ///
   /// Appelé après que le chemin natif d'arrière-plan a journalisé un accusé :
   /// on met à jour ce ViewModel VIVANT en place plutôt que de le recréer
-  /// (l'ancien comportement — `ref.invalidate` — détruisait le ViewModel en
+  /// (l'ancien comportement, `ref.invalidate`, détruisait le ViewModel en
   /// pleine réception, et l'accusé était alors traité sur une liste de lignes
   /// encore vide, donc rejeté ; c'était la cause des accusés non interceptés).
   Future<void> refreshFromDb() async {
@@ -301,13 +301,13 @@ class RelayViewModel extends ChangeNotifier {
   /// A appeler depuis la couche supérieure lorsqu'un SMS du kit est reçu.
   ///
   /// Le kit renvoie la commande soumise (« rXon » / « rXoff »). On reflète
-  /// l'état réel ON/OFF de la ligne concernée — que cette app ait initié
-  /// l'action ou non — afin que tous les numéros autorisés restent synchronisés.
+  /// l'état réel ON/OFF de la ligne concernée, que cette app ait initié
+  /// l'action ou non, afin que tous les numéros autorisés restent synchronisés.
   int? processIncomingSms(String message) {
     if (message.isEmpty) return null;
     final lower = message.toLowerCase();
     bool changed = false;
-    // Ligne (id base) du dernier accusé reconnu — sert à ouvrir automatiquement
+    // Ligne (id base) du dernier accusé reconnu : sert à ouvrir automatiquement
     // la feuille « Confirmation de la commande » côté UI (null = aucun accusé).
     int? ackedRelayId;
     // « of » (1 f, langage du kit) ou « off » sont acceptés pour l'extinction.
@@ -365,7 +365,7 @@ class RelayViewModel extends ChangeNotifier {
         );
       }
     }
-    // IMPORTANT — l'HISTORISATION de l'accusé (journal horodaté + texte brut)
+    // IMPORTANT : l'HISTORISATION de l'accusé (journal horodaté + texte brut)
     // est délibérément confiée au SEUL chemin natif d'arrière-plan
     // (SmsInboxProcessor), pour deux raisons :
     //   1) il s'exécute aussi quand l'app est fermée ou sur un autre onglet ;

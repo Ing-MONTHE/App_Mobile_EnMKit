@@ -1,25 +1,28 @@
-// ============================================================================
-// Modifications appliquées :
-// 1. Design épuré sans ombres lourdes
-// 2. Bordures réduites et subtiles
-// 3. Espacement optimisé
-// 4. Fond d'icône léger au lieu de gradient
-// ============================================================================
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:enmkit/providers.dart';
 import 'package:enmkit/ui/screens/faq_account_screen.dart';
 import 'package:enmkit/ui/screens/faq_device_screen.dart';
 import 'package:enmkit/ui/screens/faq_qr_screen.dart';
 import 'package:enmkit/ui/screens/faq_troubleshoot_screen.dart';
 
-class FaqScreen extends StatelessWidget {
+/// Accueil de la FAQ (Réglages > Aide > Questions fréquentes). Les textes
+/// viennent du catalogue i18n (clés `faq.*`), donc suivent la langue choisie.
+class FaqScreen extends ConsumerWidget {
   const FaqScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
+    final categories = <(String, IconData, Widget)>[
+      ('access', Icons.lock_outline, const FaqAccountScreen()),
+      ('kit', Icons.memory, const FaqDeviceScreen()),
+      ('qr', Icons.qr_code, const FaqQrScreen()),
+      ('trouble', Icons.build_outlined, const FaqTroubleshootScreen()),
+    ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FAQ'),
+        title: Text(t.t('faq.title')),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
@@ -31,65 +34,19 @@ class FaqScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              _buildSettingCard(
-                context,
-                'Compte & Connexion',
-                'Problèmes d\'accès et sécurité',
-                Icons.lock_outline,
-                () {
-                  Navigator.push(
+              for (final (i, c) in categories.indexed) ...[
+                if (i > 0) const SizedBox(height: 10),
+                _buildSettingCard(
+                  context,
+                  t.t('faq.home.${c.$1}'),
+                  t.t('faq.home.${c.$1}.sub'),
+                  c.$2,
+                  () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const FaqAccountScreen(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),  // ✅ Réduit de 16 → 10
-              _buildSettingCard(
-                context,
-                'Appareil / Kit',
-                'Installation et utilisation du kit',
-                Icons.memory,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const FaqDeviceScreen(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),  // ✅ Réduit
-              _buildSettingCard(
-                context,
-                'QR & Configuration',
-                'Génération et import du QR code',
-                Icons.qr_code,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const FaqQrScreen(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),  // ✅ Réduit
-              _buildSettingCard(
-                context,
-                'Dépannage',
-                'Erreurs, pannes et solutions',
-                Icons.build_outlined,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const FaqTroubleshootScreen(),
-                    ),
-                  );
-                },
-              ),
+                    MaterialPageRoute(builder: (_) => c.$3),
+                  ),
+                ),
+              ],
               const SizedBox(height: 32),
             ],
           ),
@@ -98,81 +55,6 @@ class FaqScreen extends StatelessWidget {
     );
   }
 }
-
-// ============================================================================
-// FONCTION _buildSettingCard STYLISÉE
-// ============================================================================
-/*
-Widget _buildSettingCard(
-  BuildContext context,
-  String title,
-  String subtitle,
-  IconData icon,
-  VoidCallback onTap,
-) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.all(20),  // ← Trop d'espacement
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(16),  // ← Bordures larges
-        boxShadow: const [  // ← Ombres lourdes
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(  // ← Gradient lourd
-                colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: Colors.white, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.black38,
-            size: 16,
-          ),
-        ],
-      ),
-    ),
-  );
-}
-*/
 
 Widget _buildSettingCard(
   BuildContext context,

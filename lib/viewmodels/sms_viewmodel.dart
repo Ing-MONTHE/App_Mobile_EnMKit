@@ -53,7 +53,7 @@ class SmsListenerViewModel extends ChangeNotifier {
   /// Réinjecte dans le flux temps réel un SMS de kit reçu par le CHEMIN NATIF
   /// (drain d'arrière-plan). Indispensable pour que les attentes d'accusé
   /// (confirmation de config, joignabilité…) le voient même quand le flux
-  /// `readsms` n'a rien émis — le natif étant la voie de réception fiable.
+  /// `readsms` n'a rien émis, le natif étant la voie de réception fiable.
   /// On n'appelle PAS [_processTrustedSms] ici : la persistance (conso/accusés)
   /// est déjà faite côté natif ; on ne fait qu'émettre + marquer « joignable ».
   void injectTrustedSms(String body) {
@@ -71,7 +71,7 @@ class SmsListenerViewModel extends ChangeNotifier {
     }
     // Écho de config arrivé par la voie native (souvent application fermée) :
     // la persistance est déjà faite côté natif, mais l'UI ouverte doit tout de
-    // même voir la confirmation — la détection est idempotente.
+    // même voir la confirmation, la détection est idempotente.
     _detectConfigEcho(body);
     _recordTrusted(body);
     _trustedSmsController.add(body);
@@ -105,7 +105,7 @@ class SmsListenerViewModel extends ChangeNotifier {
 
   /// Arme le RETOUR VISUEL d'une demande de consommation : bascule l'UI en
   /// « attente », et sans réponse avant [uiTimeout] elle passe en « timeout ».
-  /// N.B. : l'ENREGISTREMENT de la conso ne dépend PAS de cette fenêtre — toute
+  /// N.B. : l'ENREGISTREMENT de la conso ne dépend PAS de cette fenêtre, toute
   /// conso reçue (sollicitée ou non) est persistée, cf. [_processTrustedSms].
   void armConsumptionWindow({
     Duration uiTimeout = const Duration(seconds: 60),
@@ -176,7 +176,7 @@ class SmsListenerViewModel extends ChangeNotifier {
   }
 
   /// Vrai dès qu'un écho de configuration CONCORDANT vient d'arriver pour ce
-  /// kit. Simple SIGNAL à destination de l'UI (ouverture de la confirmation) —
+  /// kit. Simple SIGNAL à destination de l'UI (ouverture de la confirmation),
   /// l'état durable, lui, vit en base (`configAckPending`).
   bool configEchoPending = false;
 
@@ -235,7 +235,7 @@ class SmsListenerViewModel extends ChangeNotifier {
       lastSms = "$kwh kWh";
       notifyListeners();
 
-      // Enregistre TOUTE conso — SOLLICITÉE OU NON. Aucune fenêtre requise : un
+      // Enregistre TOUTE conso, SOLLICITÉE OU NON. Aucune fenêtre requise : un
       // relevé qui arrive spontanément doit s'afficher. Dédup partagée (base,
       // 45 s) pour ne pas dupliquer un SMS déjà capté par le chemin natif.
       _persistConsumptionDeduped(kwh);
@@ -245,7 +245,7 @@ class SmsListenerViewModel extends ChangeNotifier {
   }
 
   /// Persiste un relevé [kwh] sauf s'il double un relevé déjà présent (même
-  /// valeur dans la fenêtre de dédup partagée) — typiquement le même SMS déjà
+  /// valeur dans la fenêtre de dédup partagée), typiquement le même SMS déjà
   /// enregistré par le chemin natif.
   Future<void> _persistConsumptionDeduped(double kwh) async {
     try {
@@ -331,7 +331,7 @@ class SmsListenerViewModel extends ChangeNotifier {
   /// [expected] (clé « n1 »/« n2 »/« en »/« ip » → valeur envoyée), le kit doit
   /// ré-écho la clé avec une valeur équivalente. La comparaison est TOLÉRANTE
   /// (espaces, casse, format numérique, format de numéro) car le kit renvoie ses
-  /// accusés avec un format variable — cf. [SmsParser.configAckMatches]. Les
+  /// accusés avec un format variable, cf. [SmsParser.configAckMatches]. Les
   /// paires peuvent arriver sur un seul SMS ou plusieurs. Retourne true si TOUTES
   /// sont confirmées avant [totalTimeout].
   Future<bool> waitForConfigAck(
@@ -360,7 +360,7 @@ class SmsListenerViewModel extends ChangeNotifier {
       if (remaining.isEmpty) finish(true);
     }
 
-    // Balaye le tampon récent (≤3 min) — capte une réponse déjà arrivée.
+    // Balaye le tampon récent (≤3 min), capte une réponse déjà arrivée.
     void scanBuffer() {
       final cut = DateTime.now().subtract(const Duration(minutes: 3));
       for (final e in List.of(_recentTrusted)) {

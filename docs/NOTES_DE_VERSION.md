@@ -1,11 +1,64 @@
-# Notes de version — EnMKit
+# Notes de version : EnMKit
 
 > Application Flutter de pilotage de kits électriques par SMS (multi-kits, sans Internet).
-> `applicationId` : `com.enmkit.app` · Version applicative : **1.0.0+1**.
+> `applicationId` : `com.enmkit.app` · Version applicative : **1.0.1+4**.
 
 ---
 
-## Version en cours — Lot « Lignes, sécurité optionnelle & temps réel »
+## Version 1.0.1 : alignement sur les correctifs de l'app EnMKit Banc
+
+Date du document : 30/10/2026. Build `1.0.1+4` (versionCode 4).
+
+Cette version reprend les corrections d'ergonomie et de textes faites sur l'app
+sœur EnMKit Banc. Les fonctions propres au banc (analyse IA, trames horaires,
+module Apprendre, assistant et serveur EnMKit) ne font **pas** partie de l'app client.
+Aucun mot-clé du protocole SMS du kit n'a changé.
+
+### ✨ Nouveautés
+
+- **Onglet Lignes.** Carte **« Connexion du kit »** avec un bouton **Tester**
+  (le kit doit répondre dans les 45 secondes) et **actions rapides**
+  **« Tout allumer » / « Tout éteindre »** (seules les lignes qui changent d'état
+  reçoivent un SMS). Tant que le kit n'a pas reçu sa configuration (onglet Config),
+  un bandeau l'indique et les boutons ON / OFF restent désactivés.
+- **Barre de navigation flottante en icônes** (Accueil, Aide, Réglages) : une bulle
+  glisse sous l'onglet actif ; le nom de l'onglet apparaît en appui long et reste
+  lu par les lecteurs d'écran. La pastille rouge de l'onglet Aide signale toujours
+  une réponse du support.
+- **FAQ intégrée réécrite** d'après l'app actuelle, en français et en anglais
+  (vouvoiement) : 4 catégories (Accès et sécurité, Kit et lignes, QR Code et
+  partage, Dépannage), 25 questions.
+
+### 🐞 Corrections
+
+- **Code d'accès : exactement 4 chiffres** à la création, au changement et à la
+  récupération (le clavier de déverrouillage n'en saisit que 4 : un code plus long
+  bloquait l'accès). Messages et libellés mis à jour.
+- Accueil : la pastille d'état d'un kit n'est **verte** que si le kit a bien reçu sa
+  configuration, orange sinon.
+- Réglages > À propos : la version affichée est lue dans le paquet installé
+  (elle n'est plus figée à « 1.0.0 »).
+- Textes : « Passer pour l'instant », objets de demande au support et titre
+  « Aide & assistance » traduits en anglais ; le message de consommation vide cite
+  le vrai bouton « Vérifier votre consommation électrique » ; plus de mention
+  d'ampérage à l'ajout ou à la modification d'une ligne ; le code d'accès est
+  présenté comme optionnel dans la présentation ; plus aucun tiret cadratin ni
+  demi-cadratin dans les textes.
+
+### ⚠️ Notes de migration
+
+- Mise à jour par-dessus la version 1.0.0 **sans perte de données** (kits, lignes,
+  accusés, consommation, réglages), avec le même APK *release* signé.
+- **Le code d'accès est réinitialisé à la mise à jour** : le numéro de build change
+  (3 → 4), ce que détecte `lib/core/security_reset.dart`. Le code, ses questions de
+  récupération et le déverrouillage par empreinte sont effacés et l'application
+  propose à nouveau d'en créer un (« Passer pour l'instant » reste possible). C'est
+  le comportement voulu ; prévenez les utilisateurs. Un code créé avant cette
+  version et qui comptait plus de 4 chiffres disparaît ainsi de lui-même.
+
+---
+
+## Version 1.0.0 — Lot « Lignes, sécurité optionnelle & temps réel »
 
 Date du document : 02/06/2026.
 

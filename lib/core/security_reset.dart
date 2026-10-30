@@ -6,13 +6,13 @@ import 'package:sqflite/sqflite.dart';
 /// mise à jour de l'application.
 ///
 /// Principe : Android impose d'augmenter le `versionCode` pour qu'une mise à
-/// jour s'installe — c'est donc un signal fiable et automatique. On mémorise la
+/// jour s'installe : c'est donc un signal fiable et automatique. On mémorise la
 /// dernière version de build vue (table `app_meta`). Si elle a changé depuis le
 /// dernier lancement, on efface le PIN et ses questions mémo, on désactive le
 /// verrouillage et on ré-affiche la proposition de code.
 ///
 /// IMPORTANT : TOUTES les autres données (kits, lignes, accusés, consommation,
-/// réglages d'apparence, onboarding) sont CONSERVÉES — seule la sécurité est
+/// réglages d'apparence, onboarding) sont CONSERVÉES : seule la sécurité est
 /// réinitialisée.
 class SecurityResetService {
   SecurityResetService(this._dbService);

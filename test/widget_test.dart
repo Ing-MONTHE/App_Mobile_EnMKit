@@ -14,7 +14,7 @@ import 'package:enmkit/core/db_service.dart';
 import 'package:enmkit/core/support_service.dart';
 
 void main() {
-  group('RelayAck — sérialisation', () {
+  group('RelayAck : sérialisation', () {
     test('toMap / fromMap conservent toutes les valeurs (dont le texte brut)',
         () {
       final at = DateTime.fromMillisecondsSinceEpoch(1781388905969);
@@ -86,7 +86,7 @@ void main() {
   });
 
   // Anti-doublon de l'historique mémoire : quand un accusé arrive en premier
-  // plan, on l'insère pour un affichage instantané — sans empiler de doublon si
+  // plan, on l'insère pour un affichage instantané, sans empiler de doublon si
   // le même SMS est rejoué (reconstruction) ou déjà rechargé depuis la base.
   group('AckLogic.isDuplicate (fenêtre 30 s)', () {
     RelayAck ack(bool on, DateTime at) =>
@@ -483,7 +483,7 @@ void main() {
   // doit toujours y figurer, sans quoi le support ignore de quel boîtier il
   // s'agit.
   group("Demande d'assistance envoyée au support", () {
-    test('configuration de numéro — suppression : tout est repris', () {
+    test('configuration de numéro, suppression : tout est repris', () {
       final msg = SupportService.buildRequest(
         topic: SupportTopic.numberConfig,
         action: NumberAction.remove,
@@ -493,7 +493,7 @@ void main() {
         kitName: 'Appartement A',
       );
       expect(msg, contains('Kit : +237695864083 (Appartement A)'));
-      expect(msg, contains("Objet : Configuration d'un numéro — Supprimer"));
+      expect(msg, contains("Objet : Configuration d'un numéro · Supprimer"));
       expect(msg, contains('Numéro concerné : +237690112233'));
       expect(msg, contains('Détail : Ce numéro ne doit plus piloter le kit'));
     });

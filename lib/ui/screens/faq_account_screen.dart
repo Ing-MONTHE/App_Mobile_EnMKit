@@ -1,14 +1,30 @@
 import 'package:enmkit/ui/screens/support/support_screen.dart';
+import 'package:enmkit/core/i18n/strings.dart';
+import 'package:enmkit/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FaqAccountScreen extends StatelessWidget {
+/// FAQ « Accès et sécurité » : pas de compte, code d'accès facultatif de
+/// 4 chiffres, empreinte, questions de récupération et autorisations.
+class FaqAccountScreen extends ConsumerWidget {
   const FaqAccountScreen({super.key});
 
+  static const _questions = <IconData>[
+    Icons.person_off_outlined,
+    Icons.lock_open_outlined,
+    Icons.pin_outlined,
+    Icons.edit_outlined,
+    Icons.help_outline,
+    Icons.fingerprint,
+    Icons.verified_user_outlined,
+  ];
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Compte & Connexion'),
+        title: Text(t.t('faq.home.access')),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
@@ -19,71 +35,21 @@ class FaqAccountScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeroInfo(context),
+              _buildHeroInfo(context, t),
               const SizedBox(height: 20),
-              _buildActionButtons(context),
+              _buildActionButtons(context, t),
               const SizedBox(height: 24),
-              _buildFaqSection(
-                context,
-                'Créer un compte EnMKit',
-                Icons.person_add_alt,
-                const [
-                  'Ouvre l\'application EnMKit Control.',
-                  'Depuis l\'écran d\'accueil, touche « Se connecter / Créer un compte ».',
-                  'Renseigne ton email et un mot de passe sécurisé.',
-                  'Valide la création.',
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildFaqSection(
-                context,
-                'Se connecter à son compte',
-                Icons.login,
-                const [
-                  'Accède à l\'écran de connexion.',
-                  'Entre tes identifiants (email + mot de passe).',
-                  'Appuie sur « Connexion ».',
-                  'En cas d\'échec, vérifie t\'es identifiant et recommence.',
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildFaqSection(
-                context,
-                'Rôles et accès',
-                Icons.verified_user_outlined,
-                const [
-                  'Administrateur: peut configurer le Kit (pulsations, consommation initiale, etc.).',
-                  'Utilisateur: peut consulter l\'état, la consommation et les informations du système.',
-                  'Si certaines options ne s\'affichent pas, il est probable que ton rôle n\'y autorise pas l\'accès.',
-                ],
-              ),
-
-              const SizedBox(height: 16),
-              _buildFaqSection(
-                context,
-                'Sécurité du compte',
-                Icons.security_outlined,
-                const [
-                  'Utilise un mot de passe long et unique.',
-                  'Ne partage pas tes identifiants avec d\'autres utilisateurs.',
-                  'Déconnecte-toi des appareils publics après utilisation.',
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildFaqSection(
-                context,
-                'Problèmes de connexion réseau',
-                Icons.wifi_tethering_off,
-                const [
-                  'Vérifie que le téléphone a un forfait SMS',
-                  'Si la consommation ne s\'actualise pas: utilise « Actualiser la consommation » dans l\'onglet Consommation.',
-                  'Si le Kit n\'apparaît pas: assure-toi que le numéro du Kit est configuré dans Paramètres.',
-                  'Synchronise les paramètres via « État Système » puis « Valider » pour renvoyer la config au Kit.',
-                  'En cas d\'échec persistant, redémarre l\'appareil et réessaie.',
-                ],
-              ),
+              for (var i = 0; i < _questions.length; i++) ...[
+                if (i > 0) const SizedBox(height: 16),
+                _buildFaqSection(
+                  context,
+                  t.t('faq.access.q${i + 1}'),
+                  _questions[i],
+                  t.t('faq.access.a${i + 1}').split('\n'),
+                ),
+              ],
               const SizedBox(height: 28),
-              _buildSupportCard(context),
+              _buildSupportCard(context, t),
               const SizedBox(height: 24),
             ],
           ),
@@ -93,7 +59,7 @@ class FaqAccountScreen extends StatelessWidget {
   }
 }
 
-Widget _buildHeroInfo(BuildContext context) {
+Widget _buildHeroInfo(BuildContext context, AppStrings t) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     width: double.infinity,
@@ -121,7 +87,7 @@ Widget _buildHeroInfo(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Gérer votre compte en toute simplicité',
+                t.t('faq.access.hero'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -130,7 +96,7 @@ Widget _buildHeroInfo(BuildContext context) {
               ),
               const SizedBox(height: 6),
               Text(
-                'Connexion, rôles, sécurité et récupération d\'accès pour EnMKit Control.',
+                t.t('faq.access.hero.sub'),
                 style: TextStyle(
                     fontSize: 12, color: scheme.onSurfaceVariant, height: 1.4),
               ),
@@ -142,7 +108,7 @@ Widget _buildHeroInfo(BuildContext context) {
   );
 }
 
-Widget _buildActionButtons(BuildContext context) {
+Widget _buildActionButtons(BuildContext context, AppStrings t) {
   return Row(
     children: [
       Expanded(
@@ -159,8 +125,8 @@ Widget _buildActionButtons(BuildContext context) {
               elevation: 0,
             ),
             icon: const Icon(Icons.home, color: Colors.white),
-            label: const Text(
-              'Retour à l\'accueil',
+            label: Text(
+              t.t('faq.common.home'),
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
             ),
           ),
@@ -179,8 +145,8 @@ Widget _buildActionButtons(BuildContext context) {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             icon: const Icon(Icons.help_outline, color: Color(0xFF3B82F6)),
-            label: const Text(
-              'Besoin d\'aide ?',
+            label: Text(
+              t.t('faq.common.needHelp'),
               style: TextStyle(color: Color(0xFF3B82F6), fontWeight: FontWeight.w600),
             ),
           ),
@@ -257,7 +223,7 @@ Widget _buildFaqSection(
   );
 }
 
-Widget _buildSupportCard(BuildContext context) {
+Widget _buildSupportCard(BuildContext context, AppStrings t) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(18),
@@ -283,7 +249,7 @@ Widget _buildSupportCard(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Toujours bloqué ?',
+                t.t('faq.common.stuck'),
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -291,7 +257,7 @@ Widget _buildSupportCard(BuildContext context) {
               ),
               const SizedBox(height: 4),
               Text(
-                'Décrivez votre besoin : la demande part par SMS, sans Internet.',
+                t.t('faq.common.stuck.sub'),
                 style:
                     TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
               ),
@@ -303,7 +269,7 @@ Widget _buildSupportCard(BuildContext context) {
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const SupportPage()),
           ),
-          child: const Text('Contacter',
+          child: Text(t.t('faq.common.contact'),
               style: TextStyle(
                   color: Color(0xFF10B981), fontWeight: FontWeight.w700)),
         ),
@@ -311,6 +277,3 @@ Widget _buildSupportCard(BuildContext context) {
     ),
   );
 }
-
-
-

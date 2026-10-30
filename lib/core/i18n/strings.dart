@@ -1,4 +1,4 @@
-/// Internationalisation EnMKit — catalogue de traductions centralisé.
+/// Internationalisation EnMKit : catalogue de traductions centralisé.
 ///
 /// Une seule source de vérité pour tous les textes de l'interface. Ajouter une
 /// langue = ajouter une entrée dans [_catalog] pour chaque clé. La langue
@@ -65,6 +65,15 @@ class AppStrings {
     'common.soon': {'fr': 'Bientôt', 'en': 'Soon'},
     'common.continue': {'fr': 'Continuer', 'en': 'Continue'},
     'common.skip': {'fr': 'Passer', 'en': 'Skip'},
+    'access.skipForNow': {'fr': "Passer pour l'instant", 'en': 'Skip for now'},
+    'support.topic.numberConfig': {'fr': "Configuration d'un numéro", 'en': 'Number setup'},
+    'support.topic.consumption': {'fr': 'Problème de réception de la consommation', 'en': 'Consumption not received'},
+    'support.topic.lineControl': {'fr': "Problème de commande d'une ligne", 'en': 'Line control problem'},
+    'support.topic.unreachable': {'fr': 'Kit injoignable', 'en': 'Kit unreachable'},
+    'support.topic.other': {'fr': 'Autre demande', 'en': 'Other request'},
+    'support.action.add': {'fr': 'Ajouter un numéro', 'en': 'Add a number'},
+    'support.action.edit': {'fr': 'Modifier un numéro', 'en': 'Change a number'},
+    'support.action.remove': {'fr': 'Supprimer un numéro', 'en': 'Remove a number'},
 
     // --- Navigation -----------------------------------------------------------
     'nav.home': {'fr': 'Accueil', 'en': 'Home'},
@@ -88,8 +97,8 @@ class AppStrings {
     },
     'access.wrong': {'fr': 'Code incorrect', 'en': 'Wrong code'},
     'access.tooShort': {
-      'fr': 'Le code doit contenir au moins 4 chiffres',
-      'en': 'The code must be at least 4 digits',
+      'fr': 'Le code doit contenir exactement 4 chiffres',
+      'en': 'The code must be exactly 4 digits',
     },
     'access.mismatch': {
       'fr': 'Les deux codes ne correspondent pas',
@@ -97,8 +106,8 @@ class AppStrings {
     },
     'access.oldWrong': {'fr': 'Ancien code incorrect', 'en': 'Old code is wrong'},
     'access.newTooShort': {
-      'fr': 'Le nouveau code doit contenir au moins 4 chiffres',
-      'en': 'The new code must be at least 4 digits',
+      'fr': 'Le nouveau code doit contenir exactement 4 chiffres',
+      'en': 'The new code must be exactly 4 digits',
     },
     'access.forgot': {'fr': 'Code oublié ?', 'en': 'Forgot code?'},
     'access.useBiometric': {
@@ -170,7 +179,7 @@ class AppStrings {
       'fr': 'Répondez à vos questions de récupération pour définir un nouveau code.',
       'en': 'Answer your recovery questions to set a new code.',
     },
-    'forgot.newPin': {'fr': 'Nouveau code (4 chiffres min.)', 'en': 'New code (min. 4 digits)'},
+    'forgot.newPin': {'fr': 'Nouveau code (4 chiffres)', 'en': 'New code (4 digits)'},
     'forgot.confirmPin': {'fr': 'Confirmer le code', 'en': 'Confirm the code'},
     'forgot.wrongAnswers': {'fr': 'Réponses incorrectes', 'en': 'Incorrect answers'},
     'forgot.success': {'fr': 'Code réinitialisé ✓', 'en': 'Code reset ✓'},
@@ -267,8 +276,8 @@ class AppStrings {
     },
     'relays.add': {'fr': 'Ajouter une ligne', 'en': 'Add a line'},
     'relays.add.sub': {
-      'fr': 'Nommez-la et choisissez son ampérage.',
-      'en': 'Name it and choose its amperage.',
+      'fr': 'Donnez-lui un nom pour la reconnaître.',
+      'en': 'Give it a name to recognise it.',
     },
     'relays.name': {'fr': 'Nom de la ligne', 'en': 'Line name'},
     'relays.name.hint': {'fr': 'Ex : Salon, Pompe…', 'en': 'E.g. Living room, Pump…'},
@@ -276,8 +285,8 @@ class AppStrings {
     'relays.add.cta': {'fr': 'Ajouter la ligne', 'en': 'Add the line'},
     'relays.edit': {'fr': 'Modifier la ligne', 'en': 'Edit line'},
     'relays.edit.sub': {
-      'fr': 'Renommez-la ou changez son ampérage.',
-      'en': 'Rename it or change its amperage.',
+      'fr': 'Changez son nom.',
+      'en': 'Change its name.',
     },
     'relays.delete': {'fr': 'Supprimer', 'en': 'Delete'},
     'relays.delete.confirm': {
@@ -310,8 +319,8 @@ class AppStrings {
       'en': 'Kit connected'
     },
     'relays.status.on.sub': {
-      'fr': 'Configuration reçue par le kit — pilotage des lignes actif.',
-      'en': 'Configuration received by the kit — line control active.'
+      'fr': 'Configuration reçue par le kit : pilotage des lignes actif.',
+      'en': 'Configuration received by the kit: line control active.'
     },
     'relays.status.off.title': {
       'fr': 'Kit non configuré',
@@ -379,8 +388,8 @@ class AppStrings {
     'cons.trend': {'fr': 'Évolution', 'en': 'Trend'},
     'cons.empty.title': {'fr': 'Aucune donnée', 'en': 'No data'},
     'cons.empty.msg': {
-      'fr': 'Appuyez sur « Actualiser » pour interroger le kit.',
-      'en': 'Tap "Refresh" to query the kit.',
+      'fr': 'Appuyez sur « Vérifier votre consommation électrique » pour interroger le kit.',
+      'en': 'Tap "Check your electricity usage" to query the kit.',
     },
     'cons.requestSent': {'fr': 'Demande envoyée au kit…', 'en': 'Request sent to the kit…'},
     'cons.waiting': {
@@ -488,9 +497,9 @@ class AppStrings {
     },
     'config.state.okBody': {
       'fr':
-          'Le kit a renvoyé exactement ce qui lui a été envoyé. Validez pour clore la configuration — elle sera alors verrouillée.',
+          'Le kit a renvoyé exactement ce qui lui a été envoyé. Validez pour clore la configuration. Elle sera alors verrouillée.',
       'en':
-          'The kit echoed back exactly what was sent. Confirm to close the configuration — it will then be locked.',
+          'The kit echoed back exactly what was sent. Confirm to close the configuration. It will then be locked.',
     },
     'config.state.badgeOk': {'fr': 'OK', 'en': 'OK'},
     'config.state.finalizeCta': {
@@ -509,8 +518,8 @@ class AppStrings {
     },
     'config.state.badgeLocked': {'fr': 'VERROUILLÉ', 'en': 'LOCKED'},
     'config.locked.hint': {
-      'fr': 'Verrouillé — configuration close',
-      'en': 'Locked — configuration closed',
+      'fr': 'Verrouillé · configuration close',
+      'en': 'Locked · configuration closed',
     },
     'kits.toConfirm': {'fr': '{0} à valider', 'en': '{0} to confirm'},
     'nav.help': {'fr': 'Aide', 'en': 'Help'},
@@ -651,8 +660,8 @@ class AppStrings {
       'en': 'Enable security code',
     },
     'settings.security.create.sub': {
-      'fr': 'Choisissez un code à 4 chiffres minimum.',
-      'en': 'Choose a code of at least 4 digits.',
+      'fr': 'Choisissez un code à 4 chiffres.',
+      'en': 'Choose a 4-digit code.',
     },
     'settings.security.disable.title': {
       'fr': 'Désactiver le code',
@@ -681,8 +690,8 @@ class AppStrings {
     },
     'settings.changePin.title': {'fr': 'Modifier le code', 'en': 'Change the code'},
     'settings.changePin.sub': {
-      'fr': 'Choisissez un nouveau code à 4 chiffres minimum.',
-      'en': 'Choose a new code of at least 4 digits.',
+      'fr': 'Choisissez un nouveau code à 4 chiffres.',
+      'en': 'Choose a new 4-digit code.',
     },
     'settings.currentPin': {'fr': 'Code actuel', 'en': 'Current code'},
     'settings.newPin': {'fr': 'Nouveau code', 'en': 'New code'},
@@ -755,8 +764,388 @@ class AppStrings {
       'en': 'Secure and multi-kit',
     },
     'onb.3.desc': {
-      'fr': 'Un code d\'accès protège l\'application. Gérez tout votre parc depuis un seul endroit.',
-      'en': 'An access code protects the application. Manage your whole fleet from one place.',
+      'fr': 'Protégez l\'application par un code si vous le souhaitez. Gérez tout votre parc depuis un seul endroit.',
+      'en': 'Protect the application with a code if you wish. Manage your whole fleet from one place.',
+    },
+
+    // --- FAQ ------------------------------------------------------------------
+    // Les réponses sont des listes de points séparés par « \n ».
+    'faq.title': {'fr': 'FAQ', 'en': 'FAQ'},
+    'faq.home.access': {'fr': 'Accès et sécurité', 'en': 'Access and security'},
+    'faq.home.access.sub': {
+      'fr': "Code d'accès, empreinte et récupération",
+      'en': 'Access code, fingerprint and recovery',
+    },
+    'faq.home.kit': {'fr': 'Kit et lignes', 'en': 'Kit and lines'},
+    'faq.home.kit.sub': {
+      'fr': 'Ajout, configuration, pilotage et consommation',
+      'en': 'Adding, setup, control and usage',
+    },
+    'faq.home.qr': {'fr': 'QR Code et partage', 'en': 'QR Code and sharing'},
+    'faq.home.qr.sub': {
+      'fr': 'Générer, partager et importer un kit',
+      'en': 'Generate, share and import a kit',
+    },
+    'faq.home.trouble': {'fr': 'Dépannage', 'en': 'Troubleshooting'},
+    'faq.home.trouble.sub': {
+      'fr': 'Kit muet, ligne bloquée, support',
+      'en': 'Silent kit, stuck line, support',
+    },
+    'faq.common.home': {'fr': "Retour à l'accueil", 'en': 'Back to home'},
+    'faq.common.needHelp': {'fr': "Besoin d'aide ?", 'en': 'Need help?'},
+    'faq.common.stuck': {'fr': 'Toujours bloqué ?', 'en': 'Still stuck?'},
+    'faq.common.stuck.sub': {
+      'fr': 'Écrivez au support : la demande part par SMS, sans Internet.',
+      'en': 'Write to support: the request is sent by SMS, no Internet needed.',
+    },
+    'faq.common.contact': {'fr': 'Contacter', 'en': 'Contact'},
+    'faq.access.hero': {
+      'fr': "Protéger l'accès à l'application",
+      'en': 'Protect access to the app',
+    },
+    'faq.access.hero.sub': {
+      'fr': "Code d'accès facultatif, empreinte et questions de récupération.",
+      'en': 'Optional access code, fingerprint and recovery questions.',
+    },
+    'faq.access.q1': {'fr': 'Faut-il créer un compte ?', 'en': 'Do I need an account?'},
+    'faq.access.a1': {
+      'fr': "Non. EnMKit ne demande ni compte, ni e-mail, ni mot de passe.\n"
+          'Vos kits et vos données restent sur ce téléphone.\n'
+          "Les commandes partent par SMS : Internet n'est pas nécessaire.\n"
+          "Seul un code d'accès facultatif peut protéger l'ouverture de l'application.",
+      'en': 'No. EnMKit needs no account, e-mail or password.\n'
+          'Your kits and data stay on this phone.\n'
+          'Commands are sent by SMS: no Internet is needed.\n'
+          'Only an optional access code can protect the opening of the app.',
+    },
+    'faq.access.q2': {
+      'fr': "Le code d'accès est-il obligatoire ?",
+      'en': 'Is the access code mandatory?',
+    },
+    'faq.access.a2': {
+      'fr': 'Non, il est facultatif.\n'
+          "Au premier lancement, appuyez sur « Passer pour l'instant » pour ne pas en créer.\n"
+          'Vous pouvez l’activer plus tard : Réglages > Sécurité > « Code de sécurité ».',
+      'en': 'No, it is optional.\n'
+          "On first launch, tap “Skip for now” to skip it.\n"
+          'You can turn it on later: Settings > Security > “Security code”.',
+    },
+    'faq.access.q3': {'fr': 'Comment créer le code ?', 'en': 'How do I create the code?'},
+    'faq.access.a3': {
+      'fr': "Saisissez un code d'exactement 4 chiffres, puis confirmez-le.\n"
+          'Choisissez deux « Questions de récupération » différentes et répondez-y.\n'
+          "Si une empreinte est enregistrée sur le téléphone, l'application propose de l'activer.",
+      'en': 'Enter a code of exactly 4 digits, then confirm it.\n'
+          'Pick two different “Recovery questions” and answer them.\n'
+          'If a fingerprint is enrolled on the phone, the app offers to enable it.',
+    },
+    'faq.access.q4': {
+      'fr': 'Comment modifier ou désactiver le code ?',
+      'en': 'How do I change or turn off the code?',
+    },
+    'faq.access.a4': {
+      'fr': 'Ouvrez Réglages > Sécurité.\n'
+          "Modifier : « Modifier le code d'accès », puis code actuel, nouveau code et confirmation.\n"
+          'Désactiver : coupez « Code de sécurité ». Le code actuel est demandé.\n'
+          '« Questions de récupération » permet de changer vos deux questions.',
+      'en': 'Open Settings > Security.\n'
+          'To change it: “Change access code”, then current code, new code and confirmation.\n'
+          'To turn it off: switch off “Security code”. The current code is required.\n'
+          '“Recovery questions” lets you change your two questions.',
+    },
+    'faq.access.q5': {'fr': "J'ai oublié mon code", 'en': 'I forgot my code'},
+    'faq.access.a5': {
+      'fr': "Sur l'écran du code, appuyez sur « Code oublié ? ».\n"
+          'Répondez à vos deux questions. Les majuscules et les espaces en début ou en fin sont ignorés.\n'
+          'Saisissez un nouveau code de 4 chiffres, puis « Réinitialiser le code ».\n'
+          "Si aucune question n'est configurée, contactez le support (onglet Aide).",
+      'en': 'On the code screen, tap “Forgot code?”.\n'
+          'Answer your two questions. Capital letters and leading or trailing spaces are ignored.\n'
+          'Enter a new 4-digit code, then tap “Reset code”.\n'
+          'If no question is set, contact support (Help tab).',
+    },
+    'faq.access.q6': {
+      'fr': "Comment déverrouiller avec l'empreinte ?",
+      'en': 'How do I unlock with my fingerprint?',
+    },
+    'faq.access.a6': {
+      'fr': "Activez d'abord le code de sécurité.\n"
+          'Activez ensuite « Déverrouillage par empreinte » dans Réglages > Sécurité.\n'
+          'Le code reste le moyen de secours.',
+      'en': 'First turn on the security code.\n'
+          'Then turn on “Fingerprint unlock” in Settings > Security.\n'
+          'The code remains the fallback.',
+    },
+    'faq.access.q7': {
+      'fr': 'Quelles autorisations accepter ?',
+      'en': 'Which permissions should I allow?',
+    },
+    'faq.access.a7': {
+      'fr': 'SMS : envoyer les commandes et lire les réponses du kit, même application fermée.\n'
+          "Notifications : être prévenu à l'arrivée d'une réponse.\n"
+          "Appareil photo : scanner le QR Code d'un kit.\n"
+          'Empreinte : déverrouillage par empreinte (facultatif).\n'
+          "Sans l'autorisation SMS, le pilotage ne fonctionne pas.",
+      'en': 'SMS: send commands and read the kit replies, even with the app closed.\n'
+          'Notifications: be alerted when a reply arrives.\n'
+          'Camera: scan the QR Code of a kit.\n'
+          'Fingerprint: fingerprint unlock (optional).\n'
+          'Without the SMS permission, the kits cannot be controlled.',
+    },
+    'faq.kit.hero': {
+      'fr': 'Ajouter, configurer et piloter un kit',
+      'en': 'Add, set up and control a kit',
+    },
+    'faq.kit.hero.sub': {
+      'fr': 'Lignes, consommation, connexion du kit et configuration verrouillée.',
+      'en': 'Lines, usage, kit connection and locked configuration.',
+    },
+    'faq.kit.q1': {'fr': 'Comment ajouter un kit ?', 'en': 'How do I add a kit?'},
+    'faq.kit.a1': {
+      'fr': 'Onglet Accueil : appuyez sur le bouton + en bas à droite.\n'
+          'Dans « Nouveau kit », renseignez le « Nom du kit » et le « Numéro du kit » (numéro de sa carte SIM).\n'
+          'Choisissez le « Nombre de lignes » : 4, 7 ou Personnalisé (de 1 à 7).\n'
+          'Appuyez sur « Ajouter le kit ». Les lignes sont créées automatiquement.',
+      'en': 'Home tab: tap the + button at the bottom right.\n'
+          'In “New kit”, fill in the “Kit name” and the “Kit number” (its SIM card number).\n'
+          'Choose the “Number of lines”: 4, 7 or Custom (1 to 7).\n'
+          'Tap “Add the kit”. The lines are created automatically.',
+    },
+    'faq.kit.q2': {'fr': 'Comment configurer le kit ?', 'en': 'How do I set up the kit?'},
+    'faq.kit.a2': {
+      'fr': "Ouvrez le kit, puis l'onglet Config.\n"
+          'Compteur : renseignez « Impulsion par kWh » (ex. 1000) et « Consommation initiale » (kWh).\n'
+          '« Numéros autorisés » : saisissez Numéro 1 et Numéro 2. Double-appuyez sur un champ pour le modifier.\n'
+          'Appuyez sur « Envoyer la configuration au kit », vérifiez le récapitulatif, puis « Envoyer au kit ».',
+      'en': 'Open the kit, then the Config tab.\n'
+          'Meter: fill in “Pulses per kWh” (e.g. 1000) and “Initial consumption” (kWh).\n'
+          '“Allowed numbers”: enter Number 1 and Number 2. Double-tap a field to edit it.\n'
+          'Tap “Send configuration to the kit”, check the summary, then “Send to kit”.',
+    },
+    'faq.kit.q3': {
+      'fr': 'Que signifie « Valider et verrouiller » ?',
+      'en': 'What does “Confirm and lock” mean?',
+    },
+    'faq.kit.a3': {
+      'fr': "Quand le kit renvoie exactement la configuration reçue, « Le retour du kit correspond » s'affiche.\n"
+          'Appuyez alors sur « Valider et verrouiller », relisez, puis OK.\n'
+          'La validation est définitive : relisez bien les numéros et le compteur avant.\n'
+          'Ensuite, toute modification passe par les administrateurs EnMKit (onglet Aide).\n'
+          "Sur l'accueil, la puce « À valider » signale un kit qui attend cette validation.",
+      'en': 'When the kit sends back exactly the configuration it received, “The kit\'s reply matches” is shown.\n'
+          'Then tap “Confirm and lock”, review, then OK.\n'
+          'This is final: check the numbers and the meter carefully first.\n'
+          'After that, any change goes through the EnMKit administrators (Help tab).\n'
+          'On the home screen, the “To confirm” chip marks a kit waiting for this step.',
+    },
+    'faq.kit.q4': {
+      'fr': 'Comment allumer ou éteindre une ligne ?',
+      'en': 'How do I turn a line on or off?',
+    },
+    'faq.kit.a4': {
+      'fr': 'Onglet Lignes : appuyez sur ON pour allumer, OFF pour éteindre.\n'
+          "Le téléphone envoie un SMS au kit. Les boutons de la ligne restent bloqués pendant l'attente.\n"
+          "L'état fiable est celui confirmé par le kit : touchez l'icône horloge de la ligne pour ouvrir « Confirmation de la commande ».",
+      'en': 'Lines tab: tap ON to turn on, OFF to turn off.\n'
+          'The phone sends an SMS to the kit. The line buttons stay locked while waiting.\n'
+          'The reliable state is the one confirmed by the kit: tap the clock icon of the line to open “Command confirmation”.',
+    },
+    'faq.kit.q5': {
+      'fr': 'Comment vérifier que le kit répond ?',
+      'en': 'How do I check that the kit responds?',
+    },
+    'faq.kit.a5': {
+      'fr': 'Onglet Lignes, carte « Connexion du kit » : appuyez sur « Tester ».\n'
+          'Le statut passe à « Vérification du kit… ».\n'
+          "« Kit joignable » s'affiche si le kit répond dans les 45 secondes.\n"
+          'Sinon, « Kit injoignable » : vérifiez le réseau et le crédit SMS de la carte SIM du kit.',
+      'en': 'Lines tab, “Kit connection” card: tap “Test”.\n'
+          'The status changes to “Checking the kit…”.\n'
+          '“Kit reachable” is shown if the kit replies within 45 seconds.\n'
+          'Otherwise, “Kit unreachable”: check the network and SMS credit of the kit SIM card.',
+    },
+    'faq.kit.q6': {
+      'fr': 'À quoi servent « Tout allumer » et « Tout éteindre » ?',
+      'en': 'What do “Turn all on” and “Turn all off” do?',
+    },
+    'faq.kit.a6': {
+      'fr': "Ces « Actions rapides » sont en haut de l'onglet Lignes.\n"
+          "Seules les lignes qui changent d'état reçoivent une commande.\n"
+          'Les SMS partent avec un court délai entre chacun.',
+      'en': 'These “Quick actions” are at the top of the Lines tab.\n'
+          'Only the lines that change state receive a command.\n'
+          'The SMS are sent with a short delay between each one.',
+    },
+    'faq.kit.q7': {
+      'fr': 'Comment renommer ou supprimer une ligne ?',
+      'en': 'How do I rename or delete a line?',
+    },
+    'faq.kit.a7': {
+      'fr': 'Double-appuyez sur la carte de la ligne.\n'
+          'Modifiez le nom, puis appuyez sur le bouton vert pour valider.\n'
+          'Le bouton rouge supprime la ligne.',
+      'en': 'Double-tap the line card.\n'
+          'Edit the name, then tap the green button to confirm.\n'
+          'The red button deletes the line.',
+    },
+    'faq.kit.q8': {
+      'fr': 'Comment consulter la consommation ?',
+      'en': 'How do I check the usage?',
+    },
+    'faq.kit.a8': {
+      'fr': 'Onglet Conso : appuyez sur « Vérifier votre consommation électrique ».\n'
+          'À l’arrivée de « Nouvelle mesure reçue », la « Dernière mesure » est mise à jour.\n'
+          "La courbe « Évolution » et l'« Historique » listent les relevés.",
+      'en': 'Usage tab: tap “Check your electricity usage”.\n'
+          'When “New reading received” appears, the “Last reading” is updated.\n'
+          'The “Trend” chart and the “History” list the readings.',
+    },
+    'faq.kit.q9': {'fr': 'Comment supprimer un kit ?', 'en': 'How do I delete a kit?'},
+    'faq.kit.a9': {
+      'fr': "Sur l'accueil, faites glisser la carte du kit vers la gauche ou la droite.\n"
+          'Confirmez la suppression.\n'
+          'Toutes ses données sont effacées (lignes, accusés, consommation). Cette action est irréversible.',
+      'en': 'On the home screen, swipe the kit card to the left or right.\n'
+          'Confirm the deletion.\n'
+          'All its data is erased (lines, acknowledgements, usage). This cannot be undone.',
+    },
+    'faq.kit.tip': {
+      'fr': 'Astuce : donnez à chaque ligne un nom parlant (Salon, Chauffe-eau…) pour la reconnaître d’un coup d’œil.',
+      'en': 'Tip: give each line a meaningful name (Living room, Water heater…) to recognise it at a glance.',
+    },
+    'faq.qr.hero': {
+      'fr': 'Partager un kit par QR Code',
+      'en': 'Share a kit with a QR Code',
+    },
+    'faq.qr.hero.sub': {
+      'fr': "Le QR Code transporte la configuration d'un kit vers un autre téléphone.",
+      'en': 'The QR Code carries the configuration of a kit to another phone.',
+    },
+    'faq.qr.q1': {
+      'fr': "Comment générer le QR Code d'un kit ?",
+      'en': 'How do I generate the QR Code of a kit?',
+    },
+    'faq.qr.a1': {
+      'fr': "Ouvrez le kit, puis l'onglet Config.\n"
+          'Appuyez sur « Générer le QR Code ».\n'
+          'Le QR Code contient le kit (nom, numéro, compteur), ses lignes et ses numéros autorisés.',
+      'en': 'Open the kit, then the Config tab.\n'
+          'Tap “Generate QR Code”.\n'
+          'The QR Code holds the kit (name, number, meter), its lines and its allowed numbers.',
+    },
+    'faq.qr.q2': {'fr': 'Comment partager le QR Code ?', 'en': 'How do I share the QR Code?'},
+    'faq.qr.a2': {
+      'fr': 'Après la génération, appuyez sur « Partager le QR Code ».\n'
+          "Choisissez l'application d'envoi.\n"
+          'Le destinataire importe ensuite le kit avec son téléphone.',
+      'en': 'Once generated, tap “Share QR Code”.\n'
+          'Choose the app to send it with.\n'
+          'The recipient then imports the kit with their phone.',
+    },
+    'faq.qr.q3': {'fr': 'Comment importer un kit ?', 'en': 'How do I import a kit?'},
+    'faq.qr.a3': {
+      'fr': "Onglet Accueil : appuyez sur l'icône de scanner dans l'en-tête.\n"
+          "L'écran « Scanner un kit » s'ouvre : placez le QR Code dans le cadre.\n"
+          'Le message « Kit « … » importé » confirme l’import.\n'
+          "L'import se fait uniquement avec l'appareil photo.",
+      'en': 'Home tab: tap the scanner icon in the header.\n'
+          'The “Scan a kit” screen opens: place the QR Code inside the frame.\n'
+          'The message “Kit “…” imported” confirms the import.\n'
+          'Import only works with the camera.',
+    },
+    'faq.qr.q4': {
+      'fr': 'Que se passe-t-il si le kit existe déjà ?',
+      'en': 'What happens if the kit already exists?',
+    },
+    'faq.qr.a4': {
+      'fr': 'Le kit qui a le même numéro est mis à jour.\n'
+          'Ses lignes et ses numéros autorisés sont remplacés par ceux du QR Code.\n'
+          'Vos autres kits ne changent pas.',
+      'en': 'The kit with the same number is updated.\n'
+          'Its lines and allowed numbers are replaced by those of the QR Code.\n'
+          'Your other kits do not change.',
+    },
+    'faq.qr.q5': {'fr': "L'import échoue", 'en': 'The import fails'},
+    'faq.qr.a5': {
+      'fr': "« Import impossible » s'affiche si le QR Code n'est pas celui d'un kit EnMKit.\n"
+          "Vérifiez que l'application a l'autorisation Appareil photo.\n"
+          "Régénérez le QR Code depuis l'onglet Config du kit d'origine, puis réessayez.",
+      'en': '“Import failed” is shown if the QR Code is not an EnMKit kit code.\n'
+          'Check that the app has the Camera permission.\n'
+          'Generate the QR Code again from the Config tab of the original kit, then retry.',
+    },
+    'faq.qr.tip': {
+      'fr': 'Astuce : gardez le QR Code de chaque kit pour le réinstaller vite sur un autre téléphone.',
+      'en': 'Tip: keep the QR Code of each kit to set it up quickly on another phone.',
+    },
+    'faq.trouble.hero': {
+      'fr': 'Résoudre les problèmes courants',
+      'en': 'Solve common problems',
+    },
+    'faq.trouble.hero.sub': {
+      'fr': 'Kit qui ne répond pas, ligne qui ne change pas, support.',
+      'en': 'Kit not responding, line not changing, support.',
+    },
+    'faq.trouble.q1': {'fr': 'Le kit ne répond pas', 'en': 'The kit does not respond'},
+    'faq.trouble.a1': {
+      'fr': "Vérifiez l'autorisation SMS : Paramètres Android > Applications > EnMKit > Autorisations.\n"
+          'Vérifiez le réseau et le crédit SMS du téléphone et du kit.\n'
+          "Vérifiez le « Numéro du kit » dans l'onglet Config.\n"
+          'Votre téléphone doit faire partie des « Numéros autorisés » du kit.\n'
+          'Patientez : une réponse peut prendre plusieurs minutes.\n'
+          'Onglet Lignes : « Tester » vérifie que le kit répond.',
+      'en': 'Check the SMS permission: Android Settings > Apps > EnMKit > Permissions.\n'
+          'Check the network and SMS credit of the phone and of the kit.\n'
+          'Check the “Kit number” in the Config tab.\n'
+          'Your phone must be one of the kit “Allowed numbers”.\n'
+          'Be patient: a reply can take several minutes.\n'
+          'Lines tab: “Test” checks that the kit responds.',
+    },
+    'faq.trouble.q2': {
+      'fr': '« Aucune réponse du kit » dans l\'onglet Conso',
+      'en': '“No reply from the kit” in the Usage tab',
+    },
+    'faq.trouble.a2': {
+      'fr': "Le kit n'a pas répondu dans le délai prévu.\n"
+          'Vérifiez le réseau, le crédit SMS et le « Numéro du kit ».\n'
+          'Réessayez avec « Vérifier votre consommation électrique ».',
+      'en': 'The kit did not reply in time.\n'
+          'Check the network, the SMS credit and the “Kit number”.\n'
+          'Retry with “Check your electricity usage”.',
+    },
+    'faq.trouble.q3': {
+      'fr': "Une ligne ne change pas d'état",
+      'en': 'A line does not change state',
+    },
+    'faq.trouble.a3': {
+      'fr': "Attendez la confirmation du kit : les boutons restent bloqués pendant l'envoi.\n"
+          "Touchez l'icône horloge de la ligne pour voir les confirmations reçues.\n"
+          'Vérifiez la « Connexion du kit » avec « Tester ».\n'
+          "Si rien ne change, écrivez au support avec l'objet « Problème de commande d'une ligne ».",
+      'en': 'Wait for the kit confirmation: the buttons stay locked while sending.\n'
+          'Tap the clock icon of the line to see the confirmations received.\n'
+          'Check the “Kit connection” with “Test”.\n'
+          'If nothing changes, write to support with the topic “Problème de commande d\'une ligne” (line control problem).',
+    },
+    'faq.trouble.q4': {
+      'fr': 'Comment contacter le support ?',
+      'en': 'How do I contact support?',
+    },
+    'faq.trouble.a4': {
+      'fr': 'Onglet Aide : choisissez « Votre besoin » et le « Kit concerné », ajoutez des « Précisions ».\n'
+          'Appuyez sur « Envoyer au support ». La demande part par SMS.\n'
+          'Vous pouvez aussi appuyer sur « Continuer sur WhatsApp ».\n'
+          "Un point rouge sur l'icône Aide signale une réponse du support.\n"
+          'Par écrit : contact@2metechsarl.org.',
+      'en': 'Help tab: choose “Your need” and the “Kit concerned”, add “Details”.\n'
+          'Tap “Send to support”. The request is sent by SMS.\n'
+          'You can also tap “Continue on WhatsApp”.\n'
+          'A red dot on the Help icon means support has replied.\n'
+          'By e-mail: contact@2metechsarl.org.',
+    },
+    'faq.trouble.support': {
+      'fr': 'Si le problème persiste, écrivez au support depuis l’onglet Aide en indiquant le kit concerné.',
+      'en': 'If the problem persists, write to support from the Help tab and select the kit concerned.',
     },
   };
 }

@@ -7,6 +7,7 @@ import 'package:enmkit/ui/widgets/common/soft_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 // (i18n via ref.watch(tProvider).t('clé'))
 
@@ -147,7 +148,14 @@ class SettingsScreen extends ConsumerWidget {
           child: Column(
             children: [
               _InfoLine(label: t.t('settings.app'), value: 'EnMKit'),
-              _InfoLine(label: t.t('settings.version'), value: '1.0.0'),
+              // Version lue dans le paquet installé (pubspec), jamais codée en dur.
+              FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (context, snap) => _InfoLine(
+                  label: t.t('settings.version'),
+                  value: snap.data?.version ?? '…',
+                ),
+              ),
             ],
           ),
         ),

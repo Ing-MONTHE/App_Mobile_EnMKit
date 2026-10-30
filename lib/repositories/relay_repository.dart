@@ -129,7 +129,7 @@ class RelayRepository {
   /// appelle cette méthode. Le natif draine chaque SMS exactement une fois (file
   /// SharedPreferences vidée de façon atomique, cf. SmsStore.drain @Synchronized)
   /// et un SMS entrant ne déclenche qu'un seul enqueue. Aucune déduplication
-  /// n'est donc nécessaire — et surtout, rejouer la MÊME commande produit un
+  /// n'est donc nécessaire, et surtout, rejouer la MÊME commande produit un
   /// nouvel accusé qui DOIT être capturé à chaque fois (c'était le bug : une
   /// fenêtre anti-doublon écrasait les répétitions).
   Future<void> addAck(RelayAck ack) async {

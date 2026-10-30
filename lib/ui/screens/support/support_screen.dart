@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Écran d'assistance : l'utilisateur exprime un besoin par un questionnaire
 /// guidé, la demande part au support par SMS, et la conversation se poursuit
-/// dans le fil ci-dessous — les réponses du support arrivant par SMS, y
+/// dans le fil ci-dessous, les réponses du support arrivant par SMS, y
 /// compris application fermée.
 class SupportScreen extends ConsumerStatefulWidget {
   const SupportScreen({super.key});
@@ -39,8 +39,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
   /// questionnaire, ne réclamer que ce qui sert à traiter la demande.
   bool get _needsNumber => _topic == SupportTopic.numberConfig;
 
-  /// La demande est complète quand l'objet est choisi, et — pour une
-  /// configuration de numéro — que l'action et le numéro sont renseignés.
+  /// La demande est complète quand l'objet est choisi et, pour une
+  /// configuration de numéro, que l'action et le numéro sont renseignés.
   bool get _canSend {
     if (_topic == null) return false;
     if (_topic == SupportTopic.numberConfig) {
@@ -143,7 +143,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                 runSpacing: 8,
                 children: SupportTopic.values
                     .map((e) => _Choice(
-                          label: SupportService.topicLabel(e),
+                          label: t.t('support.topic.${e.name}'),
                           selected: _topic == e,
                           onTap: () => setState(() {
                             _topic = e;
@@ -163,7 +163,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                   runSpacing: 8,
                   children: NumberAction.values
                       .map((e) => _Choice(
-                            label: SupportService.actionLabel(e),
+                            label: t.t('support.action.${e.name}'),
                             selected: _action == e,
                             onTap: () => setState(() => _action = e),
                           ))
@@ -391,7 +391,7 @@ class _Choice extends StatelessWidget {
 }
 
 /// Bulle de conversation : demande envoyée à droite, réponse du support à
-/// gauche — lecture immédiate du sens de l'échange.
+/// gauche : lecture immédiate du sens de l'échange.
 class _Bubble extends StatelessWidget {
   const _Bubble({required this.message});
   final SupportMessage message;
@@ -448,13 +448,13 @@ class _Bubble extends StatelessWidget {
 
 /// L'écran d'aide ouvert comme page à part entière (depuis la FAQ par exemple),
 /// et non comme onglet de la coquille principale.
-class SupportPage extends StatelessWidget {
+class SupportPage extends ConsumerWidget {
   const SupportPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Aide & assistance')),
+      appBar: AppBar(title: Text(ref.watch(tProvider).t('help.title'))),
       body: const SafeArea(child: SupportScreen()),
     );
   }

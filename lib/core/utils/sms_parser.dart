@@ -64,7 +64,7 @@ class SmsParser {
     double? initialConsumption,
     int? pulsation,
   }) {
-    // TRAME FIXE — voir SmsServiceHybrid.buildConcatenatedConfig : les quatre
+    // TRAME FIXE, voir SmsServiceHybrid.buildConcatenatedConfig : les quatre
     // marqueurs sont toujours présents, un champ non renseigné partant VIDE
     // (« n1:+237695864083:n2::en:110.0:ip:1000 »). Les deux constructeurs
     // doivent rester alignés, sinon la trame diffère selon le chemin d'envoi.
@@ -80,7 +80,7 @@ class SmsParser {
   /// Décompose une trame de configuration TELLE QUE L'APP L'ENVOIE
   /// (« n1:+237…:n2::en:110.0:ip:1000 ») en couples clé→valeur. Une valeur peut
   /// être VIDE (champ non renseigné). Renvoie {} si la trame n'a pas cette
-  /// forme — on ne devine jamais sur une chaîne inattendue.
+  /// forme, on ne devine jamais sur une chaîne inattendue.
   static Map<String, String> parseSentConfig(String frame) {
     const keys = {'n1', 'n2', 'en', 'ip'};
     final tokens = frame.trim().split(':');
@@ -94,7 +94,7 @@ class SmsParser {
     return out;
   }
 
-  /// Vrai si [echo] — le SMS que le kit RENVOIE après une configuration —
+  /// Vrai si [echo], le SMS que le kit RENVOIE après une configuration,
   /// correspond à la trame [sentFrame] que l'application lui a envoyée.
   ///
   /// La comparaison est VOLONTAIREMENT tolérante, paire par paire, et NON une
@@ -120,8 +120,8 @@ class SmsParser {
   /// variable (espaces, casse, « kWh » en suffixe, nombre entier au lieu de
   /// décimal…). On accepte donc une correspondance si :
   ///  • la valeur reçue est égale (après suppression des espaces, en minuscules) ;
-  ///  • OU numériquement équivalente (300 == 300.0) — pour `en`/`ip` ;
-  ///  • OU le même numéro (comparaison sur les 8 derniers chiffres) — pour n1/n2.
+  ///  • OU numériquement équivalente (300 == 300.0), pour `en`/`ip` ;
+  ///  • OU le même numéro (comparaison sur les 8 derniers chiffres), pour n1/n2.
   static bool configAckMatches(String message, String key, String expectedValue) {
     final norm = message.toLowerCase().replaceAll(RegExp(r'\s+'), '');
     final k = key.toLowerCase();

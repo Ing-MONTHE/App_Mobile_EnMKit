@@ -1,13 +1,31 @@
+import 'package:enmkit/core/i18n/strings.dart';
+import 'package:enmkit/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FaqDeviceScreen extends StatelessWidget {
+/// FAQ « Kit et lignes » : ajout, configuration verrouillée, pilotage des
+/// lignes, connexion du kit, actions rapides et consommation.
+class FaqDeviceScreen extends ConsumerWidget {
   const FaqDeviceScreen({super.key});
 
+  static const _questions = <IconData>[
+    Icons.add_circle_outline,
+    Icons.tune,
+    Icons.lock_outline,
+    Icons.power_settings_new,
+    Icons.network_check,
+    Icons.flash_on_outlined,
+    Icons.edit_outlined,
+    Icons.bolt,
+    Icons.delete_outline,
+  ];
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Appareil / Kit'),
+        title: Text(t.t('faq.home.kit')),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
@@ -21,67 +39,21 @@ class FaqDeviceScreen extends StatelessWidget {
               _buildHero(
                 context,
                 icon: Icons.memory,
-                title: 'Configurer et utiliser le Kit',
-                subtitle:
-                    'Numéro du Kit, lignes, numéros autorisés et synchronisation du système.',
+                title: t.t('faq.kit.hero'),
+                subtitle: t.t('faq.kit.hero.sub'),
               ),
               const SizedBox(height: 24),
-              _buildSection(
-                context,
-                'Configurer le numéro du Kit',
-                Icons.tag,
-                const [
-                  'Ouvre Paramètres → « Numéro du Kit ».',
-                  'Saisis le numéro fourni avec le matériel.',
-                  'Enregistre puis vérifie l\'état système.'
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                context,
-                'Gérer les lignes',
-                Icons.device_hub,
-                const [
-                  'Paramètres → « Lignes Configurées » (Administrateur).',
-                  'Ajouter: indique le nom (ex: Salon) et l\'ampérage (4/8/12A).',
-                  'Modifier/Supprimer: utilise les icônes dédiées sur chaque ligne.'
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                context,
-                'Numéros autorisés',
-                Icons.phone_android,
-                const [
-                  'Paramètres → « Numéros Autorisés ».',
-                  'Ajoute au moins un numéro; un second est optionnel.',
-                  'Ces numéros sont utilisés pour contrôler le Kit par SMS.'
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                context,
-                'État système et synchronisation',
-                Icons.info_outline,
-                const [
-                  'Paramètres → « État Système » pour vérifier l\'opérationnalité.',
-                  'Appuie sur « Valider » pour renvoyer la configuration actuelle au Kit.',
-                  'Vérifie que le Kit est alimenté et correctement câblé.'
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                context,
-                'Conseils d\'installation',
-                Icons.build_rounded,
-                const [
-                  'Respecte l\'ampérage maximal des lignes.',
-                  'Isole et fixe proprement les connexions.',
-                  'Garde le Kit dans un environnement ventilé et sec.'
-                ],
-              ),
+              for (var i = 0; i < _questions.length; i++) ...[
+                if (i > 0) const SizedBox(height: 16),
+                _buildSection(
+                  context,
+                  t.t('faq.kit.q${i + 1}'),
+                  _questions[i],
+                  t.t('faq.kit.a${i + 1}').split('\n'),
+                ),
+              ],
               const SizedBox(height: 28),
-              _buildTipCard(context),
+              _buildTipCard(context, t),
               const SizedBox(height: 24),
             ],
           ),
@@ -194,7 +166,7 @@ Widget _buildSection(
   );
 }
 
-Widget _buildTipCard(BuildContext context) {
+Widget _buildTipCard(BuildContext context, AppStrings t) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     padding: const EdgeInsets.all(18),
@@ -209,7 +181,7 @@ Widget _buildTipCard(BuildContext context) {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            'Astuce: utilise « État Système » pour confirmer la synchronisation après chaque changement.',
+            t.t('faq.kit.tip'),
             style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
           ),
         )
