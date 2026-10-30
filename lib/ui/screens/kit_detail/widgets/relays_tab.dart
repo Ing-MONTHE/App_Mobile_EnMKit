@@ -72,6 +72,13 @@ class _RelaysTabState extends ConsumerState<RelaysTab> {
       return BrandLoader(message: t.t('relays.loading'));
     }
 
+    // Le pilotage n'est actif qu'une fois la configuration reçue par le kit
+    // (onglet Config) : avant, le kit ne connaît pas encore les numéros autorisés.
+    final configured = ref
+        .watch(kitProvider)
+        .kits
+        .any((k) => k.kitNumber == kitNumber && k.configSent);
+
     return RefreshIndicator(
       onRefresh: () => vm.fetchRelays(),
       child: ListView(
@@ -88,9 +95,13 @@ class _RelaysTabState extends ConsumerState<RelaysTab> {
               onAction: () => _showRelaySheet(context, ref, vm),
             )
           else ...[
-            _KitConnectionCard(kitNumber: kitNumber),
-            const SizedBox(height: 14),
-            _QuickActions(vm: vm),
+            if (!configured)
+              const _NotConfiguredBanner()
+            else ...[
+              _KitConnectionCard(kitNumber: kitNumber),
+              const SizedBox(height: 14),
+              _QuickActions(vm: vm),
+            ],
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.only(left: 4, bottom: 12),
@@ -105,6 +116,7 @@ class _RelaysTabState extends ConsumerState<RelaysTab> {
                 child: _RelayCard(
                       relay: e.value,
                       vm: vm,
+                      locked: !configured,
                       onDelete: () => _confirmDelete(context, ref, vm, e.value),
                     )
                     .animate()
@@ -269,10 +281,14 @@ class _RelayCard extends ConsumerStatefulWidget {
     required this.relay,
     required this.vm,
     required this.onDelete,
+    this.locked = false,
   });
   final RelayModel relay;
   final RelayViewModel vm;
   final VoidCallback onDelete;
+
+  /// Kit pas encore configuré : les commandes sont désactivées.
+  final bool locked;
 
   @override
   ConsumerState<_RelayCard> createState() => _RelayCardState();
@@ -425,6 +441,7 @@ class _RelayCardState extends ConsumerState<_RelayCard> {
                       : _OnOffControl(
                         key: const ValueKey('onoff'),
                         pendingOn: pendingOn,
+                        locked: widget.locked,
                         onSelect: (on) async {
                           try {
                             await widget.vm.setRelay(relay, on);
@@ -496,7 +513,11 @@ class _OnOffControl extends StatelessWidget {
     super.key,
     required this.pendingOn,
     required this.onSelect,
+    this.locked = false,
   });
+
+  /// Kit pas encore configuré : aucune commande ne peut partir.
+  final bool locked;
 
   /// Commande en vol en attente de l'écho du kit (null = aucune). `true` = ON
   /// demandé, `false` = OFF demandé. Sert UNIQUEMENT au retour « envoi en
@@ -529,7 +550,7 @@ class _OnOffControl extends StatelessWidget {
             label: 'ON',
             icon: Icons.power_settings_new_rounded,
             pending: pendingOn == true,
-            enabled: !busy,
+            enabled: !busy && !locked,
             onTap: () => onSelect(true),
           ),
           const SizedBox(width: 3),
@@ -537,7 +558,7 @@ class _OnOffControl extends StatelessWidget {
             label: 'OFF',
             icon: Icons.power_settings_new_rounded,
             pending: pendingOn == false,
-            enabled: !busy,
+            enabled: !busy && !locked,
             onTap: () => onSelect(false),
           ),
         ],
@@ -960,6 +981,56 @@ class _QuickActions extends ConsumerWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+
+/// Bandeau affiché tant que la configuration n'a pas été reçue par le kit : les
+/// commandes sont désactivées et l'utilisateur est renvoyé vers l'onglet Config.
+class _NotConfiguredBanner extends ConsumerWidget {
+  const _NotConfiguredBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(tProvider);
+    return SoftCard(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: AppTheme.amber.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(Icons.lock_clock_rounded,
+                color: AppTheme.amber, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t.t('relays.status.off.title'),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  t.t('relays.status.off.sub'),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AppTheme.inkSoft),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

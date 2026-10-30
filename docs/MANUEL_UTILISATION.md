@@ -181,6 +181,8 @@ Sur l'accueil, une puce **À valider** sur la carte d'un kit indique qu'il ne re
 
 Chaque ligne a deux boutons : **ON** et **OFF**.
 
+Tant que la configuration n'a pas été reçue par le kit (onglet **Config**), un bandeau **Kit non configuré** s'affiche en haut de l'onglet et les boutons ON / OFF sont désactivés : le kit ne connaît pas encore les numéros autorisés à le commander. Sur l'accueil, la pastille du kit est orange tant qu'il n'est pas configuré, verte ensuite.
+
 1. Appuyez sur **ON** pour allumer, **OFF** pour éteindre.
 2. Le téléphone envoie un SMS au kit. Pendant l'attente, les deux boutons de la ligne sont bloqués (pas de double envoi).
 3. Quand le kit confirme, l'état est mis à jour.

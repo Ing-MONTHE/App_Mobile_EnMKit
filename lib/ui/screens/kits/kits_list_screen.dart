@@ -617,8 +617,8 @@ class _KitCard extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final t = ref.watch(tProvider);
-    final configured = kit.isConfigured;
-    final statusColor = configured ? AppTheme.emerald : AppTheme.amber;
+    // Vert = configuration reçue par le kit ; orange = à configurer ou à valider.
+    final statusColor = kit.configSent ? AppTheme.emerald : AppTheme.amber;
 
     // Surface translucide : le motif de fond transparaît (immersion).
     final cardColor = (isDark ? const Color(0xFF1E2038) : Colors.white)
