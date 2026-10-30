@@ -49,7 +49,7 @@ lib/
 ├── core/
 │   ├── db_service.dart            # ouverture DB + onCreate/onUpgrade
 │   ├── ai/                        # energy_insights.dart (moteur §6), local_assistant.dart
-│   ├── education/                 # contenu TP1–TP7, quiz_scoring.dart
+│   ├── education/                 # contenu TP1-TP7, quiz_scoring.dart
 │   ├── api/                       # enmkit_api_client.dart (serveur optionnel)
 │   ├── sms_service_hybrid.dart    # construction & envoi des commandes SMS
 │   ├── sms_inbox_processor.dart   # traitement des SMS entrants (écho/relevé)
@@ -204,7 +204,7 @@ Fichier : `kit_control.db`. **Version courante : 17.** Ouverture dans
 | 7 | `app_settings.securityCodeEnabled` + activation auto si un PIN existait déjà |
 | **8** | **Renommage `Relais N` → `Ligne N`** des noms par défaut déjà stockés |
 | **9** | `app_settings.securityPromptSeen` (proposition de code skippable) + marquée *vue* pour les installs existantes |
-| 10–16 | Récupération du PIN / biométrie, `relay_acks`, `kits.configured`, `app_meta`, écho de config, `support_messages` (voir `db_service.dart`) |
+| 10-16 | Récupération du PIN / biométrie, `relay_acks`, `kits.configured`, `app_meta`, écho de config, `support_messages` (voir `db_service.dart`) |
 | **17** | `DBService.createV17Tables` : `hourly_consumptions` (+ index), `server_settings`, `edu_progress`, `edu_quiz_scores`, `edu_scenarios` ; tout en `IF NOT EXISTS`, aucune table existante modifiée |
 
 Migration v8 (extrait) :
@@ -371,7 +371,7 @@ Contrat partagé : `EnMKit_platform/docs/CONTRACT.md` §2 (trames) et §6 (moteu
   mis en cache, `energyBetween(from, to)` pour les scénarios A/B).
 - **Moteur** `lib/core/ai/energy_insights.dart` (`EnergyInsightsEngine.compute`, Dart pur) :
   qualité/trous, profil médiane/MAD ouvrés/week-end, anomalies z > 3,5 + dérive nocturne,
-  veille, pointe 18–22 h, tendance, prévisions 24 h/jour/mois, coût FCFA par tranches
+  veille, pointe 18-22 h, tendance, prévisions 24 h/jour/mois, coût FCFA par tranches
   (`EnergyTariff`), score/notes, recommandations FR/EN. Interprétations alignées **à
   l'identique** sur `EnMKit_platform/api/app/services/analytics.py` (voir l'en-tête de la
   classe) ; `toJson()` produit la forme `Insights` du contrat avec les mêmes arrondis.
@@ -382,7 +382,7 @@ Contrat partagé : `EnMKit_platform/docs/CONTRACT.md` §2 (trames) et §6 (moteu
 
 ## 11. Éducation énergétique & assistant
 
-- **Contenu** : `lib/core/education/education_content.dart`, 7 `EduModule` (TP1–TP7,
+- **Contenu** : `lib/core/education/education_content.dart`, 7 `EduModule` (TP1-TP7,
   forme de `GET /education/modules`), `EcoTip`, `GlossaryEntry`, textes bilingues `Bi`
   (le catalogue `strings.dart` garde les libellés d'interface). Notation :
   `quiz_scoring.dart` (70 % pour réussir, meilleur score conservé).

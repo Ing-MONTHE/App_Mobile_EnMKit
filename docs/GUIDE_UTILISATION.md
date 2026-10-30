@@ -5,7 +5,7 @@
 Version de l'application : **1.0.0** (lot « IA & éducation énergétique ») · Document mis à jour le 29/10/2026
 
 > 🆕 **Nouveautés de ce lot :** onglet **Analyse IA** hors-ligne (trames horaires, score,
-> prévisions FCFA, anomalies, voir §8.1), module **Apprendre** (TP1–TP7, quiz, glossaire, voir
+> prévisions FCFA, anomalies, voir §8.1), module **Apprendre** (TP1-TP7, quiz, glossaire, voir
 > §13 bis) et **assistant énergie** en ligne optionnel (§11.1).
 
 > ℹ️ **Note de version.** Cette édition du guide intègre les évolutions récentes :
@@ -282,7 +282,7 @@ Le kit envoie aussi, **chaque heure**, un SMS de **trames horaires** :
 les enregistre automatiquement (même fermée) et l'onglet **Analyse IA** les exploite,
 **sur le téléphone, sans Internet** :
 
-- **Score d'efficacité** (0–100) et **note A à E**, avec pénalités : veille, pointe du soir,
+- **Score d'efficacité** (0-100) et **note A à E**, avec pénalités : veille, pointe du soir,
   hausse de consommation, anomalies ;
 - **Prévisions** de la journée et du mois, en **kWh et en FCFA** (barème par tranches) ;
 - **Courbe des 48 dernières heures** comparée au **profil type** (pointillés) ;
@@ -470,7 +470,7 @@ La rubrique **QR & Configuration** détaille justement le partage vu au §10 :
 ## 13 bis. 🆕 Apprendre : Éducation énergétique (Smart Home Learning Lab)
 
 L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc EnMKit**
-(L1–L2 ampoules, L3–L4 prises) :
+(L1-L2 ampoules, L3-L4 prises) :
 
 - **7 fiches de travaux pratiques** : TP1 Comprendre et mesurer l'énergie · TP2 Comprendre
   les circuits · TP3 Commander à distance par SMS · TP4 Comparer les usages · TP5
@@ -531,17 +531,17 @@ L'onglet **Apprendre** (barre du bas) accompagne les formations sur le **banc En
 
 ## Récapitulatif : le parcours du bailleur
 
-1. **Installer** l'app ; **activer un code** d'accès seulement si souhaité (§1–2, §12).
+1. **Installer** l'app ; **activer un code** d'accès seulement si souhaité (§1-2, §12).
 2. **Ajouter chaque appartement** comme un kit, avec son numéro GSM et son **nombre de
-   lignes** (§4–5).
+   lignes** (§4-5).
 3. **Nommer et piloter les lignes** de chaque logement par **double-tap**, avec **test de
-   joignabilité** et **actions groupées** (§6–7).
+   joignabilité** et **actions groupées** (§6-7).
 4. **Suivre la consommation** et son **analyse IA** hors-ligne (§8, §8.1).
 5. **Configurer** le kit : infos, compteur, numéros autorisés (§9).
 6. **Partager / dupliquer** la configuration par **QR Code** entre téléphones : l'état des
    lignes se **synchronise** entre appareils autorisés (§10).
-7. **Personnaliser et sécuriser** l'application (§11–12), avec une **FAQ** intégrée (§13).
-8. **Former** avec le module **Apprendre** (TP1–TP7, quiz) et, si un serveur est
+7. **Personnaliser et sécuriser** l'application (§11-12), avec une **FAQ** intégrée (§13).
+8. **Former** avec le module **Apprendre** (TP1-TP7, quiz) et, si un serveur est
    configuré, l'**assistant en ligne** (§11.1, §13 bis).
 
 ---
